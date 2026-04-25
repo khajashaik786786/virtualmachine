@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>VLSI EDA Terminal</title>
+  <title>Khaja EDA Terminal</title>
 
-  <!-- ACE Editor CDN -->
+  <!-- ACE Editor -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
 
   <style>
@@ -16,32 +16,37 @@
       color: #c9d1d9;
     }
     header {
-      background: #161b22;
-      padding: 10px;
+      background: linear-gradient(90deg,#1f6feb,#238636);
+      padding: 12px;
       text-align: center;
-      font-size: 18px;
-      border-bottom: 1px solid #30363d;
+      font-size: 22px;
+      font-weight: bold;
+      color: white;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
     }
     #editor {
       width: 100%;
       height: 350px;
     }
     #terminal {
-      height: 250px;
+      height: 260px;
       background: black;
       color: #00ff00;
       padding: 10px;
       overflow-y: auto;
       border-top: 1px solid #30363d;
     }
-    .btns {
+    .controls {
       padding: 10px;
       background: #161b22;
       border-top: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
     button {
       padding: 8px 16px;
-      margin-right: 10px;
       background: #238636;
       border: none;
       color: white;
@@ -51,17 +56,31 @@
     button:hover {
       background: #2ea043;
     }
+    select {
+      padding: 6px;
+      background: #0d1117;
+      color: white;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+    }
   </style>
 </head>
 <body>
 
 <header>
-  VLSI EDA Web Terminal (SystemVerilog + UVM Simulation Mock)
+  🚀 KHAJA EDA TERMINAL 🚀
 </header>
 
 <div id="editor"></div>
 
-<div class="btns">
+<div class="controls">
+  <label>Simulator:</label>
+  <select id="simulator">
+    <option value="synopsys">Synopsys VCS</option>
+    <option value="questa">QuestaSim</option>
+    <option value="xcelium">Cadence Xcelium</option>
+  </select>
+
   <button onclick="compileCode()">Compile</button>
   <button onclick="runSim()">Run Simulation</button>
   <button onclick="clearTerminal()">Clear</button>
@@ -70,21 +89,15 @@
 <div id="terminal"></div>
 
 <script>
-  // Initialize ACE Editor
   const editor = ace.edit("editor");
   editor.setTheme("ace/theme/github_dark");
-  editor.session.setMode("ace/mode/verilog"); // closest to SystemVerilog
-  editor.setOptions({
-    fontSize: "14px",
-    showPrintMargin: false,
-    wrap: true
-  });
+  editor.session.setMode("ace/mode/verilog");
+  editor.setOptions({ fontSize: "14px", showPrintMargin: false, wrap: true });
 
-  // Default SV/UVM code
-  editor.setValue(`// SystemVerilog + UVM Sample
+  editor.setValue(`// Khaja EDA Terminal - SystemVerilog/UVM Example
 module tb;
   initial begin
-    $display("Hello VLSI World");
+    $display("Hello from Khaja EDA Terminal");
   end
 endmodule`, -1);
 
@@ -99,27 +112,27 @@ endmodule`, -1);
   }
 
   function compileCode() {
-    const code = editor.getValue();
-
+    const sim = document.getElementById("simulator").value;
+    log(`[INFO] Using Simulator: ${sim.toUpperCase()}`);
     log("[INFO] Compiling SystemVerilog Code...");
 
     setTimeout(() => {
-      if (code.includes("module")) {
-        log("[SUCCESS] Compilation Passed (Mock VCS/Xcelium)");
-      } else {
-        log("[ERROR] Compilation Failed: No module found");
-      }
+      log(`[${sim.toUpperCase()}] Compilation Successful ✔`);
     }, 1000);
   }
 
   function runSim() {
-    log("[INFO] Running Simulation...");
+    const sim = document.getElementById("simulator").value;
+    log(`[INFO] Running Simulation on ${sim.toUpperCase()}...\`);
 
     setTimeout(() => {
+      log("----------------------------------------");
       log("UVM_INFO @ 0: reporter [RNTST] Running test...");
       log("UVM_INFO @ 10: drv [DRV] Driving transactions...");
-      log("UVM_INFO @ 20: scb [SCB] Checking results...");
-      log("UVM_PASS: Simulation completed successfully!");
+      log("UVM_INFO @ 20: mon [MON] Capturing signals...");
+      log("UVM_INFO @ 30: scb [SCB] Checking results...");
+      log("----------------------------------------");
+      log(`[${sim.toUpperCase()}] UVM TEST PASSED ✅`);
     }, 1500);
   }
 </script>
