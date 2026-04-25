@@ -784,172 +784,47 @@ textarea.addEventListener('click', updateMiniBar);
 textarea.addEventListener('keyup', updateMiniBar);
 
 // ═══════════════════════════════════════════════
-// SIMULATION ENGINE
+// REAL SIMULATION ENGINE — Claude API powered
 // ═══════════════════════════════════════════════
 let simRunning = false;
 
-function analyzeCodeForOutput(code) {
-  // Intelligent output based on actual code content
-  const lines = [];
-  const hasModule = /\bmodule\b/.test(code);
-  const hasClass = /\bclass\b/.test(code);
-  const hasUVM = /uvm_|`uvm_/.test(code);
-  const hasInitial = /\binitial\b/.test(code);
-  const hasForever = /\bforever\b/.test(code);
-  const hasAssert = /\bassert\b/.test(code);
-  const hasRand = /\brand\b/.test(code);
-  const hasConstraint = /\bconstraint\b/.test(code);
-  const hasDisplay = /\$display|\$write/.test(code);
-  const hasFork = /\bfork\b/.test(code);
-  const hasMailbox = /\bmailbox\b/.test(code);
-  const hasCover = /\bcovergroup\b|\bcover\b/.test(code);
-  const hasForEach = /\bforeach\b/.test(code);
-  const hasFatal = /`uvm_fatal/.test(code);
-  const hasError = /`uvm_error/.test(code);
-  const hasTask = /\btask\b/.test(code);
-  const hasDMA = /dma|gdma/i.test(code);
-  const hasGPIO = /gpio/i.test(code);
-  const hasPLL = /pll/i.test(code);
-  const hasAPB = /apb/i.test(code);
-  const hasAHB = /ahb/i.test(code);
-  const hasAXI = /axi/i.test(code);
-  const hasQSPI = /qspi/i.test(code);
-  const hasI2C = /i2c/i.test(code);
-  const hasMIPI = /mipi|dsi/i.test(code);
+const SIM_SYSTEM_PROMPT = `You are a SystemVerilog/UVM simulator engine. Your job is to EXECUTE the given SystemVerilog code and produce EXACT simulator output — exactly like Synopsys VCS or Cadence Xcelium would produce.
 
-  // Extract class names
-  const classMatches = [...code.matchAll(/class\s+(\w+)/g)].map(m=>m[1]);
-  // Extract module names
-  const moduleMatches = [...code.matchAll(/module\s+(\w+)/g)].map(m=>m[1]);
-  // Extract constraint names
-  const constraintMatches = [...code.matchAll(/constraint\s+(\w+)/g)].map(m=>m[1]);
-  // Extract display strings
-  const displayMatches = [...code.matchAll(/\$display\s*\(\s*"([^"]+)"/g)].map(m=>m[1]);
-  // Extract uvm_info messages
-  const infoMatches = [...code.matchAll(/`uvm_info\s*\(\s*"([^"]+)"\s*,\s*\$sformatf\("([^"]+)"/g)].map(m=>({id:m[1],msg:m[2]}));
-  const infoSimple = [...code.matchAll(/`uvm_info\s*\(\s*"([^"]+)"\s*,\s*"([^"]+)"/g)].map(m=>({id:m[1],msg:m[2]}));
+CRITICAL RULES:
+1. ACTUALLY EXECUTE the code logic step by step. Do not guess or hallucinate output.
+2. For rand/randomize(): pick realistic random values that SATISFY all constraints exactly.
+3. For $display/$write: compute the EXACT formatted output with real variable values.
+4. For foreach/for loops: iterate and produce output for EACH iteration.
+5. For post_randomize(): execute it after randomization with the actual randomized values.
+6. For array methods like .max()/.min()/.sum(): compute correct results on the actual array.
+7. Detect SYNTAX ERRORS: report them with exact line numbers like "ERROR: Line 12: ..."
+8. Detect SEMANTIC ERRORS: unresolved constraints, type mismatches, out-of-bounds, etc.
+9. For UVM phases: show build_phase, connect_phase, run_phase, report_phase in sequence.
+10. Show realistic simulation timestamps (in ns/ps).
 
-  lines.push({t:'system',src:'SYS',msg:'Compiler started — analyzing source...'});
+OUTPUT FORMAT — return ONLY a JSON array of log lines, nothing else:
+[
+  {"t":"system","src":"VCS","msg":"Compiler version 2025.06 ..."},
+  {"t":"info","src":"ELAB","msg":"..."},
+  {"t":"error","src":"COMP","msg":"ERROR: Line 5: missing semicolon"},
+  {"t":"pass","src":"SIM","msg":"..."},
+  {"t":"fail","src":"SIM","msg":"..."},
+  {"t":"warning","src":"SIM","msg":"..."}
+]
 
-  if (hasModule) lines.push({t:'info',src:'ELAB',msg:`Module(s) found: ${moduleMatches.join(', ') || 'unnamed'}`});
-  if (hasClass) lines.push({t:'info',src:'ELAB',msg:`Class(es) found: ${classMatches.join(', ') || 'unnamed'}`});
-  if (hasUVM) lines.push({t:'info',src:'UVM',msg:'UVM-1.2 library linked successfully'});
-  if (hasUVM) lines.push({t:'info',src:'FACTORY',msg:`Factory registration: ${classMatches.length} class(es) registered`});
-  if (hasConstraint) lines.push({t:'info',src:'RAND',msg:`Constraints detected: ${constraintMatches.join(', ')}`});
+Tag types: "system" (green) | "info" (blue) | "pass" (green bold) | "fail" (red) | "error" (red) | "warning" (yellow)
 
-  // Protocol-specific output
-  if (hasAPB) { lines.push({t:'info',src:'APB',msg:'APB protocol component detected — driving transactions'}); }
-  if (hasAHB) { lines.push({t:'info',src:'AHB',msg:'AHB protocol burst transfer engine initialized'}); }
-  if (hasAXI) { lines.push({t:'info',src:'AXI4',msg:'AXI4 outstanding transaction tracking enabled'}); }
-  if (hasQSPI) { lines.push({t:'info',src:'QSPI',msg:'QSPI x4 mode driver initialized — SPI clock = 50MHz'}); }
-  if (hasMIPI) { lines.push({t:'info',src:'MIPI',msg:'MIPI D-PHY high-speed lane initialized — HS mode'}); }
-  if (hasDMA) { lines.push({t:'info',src:'DMA',msg:'GDMA M2M transfer engine — 8 channels available'}); }
-  if (hasGPIO) { lines.push({t:'info',src:'GPIO',msg:'GPIO interrupt controller — rising edge detection enabled'}); }
-  if (hasPLL) { lines.push({t:'info',src:'PLL',msg:'PLL frequency synthesizer — VCO range: 800-3200 MHz'}); }
-  if (hasI2C) { lines.push({t:'info',src:'I2C',msg:'I2C master controller — SCL 400kHz fast mode'}); }
+For $display output use src:"$display".
+For constraint/randomization errors use src:"RAND".
+For syntax errors use src:"COMP" and tag "error".
+For fatal errors: stop simulation and show what would fail.
 
-  if (hasAssert) lines.push({t:'info',src:'SVA',msg:'Assertions compiled — formal checker initialized'});
-  if (hasFork) lines.push({t:'info',src:'FORK',msg:'Parallel thread execution — fork/join scheduled'});
-  if (hasMailbox) lines.push({t:'info',src:'IPC',msg:'Mailbox/semaphore IPC channels created'});
-  if (hasCover) lines.push({t:'info',src:'COV',msg:'Covergroup sampling enabled'});
+IMPORTANT: The last line MUST be a summary like:
+{"t":"pass","src":"RESULT","msg":"Simulation PASSED — 0 errors, 0 warnings"}
+OR
+{"t":"fail","src":"RESULT","msg":"Simulation FAILED — 2 errors, 1 warning"}
 
-  // Run simulation
-  lines.push({t:'info',src:'SIM',msg:'Simulation time: 0ns — starting test...'});
-  if (hasUVM && hasTask) lines.push({t:'info',src:'UVM',msg:'build_phase() → connect_phase() → run_phase() → report_phase()'});
-
-  // Randomization
-  if (hasRand && hasConstraint) {
-    lines.push({t:'info',src:'RAND',msg:'Constraint solver: CVC-based engine activated'});
-    const numRand = Math.floor(4 + Math.random()*12);
-    lines.push({t:'info',src:'RAND',msg:`Randomizing ${numRand} transaction(s) — all constraints satisfied`});
-  }
-
-  // Display outputs from code
-  displayMatches.slice(0,5).forEach(msg => {
-    const formatted = msg.replace(/%0d/gi,'<N>').replace(/%0h/gi,'0x<H>').replace(/%s/gi,'<S>');
-    lines.push({t:'info',src:'$DISPLAY',msg:formatted});
-  });
-
-  // UVM info messages
-  infoMatches.slice(0,4).forEach(({id,msg}) => {
-    const formatted = msg.replace(/%0d/gi,Math.floor(Math.random()*256).toString()).replace(/%0h/gi,'0x'+Math.floor(Math.random()*0xFFFF).toString(16).toUpperCase().padStart(8,'0')).replace(/%s/gi,'DATA').replace(/%\.[0-9]*f/gi,(Math.random()*1000).toFixed(2));
-    lines.push({t:'info',src:id,msg:formatted});
-  });
-  infoSimple.slice(0,3).forEach(({id,msg}) => lines.push({t:'info',src:id,msg}));
-
-  // Protocol transactions
-  if (hasAPB) {
-    const addrs = ['0x40001000','0x40001004','0x40001008','0x4000100C'];
-    const datas = ['0xDEADBEEF','0xCAFEBABE','0x12345678','0xABCDEF01'];
-    const nTxn = Math.floor(3+Math.random()*5);
-    for(let i=0;i<nTxn;i++) {
-      const addr=addrs[i%4], data=datas[i%4];
-      lines.push({t:'info',src:'DRV',msg:`WRITE addr=${addr} data=${data}`});
-      lines.push({t:'info',src:'MON',msg:`[TXN#${i+1}] W addr=${addr} data=${data}`});
-      lines.push({t:'pass',src:'SB',msg:`PASS READ addr=${addr} exp=${data} got=${data}`});
-    }
-  }
-  if (hasAXI && !hasAPB) {
-    for(let i=0;i<3;i++) {
-      const id=i%4, len=Math.floor(4+Math.random()*12), addr='0x'+Math.floor(Math.random()*0xFFFFF).toString(16).toUpperCase().padStart(8,'0');
-      lines.push({t:'info',src:'AXI4',msg:`AWID=${id} AWADDR=${addr} AWLEN=${len} — WRITE burst started`});
-      lines.push({t:'pass',src:'AXI4',msg:`BRESP=OKAY — Write response received for ID=${id}`});
-    }
-  }
-  if (hasPLL) {
-    const fref=[24,25,26,38,40][Math.floor(Math.random()*5)];
-    const n=Math.floor(2+Math.random()*6), m=Math.floor(48+Math.random()*200), p=Math.floor(1+Math.random()*4);
-    const vco=(fref*m/n).toFixed(1), fout=(fref*m/(n*p)).toFixed(2);
-    lines.push({t:'info',src:'PLL_SB',msg:`OK Fref=${fref}MHz N=${n} M=${m} P=${p} VCO=${vco}MHz Fout=${fout}MHz`});
-    if(parseFloat(vco)<800||parseFloat(vco)>3200) lines.push({t:'fail',src:'PLL_SB',msg:`VCO OOR: ${vco}MHz (must be 800-3200 MHz)`});
-    else lines.push({t:'pass',src:'PLL_SB',msg:`VCO in range ✓ Fout=${fout}MHz within spec`});
-  }
-  if (hasDMA) {
-    lines.push({t:'info',src:'DMA',msg:`M2M transfer: src=0x20000000 dst=0x20100000 len=256 words`});
-    lines.push({t:'info',src:'DMA',msg:`Burst=16 channel=0 — transfer started`});
-    lines.push({t:'pass',src:'DMA',msg:`Transfer complete — IRQ asserted, no overlaps`});
-  }
-  if (hasGPIO) {
-    lines.push({t:'info',src:'GPIO',msg:'Pin set as INPUT'});
-    lines.push({t:'info',src:'GPIO',msg:'INT enabled on rising edge'});
-    lines.push({t:'info',src:'GPIO',msg:'INT_STATUS cleared (W1C)'});
-    lines.push({t:'pass',src:'GPIO',msg:'GPIO interrupt test sequence complete'});
-  }
-  if (hasMailbox) {
-    lines.push({t:'info',src:'PROD',msg:'Sent: 0'});
-    lines.push({t:'info',src:'PROD',msg:'Sent: 10'});
-    lines.push({t:'info',src:'CONS',msg:'Waiting for producer...'});
-    lines.push({t:'info',src:'CONS',msg:'Got: 0'});
-    lines.push({t:'info',src:'CONS',msg:'Got: 10'});
-    lines.push({t:'pass',src:'IPC',msg:'IPC demo complete'});
-  }
-
-  // Assertions
-  if (hasAssert) {
-    lines.push({t:'pass',src:'SVA',msg:'All properties passed — 0 assertion failures'});
-    if(hasCover) lines.push({t:'info',src:'SVA',msg:`Cover points hit: ${Math.floor(3+Math.random()*5)}/5`});
-  }
-
-  // Errors/Warnings from code
-  if (hasFatal) lines.push({t:'warning',src:'SIM',msg:'UVM_FATAL detected in source — check randomization guard conditions'});
-  if (hasError) lines.push({t:'warning',src:'SIM',msg:'UVM_ERROR handlers present — enabled for run-time reporting'});
-
-  // Results
-  const passCount = lines.filter(l=>l.t==='pass').length;
-  const failCount = lines.filter(l=>l.t==='fail').length;
-  const simTime = (Math.floor(100+Math.random()*9900)*1000);
-  lines.push({t:'system',src:'SIM',msg:`Simulation ended at ${simTime.toLocaleString()} ns`});
-  if (hasUVM) {
-    lines.push({t:'system',src:'UVM',msg:'--- UVM Report Summary ---'});
-    lines.push({t:'system',src:'UVM',msg:`UVM_INFO    : ${lines.filter(l=>l.t==='info').length}`});
-    lines.push({t:'system',src:'UVM',msg:`UVM_WARNING : ${hasFatal||hasError?1:0}`});
-    lines.push({t:'system',src:'UVM',msg:`UVM_ERROR   : ${failCount}`});
-    lines.push({t:'system',src:'UVM',msg:`UVM_FATAL   : 0`});
-  }
-  lines.push({t: failCount>0?'fail':'pass', src:'RESULT', msg:`SIMULATION ${failCount>0?'FAILED':'PASSED'} — PASS=${passCount} FAIL=${failCount}`});
-
-  return { lines, passCount, failCount, simTime };
-}
+Do not add any text outside the JSON array. No markdown. No explanation. Just the JSON array.`;
 
 async function runSimulation() {
   if (simRunning) return;
@@ -967,39 +842,140 @@ async function runSimulation() {
   btn.classList.add('running'); btn.textContent = '⏳ RUNNING';
   overlay.classList.add('active');
 
-  const stages = ['COMPILING...','ELABORATING...','RUNNING SIMULATION...','COLLECTING RESULTS...'];
-  for (const s of stages) { runMsg.textContent = s; await sleep(400); }
+  const simName = getSim(document.getElementById('sim-select').value);
+  const tab = openTabs[activeTabIndex];
+  const proj = db.projects[tab.projectId];
+
+  const stages = ['COMPILING...', 'ELABORATING...', 'RUNNING...', 'COLLECTING...'];
+  for (const s of stages) { runMsg.textContent = s; await sleep(350); }
 
   overlay.classList.remove('active');
   btn.classList.remove('running'); btn.textContent = '▶ RUN';
-  simRunning = false;
 
-  // Switch to log tab
-  switchOutTab(document.querySelector('.out-tab'),'log');
-
+  switchOutTab(document.querySelector('.out-tab'), 'log');
   log.innerHTML = '';
-  const result = analyzeCodeForOutput(code);
 
-  addLog('system','SYS',`${getSim(document.getElementById('sim-select').value)} started — ${new Date().toLocaleTimeString()}`);
-  const tab = openTabs[activeTabIndex];
-  const proj = db.projects[tab.projectId];
-  addLog('info','SYS',`Compiling: ${proj.name}/${tab.name}`);
+  // Header lines
+  const now = new Date().toLocaleTimeString();
+  addLog('system','SIM', `${simName} — ${now}`);
+  addLog('info','SYS', `Compiling: ${proj.name}/${tab.name}`);
 
-  for (const o of result.lines) {
-    await sleep(30+Math.random()*60);
-    addLog(o.t, o.src, o.msg);
+  // Streaming cursor line
+  const streamLine = document.createElement('div');
+  streamLine.className = 'log-line';
+  streamLine.innerHTML = `<span class="log-tag ai">[SIM]</span><span class="log-msg" id="sim-stream-msg">Executing code<span class="ai-streaming"></span></span>`;
+  log.appendChild(streamLine);
+
+  let fullText = '';
+  let parseError = false;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1500,
+        stream: true,
+        system: SIM_SYSTEM_PROMPT,
+        messages: [{
+          role: 'user',
+          content: `Simulator: ${simName}\nFile: ${tab.name}\nProject: ${proj.name}\n\nCODE TO EXECUTE:\n${code}`
+        }]
+      })
+    });
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      for (const line of chunk.split('\n')) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6);
+        if (data === '[DONE]') continue;
+        try {
+          const parsed = JSON.parse(data);
+          if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+            fullText += parsed.delta.text;
+            // Update streaming indicator
+            const msgEl = document.getElementById('sim-stream-msg');
+            if (msgEl) {
+              const preview = fullText.replace(/[\[\]"]/g,'').substring(0,60);
+              msgEl.innerHTML = `Processing... <span style="color:var(--text-dim)">${preview}</span><span class="ai-streaming"></span>`;
+            }
+          }
+        } catch(e) {}
+      }
+    }
+
+    // Remove streaming line
+    streamLine.remove();
+
+    // Parse JSON result
+    let lines = [];
+    try {
+      // Strip markdown fences if any
+      const clean = fullText.replace(/```json|```/g,'').trim();
+      // Find JSON array
+      const start = clean.indexOf('[');
+      const end = clean.lastIndexOf(']');
+      if (start !== -1 && end !== -1) {
+        lines = JSON.parse(clean.substring(start, end+1));
+      } else {
+        throw new Error('No JSON array found');
+      }
+    } catch(e) {
+      parseError = true;
+      // If JSON parse fails, show raw output as plain lines
+      addLog('warning','SIM','Could not parse simulator JSON — showing raw output:');
+      fullText.split('\n').filter(l=>l.trim()).forEach(l => {
+        addLog('info','SIM', l.replace(/[{}"]/g,'').trim());
+      });
+    }
+
+    if (!parseError) {
+      // Render each line with small delay for realism
+      let passCount = 0, failCount = 0, errCount = 0, warnCount = 0;
+      for (const line of lines) {
+        await sleep(18 + Math.random()*35);
+        const t = line.t || 'info';
+        const src = line.src || 'SIM';
+        const msg = (line.msg || '').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        addLog(t, src, msg);
+        if (t === 'pass') passCount++;
+        if (t === 'fail' || t === 'error') { failCount++; errCount++; }
+        if (t === 'warning') warnCount++;
+      }
+
+      const hasFail = failCount > 0;
+      const lastLine = lines[lines.length - 1];
+      const simTimeMatch = (fullText.match(/\d[\d,]+\s*ns/) || ['--'])[0];
+
+      document.getElementById('status-time').textContent = `SIM TIME: ${simTimeMatch}`;
+      document.getElementById('status-result').textContent = `ERR: ${errCount} | WARN: ${warnCount}`;
+
+      const footer = document.getElementById('output-footer');
+      footer.innerHTML = `
+        <span class="result-badge ${hasFail?'fail':'pass'}">${hasFail?'FAILED':'PASSED'}</span>
+        <span class="result-badge warn">WARN: ${warnCount}</span>
+        <span class="result-badge ${hasFail?'fail':'pass'}" style="${!hasFail?'opacity:0.4':''}">ERR: ${errCount}</span>`;
+
+      showToast(hasFail ? `✗ Simulation FAILED — ${errCount} error(s)` : '✓ Simulation PASSED');
+    }
+
+  } catch(err) {
+    streamLine.remove();
+    addLog('error','SIM','Simulator connection failed: ' + err.message);
+    addLog('warning','SIM','Check internet connection and try again.');
+    document.getElementById('output-footer').innerHTML = '<span class="result-badge fail">CONNECTION ERROR</span>';
   }
 
-  document.getElementById('status-time').textContent = `SIM TIME: ${result.simTime.toLocaleString()} ns`;
-  document.getElementById('status-result').textContent = `PASS: ${result.passCount} | FAIL: ${result.failCount}`;
-
-  const footer = document.getElementById('output-footer');
-  footer.innerHTML = `
-    <span class="result-badge ${result.failCount>0?'fail':'pass'}">PASS: ${result.passCount}</span>
-    <span class="result-badge warn">WARN: 0</span>
-    <span class="result-badge ${result.failCount>0?'fail':'pass'}" style="${result.failCount===0?'opacity:0.4':''}">FAIL: ${result.failCount}</span>`;
-
-  showToast(result.failCount===0 ? '✓ Simulation PASSED' : `✗ ${result.failCount} failure(s) detected`);
+  simRunning = false;
+  btn.classList.remove('running');
+  btn.textContent = '▶ RUN';
 }
 
 // ═══════════════════════════════════════════════
@@ -1042,24 +1018,26 @@ async function runAIAnalysis() {
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
+        max_tokens: 1400,
         stream: true,
+        system: `You are a world-class VLSI DV engineer with 15+ years experience in SystemVerilog, UVM, constrained random verification, formal verification, and protocol verification (APB, AHB, AXI4, MIPI DSI, PCIe, SPI, I2C, etc.).
+Analyze code like a principal verification engineer doing a thorough code review.
+Format as a clean terminal report with these section headers (only include sections relevant to what's in the code):
+[SYNTAX & ELABORATION]
+[CONSTRAINT ANALYSIS]
+[RANDOMIZATION QUALITY]
+[UVM METHODOLOGY]
+[COVERAGE ANALYSIS]
+[BUGS & RISKS]
+[RECOMMENDATIONS]
+Be direct and specific. Cite variable names, line context, constraint names. No markdown, no asterisks, no bullets — plain text only. Short paragraphs per finding.`,
         messages: [{
           role: 'user',
-          content: `You are a senior VLSI Design Verification (DV) engineer. Analyze this SystemVerilog/UVM code from file "${fileName}" in project "${proj.name}".
+          content: `File: ${fileName}  |  Project: ${proj.name}
 
-Provide a concise review covering:
-1. **Code Quality** — structure, naming, UVM methodology compliance
-2. **Potential Issues** — bugs, protocol violations, constraint problems, X-propagation risks
-3. **Simulation Tips** — coverage holes, assertion recommendations, randomization improvements
-4. **Best Practices** — what's done well and what could be improved
+${code.substring(0, 4000)}
 
-Keep it practical and specific to the code. Use terminal/engineer-friendly language. No markdown headers, use plain text sections.
-
-CODE:
-\`\`\`systemverilog
-${code.substring(0, 3000)}
-\`\`\``
+Give a deep technical review. Find bugs, constraint conflicts, randomization issues, UVM phase mistakes, coverage gaps, protocol timing problems, and specific fix recommendations.`
         }]
       })
     });
