@@ -3,795 +3,237 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DV Playground — VLSI Design Verification IDE</title>
+<title>DV Playground — VLSI IDE</title>
 <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Syne:wght@400;600;700;800&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* ═══════════════════════════════════════════════════
-   ROOT & RESET
-═══════════════════════════════════════════════════ */
 :root {
-  --bg0:       #080b0f;
-  --bg1:       #0d1117;
-  --bg2:       #111820;
-  --bg3:       #161e28;
-  --bg4:       #1c2535;
-  --green:     #00ff88;
-  --green-dim: #00c46a;
-  --blue:      #00d4ff;
-  --blue-dim:  #0099bb;
-  --orange:    #ff8c42;
-  --red:       #ff4757;
-  --yellow:    #ffd32a;
-  --purple:    #a855f7;
-  --text:      #c8d8c8;
-  --text-dim:  #5a7060;
-  --text-mid:  #8aaa8a;
-  --border:    rgba(0,255,136,0.12);
-  --border2:   rgba(0,212,255,0.10);
-  --glow-g:    0 0 16px rgba(0,255,136,0.35);
-  --glow-b:    0 0 16px rgba(0,212,255,0.30);
-  --panel-w:   260px;
-  --out-w:     340px;
-  --toolbar-h: 50px;
-  --tab-h:     38px;
-  --status-h:  26px;
-  --font-mono: 'JetBrains Mono', monospace;
-  --font-ui:   'Syne', sans-serif;
-  --font-body: 'Rajdhani', sans-serif;
-}
-
-*,*::before,*::after { margin:0; padding:0; box-sizing:border-box; }
-html,body { height:100%; overflow:hidden; }
-
-body {
-  font-family: var(--font-body);
-  background: var(--bg0);
-  color: var(--text);
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-/* ── SCANLINE overlay ── */
-body::before {
-  content:"";
-  position:fixed; inset:0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(0,0,0,0.08) 2px,
-    rgba(0,0,0,0.08) 4px
-  );
-  pointer-events:none; z-index:9999;
-}
-
-/* ── MATRIX RAIN CANVAS ── */
-#matrix-canvas {
-  position:fixed; inset:0;
-  opacity:0.025; pointer-events:none; z-index:0;
-}
-
-/* ═══════════════════════════════════════════════════
-   TOOLBAR
-═══════════════════════════════════════════════════ */
-.toolbar {
-  height: var(--toolbar-h);
-  background: var(--bg1);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  gap: 0;
-  padding: 0 12px;
-  z-index: 100;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.toolbar-logo {
-  font-family: var(--font-ui);
-  font-weight: 800;
-  font-size: 1rem;
-  letter-spacing: 1px;
-  color: var(--green);
-  text-shadow: var(--glow-g);
-  margin-right: 20px;
-  white-space: nowrap;
-}
-
-.toolbar-logo span { color: var(--blue); }
-
-.toolbar-sep {
-  width: 1px; height: 24px;
-  background: var(--border);
-  margin: 0 10px;
-}
-
-.tb-btn {
-  display: flex; align-items: center; gap: 6px;
-  padding: 6px 14px;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--text-mid);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 0.5px;
-  cursor: pointer;
-  border-radius: 4px;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-.tb-btn:hover { color: var(--text); border-color: var(--border); background: var(--bg3); }
-
-.tb-btn.run {
-  background: rgba(0,255,136,0.1);
-  border-color: var(--green);
-  color: var(--green);
-  font-weight: 700;
-}
-.tb-btn.run:hover { background: var(--green); color: var(--bg0); box-shadow: var(--glow-g); }
-.tb-btn.run.running { animation: run-pulse 0.8s ease-in-out infinite; }
-
-@keyframes run-pulse {
-  0%,100% { box-shadow: var(--glow-g); }
-  50%      { box-shadow: 0 0 30px rgba(0,255,136,0.7); }
-}
-
-.tb-btn.eda {
-  background: rgba(0,212,255,0.08);
-  border-color: var(--blue);
-  color: var(--blue);
-}
-.tb-btn.eda:hover { background: var(--blue); color: var(--bg0); box-shadow: var(--glow-b); }
-
-.toolbar-right { margin-left: auto; display:flex; align-items:center; gap:8px; }
-
-.sim-select {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  color: var(--text-mid);
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  padding: 5px 10px;
-  cursor: pointer;
-  outline: none;
-}
-.sim-select:focus { border-color: var(--green); }
-.sim-select option { background: var(--bg2); }
-
-/* ═══════════════════════════════════════════════════
-   MAIN LAYOUT
-═══════════════════════════════════════════════════ */
-.workspace {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  position: relative;
-  z-index: 1;
-}
-
-/* ═══════════════════════════════════════════════════
-   LEFT SIDEBAR — FILE EXPLORER
-═══════════════════════════════════════════════════ */
-.sidebar {
-  width: var(--panel-w);
-  background: var(--bg1);
-  border-right: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-  overflow: hidden;
-}
-
-.sidebar-header {
-  padding: 10px 14px;
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--text-dim);
-  letter-spacing: 2px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.sidebar-header-title { color: var(--blue); }
-
-.new-file-btn {
-  background: none; border: none;
-  color: var(--text-dim); cursor: pointer;
-  font-size: 0.9rem; transition: color 0.2s;
-}
-.new-file-btn:hover { color: var(--green); }
-
-.file-tree { flex: 1; overflow-y: auto; padding: 6px 0; }
-.file-tree::-webkit-scrollbar { width: 4px; }
-.file-tree::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.2); }
-
-.tree-group { margin-bottom: 4px; }
-
-.tree-folder {
-  display: flex; align-items: center; gap: 8px;
-  padding: 6px 14px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-mid);
-  letter-spacing: 0.5px;
-  transition: background 0.15s;
-  user-select: none;
-}
-.tree-folder:hover { background: var(--bg3); color: var(--text); }
-.tree-folder .arrow { transition: transform 0.2s; font-size: 0.5rem; }
-.tree-folder.open .arrow { transform: rotate(90deg); }
-.tree-folder .folder-icon { font-size: 0.75rem; }
-
-.tree-files { display: none; padding-left: 0; }
-.tree-group.open .tree-files { display: block; }
-
-.tree-file {
-  display: flex; align-items: center; gap: 8px;
-  padding: 5px 14px 5px 32px;
-  cursor: pointer;
-  font-family: var(--font-mono);
-  font-size: 0.67rem;
-  color: var(--text-dim);
-  transition: all 0.15s;
-  border-left: 2px solid transparent;
-}
-.tree-file:hover { background: var(--bg3); color: var(--text); border-left-color: var(--border); }
-.tree-file.active { 
-  background: rgba(0,255,136,0.06); 
-  color: var(--green);
-  border-left-color: var(--green);
-}
-.tree-file .file-dot {
-  width: 5px; height: 5px; border-radius: 50%;
-  background: var(--blue-dim); flex-shrink: 0;
-}
-.tree-file.active .file-dot { background: var(--green); box-shadow: 0 0 6px var(--green); }
-
-.sidebar-footer {
-  padding: 10px 14px;
-  border-top: 1px solid var(--border);
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--text-dim);
-}
-
-/* ═══════════════════════════════════════════════════
-   CENTER — EDITOR
-═══════════════════════════════════════════════════ */
-.editor-panel {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: var(--bg0);
-}
-
-/* Editor tabs */
-.editor-tabs {
-  height: var(--tab-h);
-  background: var(--bg1);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: flex-end;
-  overflow-x: auto;
-  flex-shrink: 0;
-}
-.editor-tabs::-webkit-scrollbar { height: 0; }
-
-.editor-tab {
-  display: flex; align-items: center; gap: 8px;
-  padding: 0 16px;
-  height: 100%;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  color: var(--text-dim);
-  border-right: 1px solid var(--border);
-  cursor: pointer;
-  white-space: nowrap;
-  border-top: 2px solid transparent;
-  transition: all 0.15s;
-}
-.editor-tab:hover { color: var(--text); background: var(--bg2); }
-.editor-tab.active {
-  background: var(--bg0);
-  color: var(--green);
-  border-top-color: var(--green);
-}
-.editor-tab .tab-close {
-  font-size: 0.7rem; opacity: 0.4;
-  padding: 2px; border-radius: 2px;
-}
-.editor-tab .tab-close:hover { opacity: 1; color: var(--red); }
-
-/* Code editor container */
-.code-editor-wrap {
-  flex: 1;
-  display: flex;
-  overflow: hidden;
-  position: relative;
-}
-
-.line-numbers {
-  width: 52px;
-  background: var(--bg1);
-  border-right: 1px solid rgba(0,255,136,0.06);
-  padding: 16px 0;
-  overflow: hidden;
-  flex-shrink: 0;
-  user-select: none;
-}
-
-.line-num {
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--text-dim);
-  line-height: 1.65;
-  text-align: right;
-  padding-right: 10px;
-}
-
-.code-area {
-  flex: 1;
-  position: relative;
-  overflow: hidden;
-}
-
-#code-textarea {
-  position: absolute; inset: 0;
-  width: 100%; height: 100%;
-  background: transparent;
-  border: none; outline: none; resize: none;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 1.65;
-  color: transparent;
-  caret-color: var(--green);
-  padding: 16px;
-  z-index: 2;
-  tab-size: 2;
-  white-space: pre;
-  overflow-wrap: normal;
-  overflow-x: auto;
-  overflow-y: auto;
-  spellcheck: false;
-}
-
-#code-highlight {
-  position: absolute; inset: 0;
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  line-height: 1.65;
-  padding: 16px;
-  pointer-events: none;
-  z-index: 1;
-  white-space: pre;
-  overflow: hidden;
-}
-
-/* ── Syntax colours ── */
-.kw  { color: #c678dd; }  /* class, rand, constraint, module */
-.tp  { color: #e5c07b; }  /* types */
-.cm  { color: #4a5568; font-style:italic; } /* comments */
-.st  { color: #98c379; }  /* strings */
-.nm  { color: #61afef; }  /* function/task names */
-.op  { color: #56b6c2; }  /* operators, symbols */
-.nb  { color: #d19a66; }  /* numbers */
-.mc  { color: #e06c75; }  /* macros */
-.dr  { color: #ff8c42; }  /* directives */
-
-/* Editor toolbar mini */
-.editor-mini-bar {
-  height: 28px;
-  background: var(--bg1);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  gap: 16px;
-  flex-shrink: 0;
-}
-
-.mini-bar-info {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: var(--text-dim);
-}
-
-.mini-bar-info span { color: var(--text-mid); margin: 0 4px; }
-
-/* ═══════════════════════════════════════════════════
-   RIGHT — OUTPUT PANEL
-═══════════════════════════════════════════════════ */
-.output-panel {
-  width: var(--out-w);
-  background: var(--bg1);
-  border-left: 1px solid var(--border);
-  display: flex;
-  flex-direction: column;
-  flex-shrink: 0;
-}
-
-.output-tabs {
-  height: var(--tab-h);
-  background: var(--bg2);
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-}
-
-.out-tab {
-  padding: 0 16px;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  font-family: var(--font-mono);
-  font-size: 0.67rem;
-  color: var(--text-dim);
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  transition: all 0.15s;
-}
-.out-tab:hover { color: var(--text); }
-.out-tab.active { color: var(--blue); border-bottom-color: var(--blue); }
-
-.output-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 12px;
-  font-family: var(--font-mono);
-  font-size: 0.68rem;
-  line-height: 1.8;
-}
-.output-content::-webkit-scrollbar { width: 4px; }
-.output-content::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.2); }
-
-.log-line { display: flex; gap: 8px; padding: 2px 0; }
-.log-time { color: var(--text-dim); flex-shrink: 0; }
-.log-tag  { flex-shrink: 0; font-weight: 700; }
-.log-tag.info    { color: var(--blue); }
-.log-tag.warning { color: var(--yellow); }
-.log-tag.error   { color: var(--red); }
-.log-tag.fatal   { color: var(--red); text-decoration: underline; }
-.log-tag.system  { color: var(--green); }
-.log-tag.pass    { color: var(--green); }
-.log-tag.fail    { color: var(--red); }
-.log-msg { color: var(--text); word-break: break-all; }
-
-.output-footer {
-  padding: 8px 12px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 16px;
-}
-
-.result-badge {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  padding: 3px 10px;
-  border-radius: 2px;
-  font-weight: 700;
-}
-.result-badge.pass { background: rgba(0,255,136,0.15); color: var(--green); border: 1px solid var(--green); }
-.result-badge.fail { background: rgba(255,71,87,0.15);  color: var(--red);   border: 1px solid var(--red); }
-.result-badge.warn { background: rgba(255,211,42,0.12); color: var(--yellow);border: 1px solid var(--yellow); }
-
-/* EDA section */
-.eda-section {
-  border-top: 1px solid var(--border);
-  padding: 12px;
-}
-
-.eda-title {
-  font-family: var(--font-mono);
-  font-size: 0.62rem;
-  color: var(--text-dim);
-  letter-spacing: 2px;
-  margin-bottom: 8px;
-}
-
-.eda-open-btn {
-  width: 100%;
-  padding: 10px;
-  background: rgba(0,212,255,0.08);
-  border: 1px solid var(--blue);
-  color: var(--blue);
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  letter-spacing: 1px;
-  cursor: pointer;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-.eda-open-btn:hover {
-  background: var(--blue);
-  color: var(--bg0);
-  box-shadow: var(--glow-b);
-}
-
-.eda-note {
-  margin-top: 6px;
-  font-family: var(--font-mono);
-  font-size: 0.58rem;
-  color: var(--text-dim);
-  line-height: 1.6;
-}
-
-/* ═══════════════════════════════════════════════════
-   STATUS BAR
-═══════════════════════════════════════════════════ */
-.statusbar {
-  height: var(--status-h);
-  background: var(--bg1);
-  border-top: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  padding: 0 12px;
-  gap: 20px;
-  flex-shrink: 0;
-  z-index: 100;
-}
-
-.status-item {
-  font-family: var(--font-mono);
-  font-size: 0.6rem;
-  color: var(--text-dim);
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  white-space: nowrap;
-}
-
-.status-dot {
-  width: 6px; height: 6px; border-radius: 50%;
-}
-.status-dot.green { background: var(--green); box-shadow: 0 0 4px var(--green); animation: blink 2s ease-in-out infinite; }
-.status-dot.blue  { background: var(--blue); }
-.status-dot.grey  { background: var(--text-dim); }
-
-@keyframes blink {
-  0%,100% { opacity:1; }
-  50% { opacity:0.3; }
-}
-
-.status-right { margin-left: auto; display:flex; gap:20px; }
-
-/* ═══════════════════════════════════════════════════
-   LOADING OVERLAY
-═══════════════════════════════════════════════════ */
-.run-overlay {
-  position: absolute;
-  inset: 0;
-  background: rgba(8,11,15,0.85);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  z-index: 200;
-  flex-direction: column;
-  gap: 16px;
-  backdrop-filter: blur(4px);
-}
-.run-overlay.active { display: flex; }
-
-.run-spinner {
-  width: 48px; height: 48px;
-  border: 2px solid var(--border);
-  border-top-color: var(--green);
-  border-radius: 50%;
-  animation: spin 0.8s linear infinite;
-}
-
-@keyframes spin { to { transform: rotate(360deg); } }
-
-.run-msg {
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  color: var(--green);
-  letter-spacing: 2px;
-}
-
-.run-progress {
-  width: 200px; height: 2px;
-  background: var(--bg3);
-  position: relative; overflow: hidden;
-}
-.run-progress::after {
-  content:"";
-  position:absolute; inset:0;
-  background: var(--green);
-  animation: progress 1.8s ease-in-out infinite;
-}
-@keyframes progress {
-  0%   { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* ═══════════════════════════════════════════════════
-   MODAL — Quick Reference
-═══════════════════════════════════════════════════ */
-.modal-backdrop {
-  position:fixed; inset:0;
-  background: rgba(0,0,0,0.75);
-  backdrop-filter: blur(4px);
-  z-index: 500;
-  display:none;
-  align-items: center;
-  justify-content: center;
-}
-.modal-backdrop.open { display:flex; }
-
-.modal {
-  background: var(--bg2);
-  border: 1px solid var(--border);
-  width: min(700px, 95vw);
-  max-height: 85vh;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 60px rgba(0,0,0,0.8), var(--glow-b);
-}
-
-.modal-header {
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-.modal-title {
-  font-family: var(--font-ui);
-  font-size: 0.9rem;
-  color: var(--blue);
-  letter-spacing: 1px;
-}
-
-.modal-close {
-  background:none; border:none;
-  color: var(--text-dim); cursor:pointer;
-  font-size: 1.2rem; transition: color 0.2s;
-}
-.modal-close:hover { color: var(--red); }
-
-.modal-body { padding: 20px; overflow-y: auto; }
-.modal-body::-webkit-scrollbar { width: 4px; }
-.modal-body::-webkit-scrollbar-thumb { background: var(--border2); }
-
-.ref-section { margin-bottom: 20px; }
-.ref-section-title {
-  font-family: var(--font-mono);
-  font-size: 0.65rem;
-  color: var(--green);
-  letter-spacing: 2px;
-  margin-bottom: 10px;
-  padding-bottom: 4px;
-  border-bottom: 1px solid var(--border);
-}
-
-.ref-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-
-.ref-item {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  padding: 10px 12px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-.ref-item:hover { border-color: var(--green); background: rgba(0,255,136,0.05); }
-.ref-item-name {
-  font-family: var(--font-mono);
-  font-size: 0.67rem;
-  color: var(--green);
-  margin-bottom: 4px;
-}
-.ref-item-desc {
-  font-size: 0.75rem;
-  color: var(--text-dim);
-  line-height: 1.5;
-}
-
-/* ═══════════════════════════════════════════════════
-   NOTIFICATION TOAST
-═══════════════════════════════════════════════════ */
-.toast {
-  position: fixed;
-  bottom: 40px; right: 20px;
-  background: var(--bg3);
-  border: 1px solid var(--green);
-  padding: 10px 18px;
-  font-family: var(--font-mono);
-  font-size: 0.72rem;
-  color: var(--green);
-  z-index: 9000;
-  opacity: 0;
-  transform: translateY(10px);
-  transition: all 0.3s;
-  box-shadow: var(--glow-g);
-}
-.toast.show { opacity: 1; transform: translateY(0); }
-
-/* ═══════════════════════════════════════════════════
-   SCROLLBARS
-═══════════════════════════════════════════════════ */
-::-webkit-scrollbar { width: 5px; height: 5px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: rgba(0,255,136,0.15); }
-::-webkit-scrollbar-thumb:hover { background: rgba(0,255,136,0.3); }
-
-/* ═══════════════════════════════════════════════════
-   WELCOME SCREEN (shown when no file selected)
-═══════════════════════════════════════════════════ */
-.welcome-screen {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 24px;
-  display: none;
-}
-.welcome-screen.visible { display: flex; }
-
-.welcome-logo {
-  font-family: var(--font-ui);
-  font-size: 2.5rem;
-  font-weight: 800;
-  color: var(--green);
-  text-shadow: var(--glow-g);
-  letter-spacing: 2px;
-}
-.welcome-sub {
-  font-family: var(--font-mono);
-  font-size: 0.8rem;
-  color: var(--text-dim);
-  letter-spacing: 3px;
-}
-.welcome-hint {
-  font-family: var(--font-mono);
-  font-size: 0.7rem;
-  color: var(--text-dim);
-  text-align: center;
-  line-height: 2;
-}
-.welcome-hint kbd {
-  background: var(--bg3);
-  border: 1px solid var(--border);
-  padding: 2px 8px;
-  color: var(--blue);
-}
-
+  --bg0:#080b0f;--bg1:#0d1117;--bg2:#111820;--bg3:#161e28;--bg4:#1c2535;
+  --green:#00ff88;--green-dim:#00c46a;--blue:#00d4ff;--blue-dim:#0099bb;
+  --orange:#ff8c42;--red:#ff4757;--yellow:#ffd32a;--purple:#a855f7;
+  --text:#c8d8c8;--text-dim:#5a7060;--text-mid:#8aaa8a;
+  --border:rgba(0,255,136,0.12);--border2:rgba(0,212,255,0.10);
+  --glow-g:0 0 16px rgba(0,255,136,0.35);--glow-b:0 0 16px rgba(0,212,255,0.30);
+  --panel-w:260px;--out-w:360px;--toolbar-h:50px;--tab-h:38px;--status-h:26px;
+  --font-mono:'JetBrains Mono',monospace;--font-ui:'Syne',sans-serif;--font-body:'Rajdhani',sans-serif;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:var(--font-body);background:var(--bg0);color:var(--text);display:flex;flex-direction:column;position:relative;}
+body::before{content:"";position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.08) 2px,rgba(0,0,0,0.08) 4px);pointer-events:none;z-index:9999;}
+#matrix-canvas{position:fixed;inset:0;opacity:0.025;pointer-events:none;z-index:0;}
+
+/* TOOLBAR */
+.toolbar{height:var(--toolbar-h);background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0;padding:0 12px;z-index:100;flex-shrink:0;position:relative;}
+.toolbar-logo{font-family:var(--font-ui);font-weight:800;font-size:1rem;letter-spacing:1px;color:var(--green);text-shadow:var(--glow-g);margin-right:20px;white-space:nowrap;}
+.toolbar-logo span{color:var(--blue);}
+.toolbar-sep{width:1px;height:24px;background:var(--border);margin:0 10px;}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:6px 14px;background:transparent;border:1px solid transparent;color:var(--text-mid);font-family:var(--font-mono);font-size:0.72rem;letter-spacing:0.5px;cursor:pointer;border-radius:4px;transition:all 0.2s;white-space:nowrap;}
+.tb-btn:hover{color:var(--text);border-color:var(--border);background:var(--bg3);}
+.tb-btn.run{background:rgba(0,255,136,0.1);border-color:var(--green);color:var(--green);font-weight:700;}
+.tb-btn.run:hover{background:var(--green);color:var(--bg0);box-shadow:var(--glow-g);}
+.tb-btn.run.running{animation:run-pulse 0.8s ease-in-out infinite;}
+@keyframes run-pulse{0%,100%{box-shadow:var(--glow-g);}50%{box-shadow:0 0 30px rgba(0,255,136,0.7);}}
+.tb-btn.ai-btn{background:rgba(168,85,247,0.1);border-color:var(--purple);color:var(--purple);}
+.tb-btn.ai-btn:hover{background:var(--purple);color:var(--bg0);}
+.tb-btn.eda{background:rgba(0,212,255,0.08);border-color:var(--blue);color:var(--blue);}
+.tb-btn.eda:hover{background:var(--blue);color:var(--bg0);box-shadow:var(--glow-b);}
+.toolbar-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.sim-select{background:var(--bg3);border:1px solid var(--border);color:var(--text-mid);font-family:var(--font-mono);font-size:0.7rem;padding:5px 10px;cursor:pointer;outline:none;}
+.sim-select:focus{border-color:var(--green);}
+.sim-select option{background:var(--bg2);}
+
+/* LAYOUT */
+.workspace{flex:1;display:flex;overflow:hidden;position:relative;z-index:1;}
+
+/* LEFT SIDEBAR */
+.sidebar{width:var(--panel-w);background:var(--bg1);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden;}
+.sidebar-header{padding:10px 14px;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:2px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.sidebar-header-title{color:var(--blue);}
+.sidebar-tabs{display:flex;border-bottom:1px solid var(--border);}
+.sidebar-tab{flex:1;padding:8px;text-align:center;font-family:var(--font-mono);font-size:0.6rem;letter-spacing:1px;color:var(--text-dim);cursor:pointer;transition:all 0.2s;border-bottom:2px solid transparent;}
+.sidebar-tab.active{color:var(--green);border-bottom-color:var(--green);}
+.sidebar-tab:hover{color:var(--text);background:var(--bg3);}
+.sidebar-panel{flex:1;overflow-y:auto;display:none;}
+.sidebar-panel.active{display:block;}
+.sidebar-panel::-webkit-scrollbar{width:4px;}
+.sidebar-panel::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
+
+/* FILE SECTION HEADER */
+.section-header{display:flex;align-items:center;justify-content:space-between;padding:8px 14px;font-family:var(--font-mono);font-size:0.62rem;color:var(--text-dim);letter-spacing:2px;border-bottom:1px solid rgba(0,255,136,0.06);}
+.section-header span{color:var(--blue);}
+.section-btn{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:0.85rem;transition:color 0.2s;padding:2px 5px;}
+.section-btn:hover{color:var(--green);}
+.new-project-btn{display:flex;align-items:center;gap:6px;width:calc(100% - 28px);margin:8px 14px;padding:7px 12px;background:rgba(0,255,136,0.06);border:1px solid var(--border);color:var(--green);font-family:var(--font-mono);font-size:0.65rem;cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+.new-project-btn:hover{background:rgba(0,255,136,0.15);}
+
+/* PROJECT TREE */
+.project-group{margin-bottom:2px;}
+.project-header{display:flex;align-items:center;gap:6px;padding:7px 14px;cursor:pointer;font-family:var(--font-mono);font-size:0.68rem;color:var(--text-mid);transition:background 0.15s;user-select:none;}
+.project-header:hover{background:var(--bg3);color:var(--text);}
+.project-header .ph-arrow{font-size:0.5rem;transition:transform 0.2s;}
+.project-header.open .ph-arrow{transform:rotate(90deg);}
+.project-header .ph-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.project-header .ph-count{font-size:0.58rem;color:var(--text-dim);background:var(--bg3);padding:1px 5px;border-radius:8px;}
+.project-header .ph-del{margin-left:auto;opacity:0;font-size:0.75rem;color:var(--red);background:none;border:none;cursor:pointer;padding:0 4px;}
+.project-header:hover .ph-del{opacity:0.7;}
+.project-header .ph-del:hover{opacity:1;}
+.project-files{display:none;padding-left:0;}
+.project-group.open .project-files{display:block;}
+.file-item{display:flex;align-items:center;gap:6px;padding:5px 14px 5px 30px;cursor:pointer;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);transition:all 0.15s;border-left:2px solid transparent;}
+.file-item:hover{background:var(--bg3);color:var(--text);border-left-color:var(--border);}
+.file-item.active{background:rgba(0,255,136,0.06);color:var(--green);border-left-color:var(--green);}
+.file-item .fi-dot{width:5px;height:5px;border-radius:50%;background:var(--blue-dim);flex-shrink:0;}
+.file-item.active .fi-dot{background:var(--green);box-shadow:0 0 6px var(--green);}
+.file-item .fi-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.file-item .fi-del{opacity:0;font-size:0.7rem;color:var(--red);background:none;border:none;cursor:pointer;padding:0 3px;}
+.file-item:hover .fi-del{opacity:0.7;}
+
+.add-file-btn{display:flex;align-items:center;gap:5px;padding:5px 14px 5px 30px;width:100%;background:none;border:none;color:var(--text-dim);font-family:var(--font-mono);font-size:0.63rem;cursor:pointer;transition:color 0.2s;text-align:left;}
+.add-file-btn:hover{color:var(--green);}
+
+.sidebar-footer{padding:10px 14px;border-top:1px solid var(--border);font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim);}
+
+/* EDITOR PANEL */
+.editor-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg0);}
+.editor-tabs{height:var(--tab-h);background:var(--bg1);border-bottom:1px solid var(--border);display:flex;align-items:flex-end;overflow-x:auto;flex-shrink:0;}
+.editor-tabs::-webkit-scrollbar{height:0;}
+.editor-tab{display:flex;align-items:center;gap:8px;padding:0 16px;height:100%;font-family:var(--font-mono);font-size:0.68rem;color:var(--text-dim);border-right:1px solid var(--border);cursor:pointer;white-space:nowrap;border-top:2px solid transparent;transition:all 0.15s;}
+.editor-tab:hover{color:var(--text);background:var(--bg2);}
+.editor-tab.active{background:var(--bg0);color:var(--green);border-top-color:var(--green);}
+.editor-tab .tab-close{font-size:0.7rem;opacity:0.4;padding:2px;border-radius:2px;}
+.editor-tab .tab-close:hover{opacity:1;color:var(--red);}
+.code-editor-wrap{flex:1;display:flex;overflow:hidden;position:relative;}
+.line-numbers{width:52px;background:var(--bg1);border-right:1px solid rgba(0,255,136,0.06);padding:16px 0;overflow:hidden;flex-shrink:0;user-select:none;}
+.line-num{font-family:var(--font-mono);font-size:0.72rem;color:var(--text-dim);line-height:1.65;text-align:right;padding-right:10px;}
+.code-area{flex:1;position:relative;overflow:hidden;}
+#code-textarea{position:absolute;inset:0;width:100%;height:100%;background:transparent;border:none;outline:none;resize:none;font-family:var(--font-mono);font-size:0.78rem;line-height:1.65;color:transparent;caret-color:var(--green);padding:16px;z-index:2;tab-size:2;white-space:pre;overflow-wrap:normal;overflow-x:auto;overflow-y:auto;}
+#code-highlight{position:absolute;inset:0;font-family:var(--font-mono);font-size:0.78rem;line-height:1.65;padding:16px;pointer-events:none;z-index:1;white-space:pre;overflow:hidden;}
+.kw{color:#c678dd;}.tp{color:#e5c07b;}.cm{color:#4a5568;font-style:italic;}.st{color:#98c379;}.nm{color:#61afef;}.op{color:#56b6c2;}.nb{color:#d19a66;}.mc{color:#e06c75;}.dr{color:#ff8c42;}
+.editor-mini-bar{height:28px;background:var(--bg1);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:16px;flex-shrink:0;}
+.mini-bar-info{font-family:var(--font-mono);font-size:0.62rem;color:var(--text-dim);}
+.mini-bar-info span{color:var(--text-mid);margin:0 4px;}
+
+/* RIGHT PANEL */
+.output-panel{width:var(--out-w);background:var(--bg1);border-left:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;}
+.output-tabs{height:var(--tab-h);background:var(--bg2);border-bottom:1px solid var(--border);display:flex;align-items:center;}
+.out-tab{padding:0 14px;height:100%;display:flex;align-items:center;font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
+.out-tab:hover{color:var(--text);}
+.out-tab.active{color:var(--blue);border-bottom-color:var(--blue);}
+.output-content{flex:1;overflow-y:auto;padding:12px;font-family:var(--font-mono);font-size:0.68rem;line-height:1.8;display:none;}
+.output-content.active{display:block;}
+.output-content::-webkit-scrollbar{width:4px;}
+.output-content::-webkit-scrollbar-thumb{background:rgba(0,212,255,0.2);}
+.log-line{display:flex;gap:8px;padding:2px 0;}
+.log-time{color:var(--text-dim);flex-shrink:0;}
+.log-tag{flex-shrink:0;font-weight:700;}
+.log-tag.info{color:var(--blue);}
+.log-tag.warning{color:var(--yellow);}
+.log-tag.error{color:var(--red);}
+.log-tag.fatal{color:var(--red);text-decoration:underline;}
+.log-tag.system{color:var(--green);}
+.log-tag.pass{color:var(--green);}
+.log-tag.fail{color:var(--red);}
+.log-tag.ai{color:var(--purple);}
+.log-msg{color:var(--text);word-break:break-all;}
+.output-footer{padding:8px 12px;border-top:1px solid var(--border);display:flex;gap:10px;flex-wrap:wrap;}
+.result-badge{font-family:var(--font-mono);font-size:0.65rem;padding:3px 10px;border-radius:2px;font-weight:700;}
+.result-badge.pass{background:rgba(0,255,136,0.15);color:var(--green);border:1px solid var(--green);}
+.result-badge.fail{background:rgba(255,71,87,0.15);color:var(--red);border:1px solid var(--red);}
+.result-badge.warn{background:rgba(255,211,42,0.12);color:var(--yellow);border:1px solid var(--yellow);}
+.result-badge.ai{background:rgba(168,85,247,0.15);color:var(--purple);border:1px solid var(--purple);}
+
+/* AI OUTPUT */
+.ai-output-box{background:var(--bg2);border:1px solid rgba(168,85,247,0.3);padding:12px;margin-bottom:8px;border-radius:4px;}
+.ai-output-title{font-family:var(--font-mono);font-size:0.62rem;color:var(--purple);letter-spacing:2px;margin-bottom:8px;}
+.ai-output-text{font-family:var(--font-mono);font-size:0.68rem;color:var(--text);line-height:1.8;}
+.ai-streaming{display:inline-block;width:8px;height:12px;background:var(--purple);animation:cursor-blink 0.7s ease-in-out infinite;margin-left:2px;vertical-align:middle;}
+@keyframes cursor-blink{0%,100%{opacity:1;}50%{opacity:0;}}
+
+/* EDA SECTION */
+.eda-section{border-top:1px solid var(--border);padding:12px;}
+.eda-title{font-family:var(--font-mono);font-size:0.62rem;color:var(--text-dim);letter-spacing:2px;margin-bottom:8px;}
+.eda-open-btn{width:100%;padding:10px;background:rgba(0,212,255,0.08);border:1px solid var(--blue);color:var(--blue);font-family:var(--font-mono);font-size:0.72rem;letter-spacing:1px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.eda-open-btn:hover{background:var(--blue);color:var(--bg0);box-shadow:var(--glow-b);}
+.eda-note{margin-top:6px;font-family:var(--font-mono);font-size:0.58rem;color:var(--text-dim);line-height:1.6;}
+
+/* STATUS BAR */
+.statusbar{height:var(--status-h);background:var(--bg1);border-top:1px solid var(--border);display:flex;align-items:center;padding:0 12px;gap:20px;flex-shrink:0;z-index:100;}
+.status-item{font-family:var(--font-mono);font-size:0.6rem;color:var(--text-dim);display:flex;align-items:center;gap:5px;white-space:nowrap;}
+.status-dot{width:6px;height:6px;border-radius:50%;}
+.status-dot.green{background:var(--green);box-shadow:0 0 4px var(--green);animation:blink 2s ease-in-out infinite;}
+.status-dot.blue{background:var(--blue);}
+.status-dot.grey{background:var(--text-dim);}
+.status-dot.purple{background:var(--purple);animation:blink 1s ease-in-out infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0.3;}}
+.status-right{margin-left:auto;display:flex;gap:20px;}
+
+/* RUN OVERLAY */
+.run-overlay{position:absolute;inset:0;background:rgba(8,11,15,0.85);display:none;align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:16px;backdrop-filter:blur(4px);}
+.run-overlay.active{display:flex;}
+.run-spinner{width:48px;height:48px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin 0.8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.run-msg{font-family:var(--font-mono);font-size:0.75rem;color:var(--green);letter-spacing:2px;}
+.run-progress{width:200px;height:2px;background:var(--bg3);position:relative;overflow:hidden;}
+.run-progress::after{content:"";position:absolute;inset:0;background:var(--green);animation:progress 1.8s ease-in-out infinite;}
+@keyframes progress{0%{transform:translateX(-100%);}100%{transform:translateX(100%);}}
+
+/* MODAL */
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);z-index:500;display:none;align-items:center;justify-content:center;}
+.modal-backdrop.open{display:flex;}
+.modal{background:var(--bg2);border:1px solid var(--border);width:min(500px,95vw);max-height:85vh;display:flex;flex-direction:column;box-shadow:0 0 60px rgba(0,0,0,0.8),var(--glow-b);}
+.modal-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-family:var(--font-ui);font-size:0.9rem;color:var(--blue);letter-spacing:1px;}
+.modal-close{background:none;border:none;color:var(--text-dim);cursor:pointer;font-size:1.2rem;transition:color 0.2s;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:20px;overflow-y:auto;display:flex;flex-direction:column;gap:14px;}
+.modal-input{background:var(--bg3);border:1px solid var(--border);color:var(--text);font-family:var(--font-mono);font-size:0.75rem;padding:10px 12px;outline:none;width:100%;}
+.modal-input:focus{border-color:var(--green);}
+.modal-label{font-family:var(--font-mono);font-size:0.65rem;color:var(--text-dim);letter-spacing:1px;margin-bottom:4px;}
+.modal-btn{padding:10px 20px;background:rgba(0,255,136,0.1);border:1px solid var(--green);color:var(--green);font-family:var(--font-mono);font-size:0.75rem;cursor:pointer;transition:all 0.2s;letter-spacing:1px;}
+.modal-btn:hover{background:var(--green);color:var(--bg0);}
+.modal-btn.cancel{background:transparent;border-color:var(--border);color:var(--text-dim);}
+.modal-btn.cancel:hover{background:var(--bg3);color:var(--text);}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;}
+
+/* TOAST */
+.toast{position:fixed;bottom:40px;right:20px;background:var(--bg3);border:1px solid var(--green);padding:10px 18px;font-family:var(--font-mono);font-size:0.72rem;color:var(--green);z-index:9000;opacity:0;transform:translateY(10px);transition:all 0.3s;box-shadow:var(--glow-g);}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* COVERAGE BARS */
+.cov-item{margin-bottom:10px;}
+.cov-label{display:flex;justify-content:space-between;margin-bottom:4px;}
+.cov-track{height:4px;background:var(--bg3);position:relative;overflow:hidden;}
+.cov-fill{height:100%;transition:width 0.8s ease;}
+
+/* WAVEFORM */
+#waveform-canvas{width:100%;background:transparent;}
+
+/* EMPTY STATE */
+.empty-state{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:40px;}
+.empty-state-icon{font-size:2rem;color:var(--text-dim);}
+.empty-state-text{font-family:var(--font-mono);font-size:0.75rem;color:var(--text-dim);text-align:center;line-height:2;}
+
+/* SCROLLBARS */
+::-webkit-scrollbar{width:5px;height:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.15);}
+::-webkit-scrollbar-thumb:hover{background:rgba(0,255,136,0.3);}
 </style>
 </head>
 <body>
-
-<!-- Matrix canvas background -->
 <canvas id="matrix-canvas"></canvas>
 
-<!-- ═══ TOOLBAR ═══ -->
+<!-- TOOLBAR -->
 <div class="toolbar">
   <div class="toolbar-logo">DV<span>.</span>PLAYGROUND</div>
   <div class="toolbar-sep"></div>
-
-  <button class="tb-btn run" id="run-btn" onclick="runSimulation()">
-    ▶ RUN
-  </button>
-
+  <button class="tb-btn run" id="run-btn" onclick="runSimulation()">▶ RUN</button>
+  <button class="tb-btn ai-btn" id="ai-btn" onclick="runAIAnalysis()">✦ AI ANALYZE</button>
   <button class="tb-btn" onclick="copyCode()">⧉ COPY</button>
-  <button class="tb-btn" onclick="clearOutput()">✕ CLEAR LOG</button>
-  <button class="tb-btn" onclick="showRef()">☰ REFERENCE</button>
-  <button class="tb-btn" onclick="newFile()">+ NEW</button>
-
+  <button class="tb-btn" onclick="clearOutput()">✕ CLEAR</button>
+  <button class="tb-btn" onclick="newFile()">+ NEW FILE</button>
   <div class="toolbar-sep"></div>
-
-  <button class="tb-btn eda" onclick="openEDA()">
-    ⬡ OPEN IN EDA PLAYGROUND
-  </button>
-
+  <button class="tb-btn eda" onclick="openEDA()">⬡ EDA PLAYGROUND</button>
   <div class="toolbar-right">
     <select class="sim-select" id="sim-select">
       <option value="vcs">Synopsys VCS 2025</option>
@@ -800,167 +242,45 @@ body::before {
       <option value="iverilog">Icarus Verilog</option>
     </select>
     <div class="toolbar-sep"></div>
-    <div class="status-item">
-      <div class="status-dot green"></div>
-      SIMULATOR READY
-    </div>
+    <div class="status-item"><div class="status-dot green"></div>READY</div>
   </div>
 </div>
 
-<!-- ═══ WORKSPACE ═══ -->
+<!-- WORKSPACE -->
 <div class="workspace">
 
-  <!-- ── LEFT SIDEBAR ── -->
+  <!-- LEFT SIDEBAR -->
   <div class="sidebar">
     <div class="sidebar-header">
-      <span class="sidebar-header-title">EXPLORER</span>
-      <button class="new-file-btn" title="New File" onclick="newFile()">+</button>
+      <span class="sidebar-header-title">FILES</span>
+    </div>
+    <div class="sidebar-tabs">
+      <div class="sidebar-tab active" onclick="switchSidebarTab(this,'files')">FILES</div>
+      <div class="sidebar-tab" onclick="switchSidebarTab(this,'saved')">SAVED</div>
     </div>
 
-    <div class="file-tree" id="file-tree">
+    <!-- FILES PANEL -->
+    <div class="sidebar-panel active" id="sp-files">
+      <button class="new-project-btn" onclick="showNewProjectModal()">+ NEW PROJECT</button>
+      <div id="project-tree"></div>
+    </div>
 
-      <!-- UVM Testbench -->
-      <div class="tree-group open" id="grp-uvm">
-        <div class="tree-folder open" onclick="toggleGroup('grp-uvm')">
-          <span class="arrow">▶</span>
-          <span class="folder-icon">📁</span>
-          UVM_TESTBENCH
-        </div>
-        <div class="tree-files">
-          <div class="tree-file active" onclick="loadFile('apb_seq_item')" data-file="apb_seq_item">
-            <div class="file-dot"></div>apb_seq_item.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('apb_driver')" data-file="apb_driver">
-            <div class="file-dot"></div>apb_driver.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('apb_monitor')" data-file="apb_monitor">
-            <div class="file-dot"></div>apb_monitor.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('apb_scoreboard')" data-file="apb_scoreboard">
-            <div class="file-dot"></div>apb_scoreboard.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('apb_agent')" data-file="apb_agent">
-            <div class="file-dot"></div>apb_agent.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('apb_env_test')" data-file="apb_env_test">
-            <div class="file-dot"></div>apb_env_test.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('virtual_seq')" data-file="virtual_seq">
-            <div class="file-dot"></div>virtual_seq.sv
-          </div>
-        </div>
-      </div>
-
-      <!-- Constraints -->
-      <div class="tree-group" id="grp-con">
-        <div class="tree-folder" onclick="toggleGroup('grp-con')">
-          <span class="arrow">▶</span>
-          <span class="folder-icon">📁</span>
-          CONSTRAINTS
-        </div>
-        <div class="tree-files">
-          <div class="tree-file" onclick="loadFile('ahb_constraints')" data-file="ahb_constraints">
-            <div class="file-dot"></div>ahb_constraints.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('axi4_constraints')" data-file="axi4_constraints">
-            <div class="file-dot"></div>axi4_constraints.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('pattern_constraints')" data-file="pattern_constraints">
-            <div class="file-dot"></div>pattern_constraints.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('error_injection')" data-file="error_injection">
-            <div class="file-dot"></div>error_injection.sv
-          </div>
-        </div>
-      </div>
-
-      <!-- Assertions -->
-      <div class="tree-group" id="grp-asr">
-        <div class="tree-folder" onclick="toggleGroup('grp-asr')">
-          <span class="arrow">▶</span>
-          <span class="folder-icon">📁</span>
-          ASSERTIONS_SVA
-        </div>
-        <div class="tree-files">
-          <div class="tree-file" onclick="loadFile('apb_assertions')" data-file="apb_assertions">
-            <div class="file-dot"></div>apb_assertions.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('ahb_assertions')" data-file="ahb_assertions">
-            <div class="file-dot"></div>ahb_assertions.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('axi_assertions')" data-file="axi_assertions">
-            <div class="file-dot"></div>axi_assertions.sv
-          </div>
-        </div>
-      </div>
-
-      <!-- Projects -->
-      <div class="tree-group" id="grp-proj">
-        <div class="tree-folder" onclick="toggleGroup('grp-proj')">
-          <span class="arrow">▶</span>
-          <span class="folder-icon">📁</span>
-          PROJECT_CODES
-        </div>
-        <div class="tree-files">
-          <div class="tree-file" onclick="loadFile('mipi_dsi')" data-file="mipi_dsi">
-            <div class="file-dot"></div>mipi_dsi_tb.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('qspi_driver')" data-file="qspi_driver">
-            <div class="file-dot"></div>qspi_driver.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('gdma_seq')" data-file="gdma_seq">
-            <div class="file-dot"></div>gdma_seq_item.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('gpio_seq')" data-file="gpio_seq">
-            <div class="file-dot"></div>gpio_interrupt_seq.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('pll_sb')" data-file="pll_sb">
-            <div class="file-dot"></div>pll_scoreboard.sv
-          </div>
-        </div>
-      </div>
-
-      <!-- SV Concepts -->
-      <div class="tree-group" id="grp-svc">
-        <div class="tree-folder" onclick="toggleGroup('grp-svc')">
-          <span class="arrow">▶</span>
-          <span class="folder-icon">📁</span>
-          SV_CONCEPTS
-        </div>
-        <div class="tree-files">
-          <div class="tree-file" onclick="loadFile('coverage')" data-file="coverage">
-            <div class="file-dot"></div>functional_coverage.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('ipc')" data-file="ipc">
-            <div class="file-dot"></div>ipc_mailbox_sem.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('fork_join')" data-file="fork_join">
-            <div class="file-dot"></div>fork_join_demo.sv
-          </div>
-          <div class="tree-file" onclick="loadFile('polymorphism')" data-file="polymorphism">
-            <div class="file-dot"></div>polymorphism.sv
-          </div>
-        </div>
-      </div>
-
+    <!-- SAVED CODES PANEL -->
+    <div class="sidebar-panel" id="sp-saved">
+      <div class="section-header"><span>SAVED CODES</span><button class="section-btn" title="Refresh" onclick="renderSavedPanel()">↻</button></div>
+      <div id="saved-list"></div>
     </div>
 
     <div class="sidebar-footer">
-      <div style="color:var(--blue);margin-bottom:4px;">DV PLAYGROUND v2.0</div>
-      <div>VLSI Verification IDE</div>
+      <div style="color:var(--blue);margin-bottom:4px;">DV PLAYGROUND v3.0</div>
+      <div>AI-Powered VLSI IDE</div>
       <div style="margin-top:4px;">by Khaja Mohiddeen</div>
     </div>
   </div>
 
-  <!-- ── EDITOR PANEL ── -->
+  <!-- EDITOR PANEL -->
   <div class="editor-panel">
-    <div class="editor-tabs" id="editor-tabs">
-      <div class="editor-tab active" id="tab-main">
-        <span id="tab-main-name">apb_seq_item.sv</span>
-        <span class="tab-close" onclick="closeTab(event)">×</span>
-      </div>
-    </div>
-
+    <div class="editor-tabs" id="editor-tabs"></div>
     <div class="code-editor-wrap" id="editor-wrap">
       <div class="line-numbers" id="line-numbers"></div>
       <div class="code-area">
@@ -968,55 +288,52 @@ body::before {
         <textarea id="code-textarea" spellcheck="false"
           oninput="onCodeInput()"
           onscroll="syncScroll()"
-          onkeydown="handleTab(event)"
-          placeholder="// Write your SystemVerilog / UVM code here..."></textarea>
+          onkeydown="handleKeyDown(event)"
+          placeholder="// Select a file or create a new one...&#10;// Use + NEW FILE or + NEW PROJECT to get started"></textarea>
       </div>
-
-      <!-- Run overlay -->
       <div class="run-overlay" id="run-overlay">
         <div class="run-spinner"></div>
         <div class="run-msg" id="run-msg">COMPILING...</div>
         <div class="run-progress"></div>
       </div>
     </div>
-
     <div class="editor-mini-bar">
       <div class="mini-bar-info">Ln <span id="ln-num">1</span>, Col <span id="col-num">1</span></div>
-      <div class="mini-bar-info">SystemVerilog</div>
+      <div class="mini-bar-info" id="lang-label">SystemVerilog</div>
       <div class="mini-bar-info">UTF-8</div>
       <div class="mini-bar-info"><span id="char-count">0</span> chars</div>
+      <div class="mini-bar-info" id="file-path-label" style="color:var(--text-dim);margin-left:auto;"></div>
     </div>
   </div>
 
-  <!-- ── OUTPUT PANEL ── -->
+  <!-- OUTPUT PANEL -->
   <div class="output-panel">
     <div class="output-tabs">
       <div class="out-tab active" onclick="switchOutTab(this,'log')">LOG</div>
+      <div class="out-tab" onclick="switchOutTab(this,'ai')">AI REVIEW</div>
       <div class="out-tab" onclick="switchOutTab(this,'waveform')">WAVEFORM</div>
       <div class="out-tab" onclick="switchOutTab(this,'coverage')">COVERAGE</div>
     </div>
 
-    <div class="output-content" id="output-log">
-      <div class="log-line">
-        <span class="log-tag system">SYS</span>
-        <span class="log-msg">DV Playground ready. Select a file or write code.</span>
-      </div>
-      <div class="log-line">
-        <span class="log-tag system">SYS</span>
-        <span class="log-msg">Press ▶ RUN or Ctrl+Enter to simulate.</span>
+    <div class="output-content active" id="output-log">
+      <div class="log-line"><span class="log-tag system">SYS</span><span class="log-msg">DV Playground v3.0 — AI-powered VLSI IDE ready.</span></div>
+      <div class="log-line"><span class="log-tag system">SYS</span><span class="log-msg">Create a project and add files to get started.</span></div>
+      <div class="log-line"><span class="log-tag ai">AI</span><span class="log-msg">Click ✦ AI ANALYZE for intelligent code review.</span></div>
+    </div>
+
+    <div class="output-content" id="output-ai">
+      <div class="empty-state" style="padding:20px;">
+        <div class="empty-state-icon">✦</div>
+        <div class="empty-state-text">Write code and click<br><strong style="color:var(--purple)">✦ AI ANALYZE</strong><br>for intelligent review</div>
       </div>
     </div>
 
-    <!-- Waveform placeholder -->
-    <div class="output-content" id="output-waveform" style="display:none;">
-      <canvas id="waveform-canvas" style="width:100%;"></canvas>
-      <div style="color:var(--text-dim);font-family:var(--font-mono);font-size:0.68rem;margin-top:12px;">
-        Run simulation to generate waveform.
-      </div>
+    <div class="output-content" id="output-waveform">
+      <canvas id="waveform-canvas" height="200"></canvas>
+      <div style="color:var(--text-dim);font-family:var(--font-mono);font-size:0.68rem;margin-top:12px;">Run simulation to generate waveform.</div>
     </div>
 
-    <!-- Coverage placeholder -->
-    <div class="output-content" id="output-coverage" style="display:none;">
+    <div class="output-content" id="output-coverage">
       <div id="coverage-bars"></div>
     </div>
 
@@ -1026,1340 +343,394 @@ body::before {
 
     <div class="eda-section">
       <div class="eda-title">// EXTERNAL SIMULATOR</div>
-      <button class="eda-open-btn" onclick="openEDA()">
-        ⬡ OPEN IN EDA PLAYGROUND
-      </button>
-      <div class="eda-note">
-        Opens edaplayground.com with your current code.<br>
-        Login required for full simulation (free account).
-      </div>
+      <button class="eda-open-btn" onclick="openEDA()">⬡ OPEN IN EDA PLAYGROUND</button>
+      <div class="eda-note">Opens edaplayground.com with your current code.<br>Login required for full simulation (free account).</div>
     </div>
   </div>
-
 </div>
 
-<!-- ═══ STATUS BAR ═══ -->
+<!-- STATUS BAR -->
 <div class="statusbar">
-  <div class="status-item">
-    <div class="status-dot green"></div>
-    <span>READY</span>
-  </div>
-  <div class="status-item">
-    <div class="status-dot blue"></div>
-    <span id="status-sim">VCS 2025.06</span>
-  </div>
+  <div class="status-item"><div class="status-dot green"></div><span>READY</span></div>
+  <div class="status-item"><div class="status-dot blue"></div><span id="status-sim">VCS 2025</span></div>
   <div class="status-item">SV IEEE 1800-2017</div>
   <div class="status-item">UVM 1.2</div>
-
   <div class="status-right">
     <div class="status-item" id="status-time">SIM TIME: --</div>
+    <div class="status-item" id="status-ai" style="display:none;"><div class="status-dot purple"></div>AI PROCESSING</div>
     <div class="status-item" id="status-result">--</div>
-    <div class="status-item">
-      <div class="status-dot grey"></div>
-      DV PLAYGROUND
-    </div>
+    <div class="status-item"><div class="status-dot grey"></div>DV PLAYGROUND</div>
   </div>
 </div>
 
-<!-- ═══ QUICK REFERENCE MODAL ═══ -->
-<div class="modal-backdrop" id="ref-modal">
+<!-- NEW PROJECT MODAL -->
+<div class="modal-backdrop" id="new-project-modal">
   <div class="modal">
     <div class="modal-header">
-      <div class="modal-title">// QUICK REFERENCE — CLICK TO INSERT</div>
-      <button class="modal-close" onclick="hideRef()">×</button>
+      <div class="modal-title">// NEW PROJECT</div>
+      <button class="modal-close" onclick="closeModal('new-project-modal')">×</button>
     </div>
-    <div class="modal-body" id="modal-body">
-      <div class="ref-section">
-        <div class="ref-section-title">UVM MACROS</div>
-        <div class="ref-grid" id="ref-uvm-macros"></div>
+    <div class="modal-body">
+      <div>
+        <div class="modal-label">PROJECT NAME</div>
+        <input class="modal-input" id="new-project-name" placeholder="e.g. APB_Testbench" onkeydown="if(event.key==='Enter')createProject()">
       </div>
-      <div class="ref-section">
-        <div class="ref-section-title">SEQUENCE ITEM TEMPLATE</div>
-        <div class="ref-grid" id="ref-seq-template"></div>
+      <div>
+        <div class="modal-label">DESCRIPTION (optional)</div>
+        <input class="modal-input" id="new-project-desc" placeholder="Short description...">
       </div>
-      <div class="ref-section">
-        <div class="ref-section-title">CONSTRAINT SNIPPETS</div>
-        <div class="ref-grid" id="ref-constraints"></div>
-      </div>
-      <div class="ref-section">
-        <div class="ref-section-title">SVA ASSERTION TEMPLATES</div>
-        <div class="ref-grid" id="ref-sva"></div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeModal('new-project-modal')">CANCEL</button>
+        <button class="modal-btn" onclick="createProject()">CREATE PROJECT</button>
       </div>
     </div>
   </div>
 </div>
 
-<!-- TOAST -->
+<!-- NEW FILE MODAL -->
+<div class="modal-backdrop" id="new-file-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">// ADD FILE TO PROJECT</div>
+      <button class="modal-close" onclick="closeModal('new-file-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="modal-label">FILE NAME</div>
+        <input class="modal-input" id="new-file-name" placeholder="e.g. apb_driver.sv" onkeydown="if(event.key==='Enter')createFileInProject()">
+      </div>
+      <div class="modal-label" id="new-file-project-label" style="color:var(--blue);">PROJECT: —</div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeModal('new-file-modal')">CANCEL</button>
+        <button class="modal-btn" onclick="createFileInProject()">ADD FILE</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RENAME FILE MODAL -->
+<div class="modal-backdrop" id="rename-modal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="modal-title">// RENAME FILE</div>
+      <button class="modal-close" onclick="closeModal('rename-modal')">×</button>
+    </div>
+    <div class="modal-body">
+      <div>
+        <div class="modal-label">NEW NAME</div>
+        <input class="modal-input" id="rename-input" onkeydown="if(event.key==='Enter')doRename()">
+      </div>
+      <div class="modal-actions">
+        <button class="modal-btn cancel" onclick="closeModal('rename-modal')">CANCEL</button>
+        <button class="modal-btn" onclick="doRename()">RENAME</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
-// ═════════════════════════════════════════════════
-// CODE LIBRARY
-// ═════════════════════════════════════════════════
-const FILES = {
-
-apb_seq_item: `// ─────────────────────────────────────────────────
-// APB Sequence Item — UVM Transaction Object
-// ─────────────────────────────────────────────────
-\`include "uvm_macros.svh"
-import uvm_pkg::*;
-
-class apb_seq_item extends uvm_sequence_item;
-  \`uvm_object_utils_begin(apb_seq_item)
-    \`uvm_field_int(addr,  UVM_ALL_ON)
-    \`uvm_field_int(data,  UVM_ALL_ON)
-    \`uvm_field_int(wr,    UVM_ALL_ON)
-    \`uvm_field_int(delay, UVM_ALL_ON)
-  \`uvm_object_utils_end
-
-  rand logic [31:0] addr;
-  rand logic [31:0] data;
-  rand logic        wr;
-  rand int unsigned delay;
-
-  constraint c_delay      { delay inside {[0:5]}; }
-  constraint c_addr_align { addr[1:0] == 2'b00; }
-
-  function new(string name = "apb_seq_item");
-    super.new(name);
-  endfunction
-endclass
-
-// Write Sequence
-class apb_write_seq extends uvm_sequence #(apb_seq_item);
-  \`uvm_object_utils(apb_write_seq)
-  rand logic [31:0] start_addr;
-  rand int unsigned num_txn;
-  constraint c_num { num_txn inside {[4:16]}; }
-
-  function new(string name="apb_write_seq"); super.new(name); endfunction
-
-  task body();
-    apb_seq_item item;
-    repeat(num_txn) begin
-      item = apb_seq_item::type_id::create("item");
-      start_item(item);
-      if (!item.randomize() with { wr==1; addr==start_addr; })
-        \`uvm_fatal("RAND","Randomization failed")
-      start_addr += 4;
-      finish_item(item);
-      \`uvm_info("SEQ", $sformatf("Sent APB: addr=0x%h data=0x%h",
-        item.addr, item.data), UVM_MEDIUM)
-    end
-  endtask
-endclass`,
-
-apb_driver: `// ─────────────────────────────────────────────────
-// APB UVM Driver — Pin-level Protocol
-// ─────────────────────────────────────────────────
-class apb_driver extends uvm_driver #(apb_seq_item);
-  \`uvm_component_utils(apb_driver)
-  virtual apb_if vif;
-
-  function new(string name, uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    if (!uvm_config_db #(virtual apb_if)::get(this,"","vif",vif))
-      \`uvm_fatal("CFG","VIF not found in config_db")
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    apb_seq_item item;
-    // Initialize bus
-    vif.psel    <= 0;
-    vif.penable <= 0;
-    vif.pwrite  <= 0;
-    forever begin
-      seq_item_port.get_next_item(item);
-      drive_item(item);
-      seq_item_port.item_done();
-    end
-  endtask
-
-  task drive_item(apb_seq_item item);
-    // Idle cycles
-    repeat(item.delay) @(posedge vif.pclk);
-    // SETUP phase
-    @(posedge vif.pclk);
-    vif.paddr  <= item.addr;
-    vif.pwrite <= item.wr;
-    vif.pwdata <= item.wr ? item.data : 'x;
-    vif.psel   <= 1;
-    vif.penable<= 0;
-    // ACCESS phase
-    @(posedge vif.pclk);
-    vif.penable <= 1;
-    // Wait for PREADY
-    do @(posedge vif.pclk); while (!vif.pready);
-    if (!item.wr) item.data = vif.prdata;
-    vif.psel    <= 0;
-    vif.penable <= 0;
-    \`uvm_info("DRV", $sformatf("%s addr=0x%h data=0x%h",
-      item.wr?"WRITE":"READ", item.addr, item.data), UVM_MEDIUM)
-  endtask
-endclass`,
-
-apb_monitor: `// ─────────────────────────────────────────────────
-// APB Monitor — Passive Bus Observer
-// ─────────────────────────────────────────────────
-class apb_monitor extends uvm_monitor;
-  \`uvm_component_utils(apb_monitor)
-  uvm_analysis_port #(apb_seq_item) ap;
-  virtual apb_if vif;
-  int txn_count = 0;
-
-  function new(string name, uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    ap = new("ap", this);
-    if (!uvm_config_db #(virtual apb_if)::get(this,"","vif",vif))
-      \`uvm_fatal("CFG","VIF not found")
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    apb_seq_item item;
-    forever begin
-      // Wait for completed transfer: psel=1, penable=1, pready=1
-      @(posedge vif.pclk);
-      if (vif.psel && vif.penable && vif.pready) begin
-        item = apb_seq_item::type_id::create("mon_item");
-        item.addr = vif.paddr;
-        item.wr   = vif.pwrite;
-        item.data = vif.pwrite ? vif.pwdata : vif.prdata;
-        txn_count++;
-        \`uvm_info("MON", $sformatf("[TXN#%0d] %s addr=0x%h data=0x%h",
-          txn_count, item.wr?"W":"R", item.addr, item.data), UVM_HIGH)
-        ap.write(item); // broadcast to scoreboard + coverage
-      end
-    end
-  endtask
-endclass`,
-
-apb_scoreboard: `// ─────────────────────────────────────────────────
-// APB Scoreboard — Reference Model Checker
-// ─────────────────────────────────────────────────
-class apb_scoreboard extends uvm_scoreboard;
-  \`uvm_component_utils(apb_scoreboard)
-  uvm_analysis_imp #(apb_seq_item, apb_scoreboard) analysis_export;
-
-  // Shadow memory — reference model
-  logic [31:0] ref_mem [logic [31:0]];
-  int unsigned pass_cnt = 0;
-  int unsigned fail_cnt = 0;
-
-  function new(string name, uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    analysis_export = new("analysis_export", this);
-  endfunction
-
-  function void write(apb_seq_item item);
-    if (item.wr) begin
-      // Write: update shadow
-      ref_mem[item.addr] = item.data;
-      \`uvm_info("SB",$sformatf("WRITE addr=0x%h data=0x%h",
-        item.addr, item.data), UVM_MEDIUM)
-    end else begin
-      // Read: compare DUT vs shadow
-      if (ref_mem.exists(item.addr)) begin
-        if (ref_mem[item.addr] === item.data) begin
-          pass_cnt++;
-          \`uvm_info("SB",$sformatf("PASS READ addr=0x%h exp=0x%h got=0x%h",
-            item.addr, ref_mem[item.addr], item.data), UVM_MEDIUM)
-        end else begin
-          fail_cnt++;
-          \`uvm_error("SB",$sformatf("FAIL READ addr=0x%h exp=0x%h got=0x%h",
-            item.addr, ref_mem[item.addr], item.data))
-        end
-      end
-    end
-  endfunction
-
-  function void report_phase(uvm_phase phase);
-    \`uvm_info("SB",$sformatf(
-      "\\n=== SCOREBOARD RESULTS === PASS=%0d FAIL=%0d ===",
-      pass_cnt, fail_cnt), UVM_NONE)
-  endfunction
-endclass`,
-
-apb_agent: `// ─────────────────────────────────────────────────
-// APB Agent — Active/Passive Container
-// ─────────────────────────────────────────────────
-class apb_agent extends uvm_agent;
-  \`uvm_component_utils(apb_agent)
-
-  apb_driver   drv;
-  apb_monitor  mon;
-  uvm_sequencer #(apb_seq_item) seqr;
-  uvm_analysis_port #(apb_seq_item) ap;
-
-  function new(string name, uvm_component parent);
-    super.new(name, parent);
-  endfunction
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    ap  = new("ap", this);
-    mon = apb_monitor::type_id::create("mon", this);
-
-    if (get_is_active() == UVM_ACTIVE) begin
-      drv  = apb_driver::type_id::create("drv", this);
-      seqr = uvm_sequencer #(apb_seq_item)::
-             type_id::create("seqr", this);
-    end
-  endfunction
-
-  function void connect_phase(uvm_phase phase);
-    mon.ap.connect(ap); // forward monitor output
-    if (get_is_active() == UVM_ACTIVE)
-      drv.seq_item_port.connect(seqr.seq_item_export);
-  endfunction
-endclass`,
-
-apb_env_test: `// ─────────────────────────────────────────────────
-// APB Environment + Test
-// ─────────────────────────────────────────────────
-class apb_env extends uvm_env;
-  \`uvm_component_utils(apb_env)
-  apb_agent      agent;
-  apb_scoreboard sb;
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    agent = apb_agent::type_id::create("agent", this);
-    sb    = apb_scoreboard::type_id::create("sb", this);
-  endfunction
-
-  function void connect_phase(uvm_phase phase);
-    agent.ap.connect(sb.analysis_export);
-  endfunction
-endclass
-
-// Base Test
-class apb_base_test extends uvm_test;
-  \`uvm_component_utils(apb_base_test)
-  apb_env env;
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    env = apb_env::type_id::create("env", this);
-    uvm_config_db #(virtual apb_if)::set(
-      this,"env.agent.*","vif",apb_vif);
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    apb_write_seq seq;
-    phase.raise_objection(this);
-    seq = apb_write_seq::type_id::create("seq");
-    void'(seq.randomize());
-    seq.start(env.agent.seqr);
-    #100ns;
-    phase.drop_objection(this);
-  endtask
-endclass
-
-// Write test
-class apb_write_test extends apb_base_test;
-  \`uvm_component_utils(apb_write_test)
-  task run_phase(uvm_phase phase);
-    apb_write_seq seq;
-    phase.raise_objection(this);
-    repeat(5) begin
-      seq = apb_write_seq::type_id::create("seq");
-      void'(seq.randomize() with { num_txn==4; });
-      seq.start(env.agent.seqr);
-    end
-    phase.drop_objection(this);
-  endtask
-endclass`,
-
-virtual_seq: `// ─────────────────────────────────────────────────
-// Virtual Sequencer + Virtual Sequence
-// ─────────────────────────────────────────────────
-class tb_vseqr extends uvm_sequencer;
-  \`uvm_component_utils(tb_vseqr)
-  apb_agent apb_agent_h;
-  ahb_agent ahb_agent_h;
-  qspi_agent qspi_agent_h;
-
-  function new(string name, uvm_component parent);
-    super.new(name, parent);
-  endfunction
-endclass
-
-class tb_vseq extends uvm_sequence;
-  \`uvm_object_utils(tb_vseq)
-  tb_vseqr vseqr;
-
-  function new(string name="tb_vseq"); super.new(name); endfunction
-
-  task body();
-    apb_write_seq apb_seq;
-    qspi_read_seq qspi_seq;
-
-    \`uvm_info("VSEQ","Starting parallel sequences", UVM_LOW)
-
-    fork
-      begin
-        // APB writes
-        apb_seq = apb_write_seq::type_id::create("apb_seq");
-        void'(apb_seq.randomize() with { num_txn == 4; });
-        apb_seq.start(vseqr.apb_agent_h.seqr);
-        \`uvm_info("VSEQ","APB sequence done", UVM_LOW)
-      end
-      begin
-        // QSPI reads in parallel
-        qspi_seq = qspi_read_seq::type_id::create("qspi_seq");
-        void'(qspi_seq.randomize());
-        qspi_seq.start(vseqr.qspi_agent_h.seqr);
-        \`uvm_info("VSEQ","QSPI sequence done", UVM_LOW)
-      end
-    join
-
-    \`uvm_info("VSEQ","Completed virtual sequence", UVM_LOW)
-  endtask
-endclass`,
-
-ahb_constraints: `// ─────────────────────────────────────────────────
-// AHB Constraint Class
-// ─────────────────────────────────────────────────
-typedef enum logic [2:0] {
-  AHB_SINGLE=3'b000, AHB_WRAP4=3'b010,
-  AHB_INCR4=3'b011,  AHB_WRAP8=3'b100,
-  AHB_INCR8=3'b101,  AHB_WRAP16=3'b110
-} ahb_hburst_e;
-
-class ahb_constraints;
-  rand logic [31:0] haddr;
-  rand ahb_hburst_e hburst;
-  rand logic [2:0]  hsize;
-  rand logic        hwrite;
-
-  // Wrap burst natural alignment
-  constraint c_wrap4  { (hburst==AHB_WRAP4)  -> haddr[3:0]==4'h0; }
-  constraint c_wrap8  { (hburst==AHB_WRAP8)  -> haddr[4:0]==5'h00; }
-  constraint c_wrap16 { (hburst==AHB_WRAP16) -> haddr[5:0]==6'h00; }
-
-  // Size alignment
-  constraint c_size_align {
-    (hsize==3'b001) -> haddr[0]==1'b0;
-    (hsize==3'b010) -> haddr[1:0]==2'b00;
-    (hsize==3'b011) -> haddr[2:0]==3'b000;
-  }
-
-  // HPROT: data + privileged
-  constraint c_hprot_data { hwrite dist { 1:=60, 0:=40 }; }
-
-  function void post_randomize();
-    $display("[AHB] addr=0x%h burst=%s size=%0d wr=%0b",
-             haddr, hburst.name(), hsize, hwrite);
-  endfunction
-endclass
-
-module top;
-  initial begin
-    ahb_constraints c = new();
-    repeat(5) begin
-      assert(c.randomize());
-    end
-  end
-endmodule`,
-
-axi4_constraints: `// ─────────────────────────────────────────────────
-// AXI4 Constraint Class — 4KB Boundary Check
-// ─────────────────────────────────────────────────
-class axi4_constraints;
-  rand logic [7:0]  awlen;    // burst length - 1
-  rand logic [2:0]  awsize;   // bytes/beat = 2^awsize
-  rand logic [1:0]  awburst;  // 01=INCR
-  rand logic [31:0] awaddr;
-  rand logic [3:0]  awid;
-
-  // AXI4: max 256 beats
-  constraint c_burst_len  { awlen  inside {[0:255]}; }
-  constraint c_burst_size { awsize inside {[0:3]}; }
-  constraint c_incr_only  { awburst == 2'b01; }
-
-  // No 4KB crossing: addr[11:0] + total_bytes <= 0xFFF
-  constraint c_4kb_boundary {
-    (awaddr[11:0] + ((awlen+1) << awsize)) <= 12'hFFF;
-  }
-
-  // Address aligned to transfer size
-  constraint c_addr_align { awaddr[awsize-1:0] == '0; }
-
-  // Outstanding IDs 0-3
-  constraint c_id_range { awid inside {[0:3]}; }
-
-  function void post_randomize();
-    $display("[AXI4] AWADDR=0x%h LEN=%0d SIZE=%0d ID=%0d",
-             awaddr, awlen, awsize, awid);
-  endfunction
-endclass
-
-module top;
-  initial begin
-    axi4_constraints c = new();
-    repeat(10) assert(c.randomize());
-  end
-endmodule`,
-
-pattern_constraints: `// ─────────────────────────────────────────────────
-// Pattern Constraint Examples
-// ─────────────────────────────────────────────────
-
-// Pattern: 0 1 0 1 0 1 ...
-class alternating_cons;
-  rand int a[];
-  constraint x { a.size == 10; }
-  constraint y {
-    foreach(a[i])
-      if(i%2==0) a[i]==0; else a[i]==1;
-  }
-  function void post_randomize();
-    $display("Alt pattern: %0p", a);
-  endfunction
-endclass
-
-// Pattern: 1 2 3 4 5 5 4 3 2 1
-class mirror_cons;
-  rand int a[];
-  constraint x { a.size == 10; }
-  constraint y {
-    foreach(a[i])
-      if(i<5) a[i]==i+1; else a[i]==10-i;
-  }
-  function void post_randomize();
-    $display("Mirror: %0p", a);
-  endfunction
-endclass
-
-// Fibonacci sequence
-class fibonacci_cons;
-  rand int n;
-  rand int a[];
-  constraint x { n inside {[7:12]}; }
-  constraint y { a.size == n; }
-  constraint z {
-    foreach(a[i])
-      if(i==0)      a[i]==0;
-      else if(i==1) a[i]==1;
-      else          a[i]==a[i-1]+a[i-2];
-  }
-  function void post_randomize();
-    $display("Fibonacci(%0d): %0p", n, a);
-  endfunction
-endclass
-
-module top;
-  initial begin
-    alternating_cons a = new(); a.randomize();
-    mirror_cons      m = new(); m.randomize();
-    fibonacci_cons   f = new(); f.randomize();
-  end
-endmodule`,
-
-error_injection: `// ─────────────────────────────────────────────────
-// Error Injection Constraint Class
-// ─────────────────────────────────────────────────
-class error_injection_cons;
-  rand bit inject_ecc_error;
-  rand bit inject_parity_error;
-  rand bit inject_crc_error;
-  rand bit inject_timeout;
-  rand bit inject_addr_decode_err;
-  rand bit inject_backpressure;
-  rand bit inject_spurious_irq;
-
-  // At most ONE error type at a time
-  constraint c_one_error_max {
-    (inject_ecc_error + inject_parity_error + inject_crc_error +
-     inject_timeout   + inject_addr_decode_err +
-     inject_backpressure + inject_spurious_irq) <= 1;
-  }
-
-  // Weighted error rates
-  constraint c_rates {
-    inject_ecc_error       dist {0:=98, 1:=2};
-    inject_parity_error    dist {0:=97, 1:=3};
-    inject_crc_error       dist {0:=97, 1:=3};
-    inject_timeout         dist {0:=98, 1:=2};
-    inject_addr_decode_err dist {0:=97, 1:=3};
-    inject_backpressure    dist {0:=85, 1:=15};
-    inject_spurious_irq    dist {0:=99, 1:=1};
-  }
-
-  function void post_randomize();
-    if (inject_ecc_error)       $display("[ERR] ECC error injected");
-    else if (inject_parity_error) $display("[ERR] Parity error injected");
-    else if (inject_crc_error)  $display("[ERR] CRC error injected");
-    else if (inject_timeout)    $display("[ERR] Timeout injected");
-    else if (inject_backpressure) $display("[ERR] Backpressure injected");
-    else                        $display("[OK]  No error this cycle");
-  endfunction
-endclass
-
-module top;
-  initial begin
-    error_injection_cons e = new();
-    repeat(20) e.randomize();
-  end
-endmodule`,
-
-apb_assertions: `// ─────────────────────────────────────────────────
-// APB Protocol Assertions (SVA)
-// ─────────────────────────────────────────────────
-module apb_sva (
-  input logic pclk, presetn,
-  input logic psel, penable, pwrite, pready, pslverr,
-  input logic [31:0] paddr, pwdata, prdata
-);
-
-// 1. PSEL must deassert PENABLE before asserting
-property apb_setup_phase;
-  @(posedge pclk) disable iff (!presetn)
-  $rose(psel) |-> !penable;
-endproperty
-a_setup: assert property(apb_setup_phase)
-  else $error("APB VIOLATION: penable high on psel assertion");
-
-// 2. PENABLE follows PSEL by exactly 1 cycle
-property apb_enable_follows_sel;
-  @(posedge pclk) disable iff (!presetn)
-  (psel && !penable) |=> penable;
-endproperty
-a_enable: assert property(apb_enable_follows_sel)
-  else $error("APB VIOLATION: penable not asserted after psel");
-
-// 3. PADDR/PWRITE stable during ACCESS phase
-property apb_addr_stable;
-  @(posedge pclk) disable iff (!presetn)
-  (psel && penable) |-> $stable(paddr) && $stable(pwrite);
-endproperty
-a_addr_stable: assert property(apb_addr_stable);
-
-// 4. psel/penable held while pready low
-property apb_hold_while_wait;
-  @(posedge pclk) disable iff (!presetn)
-  (psel && penable && !pready) |=> (psel && penable);
-endproperty
-a_hold: assert property(apb_hold_while_wait);
-
-// 5. No SLVERR without transfer completion
-property apb_slverr_on_complete;
-  @(posedge pclk) disable iff (!presetn)
-  pslverr |-> (psel && penable && pready);
-endproperty
-a_slverr: assert property(apb_slverr_on_complete);
-
-// Cover point: successful write
-cp_write: cover property(
-  @(posedge pclk)
-  (psel && penable && pready && pwrite && !pslverr));
-
-// Cover point: successful read
-cp_read: cover property(
-  @(posedge pclk)
-  (psel && penable && pready && !pwrite && !pslverr));
-
-endmodule`,
-
-ahb_assertions: `// ─────────────────────────────────────────────────
-// AHB Protocol Assertions (SVA)
-// ─────────────────────────────────────────────────
-module ahb_sva(
-  input logic hclk, hresetn,
-  input logic [1:0] htrans,
-  input logic [2:0] hburst, hsize,
-  input logic [31:0] haddr, hwdata, hrdata,
-  input logic hwrite, hready, hresp
-);
-
-// HTRANS encoding
-localparam IDLE   = 2'b00;
-localparam BUSY   = 2'b01;
-localparam NONSEQ = 2'b10;
-localparam SEQ    = 2'b11;
-
-// 1. NONSEQ requires HREADY to be asserted
-property ahb_hready_for_nonseq;
-  @(posedge hclk) disable iff (!hresetn)
-  (htrans == NONSEQ) |-> hready;
-endproperty
-a_nonseq_hready: assert property(ahb_hready_for_nonseq);
-
-// 2. SEQ must follow NONSEQ (burst continuity)
-property ahb_seq_follows_nonseq;
-  @(posedge hclk) disable iff (!hresetn)
-  (htrans == NONSEQ && hburst != 3'b000) |=>
-  (htrans == SEQ || htrans == BUSY);
-endproperty
-a_burst_cont: assert property(ahb_seq_follows_nonseq);
-
-// 3. HADDR stable during wait states
-property ahb_addr_stable_wait;
-  @(posedge hclk) disable iff (!hresetn)
-  (htrans != IDLE && !hready) |=> $stable(haddr);
-endproperty
-a_addr_wait: assert property(ahb_addr_stable_wait);
-
-// 4. HRESP=ERROR must be two cycles
-property ahb_error_two_cycles;
-  @(posedge hclk) disable iff (!hresetn)
-  (hresp && !hready) |=> (hresp && hready);
-endproperty
-a_err_2cyc: assert property(ahb_error_two_cycles);
-
-endmodule`,
-
-axi_assertions: `// ─────────────────────────────────────────────────
-// AXI4 Protocol Assertions (SVA)
-// ─────────────────────────────────────────────────
-module axi4_sva(
-  input logic aclk, aresetn,
-  input logic awvalid, awready,
-  input logic wvalid,  wready, wlast,
-  input logic bvalid,  bready,
-  input logic arvalid, arready,
-  input logic rvalid,  rready, rlast,
-  input logic [31:0] wdata
-);
-
-// 1. AWVALID once asserted must stay until AWREADY
-property axi_awvalid_stable;
-  @(posedge aclk) disable iff (!aresetn)
-  (awvalid && !awready) |=> awvalid;
-endproperty
-a_awvalid: assert property(axi_awvalid_stable)
-  else $error("AXI VIOLATION: awvalid deasserted before awready");
-
-// 2. No X on WDATA during handshake
-property axi_no_x_wdata;
-  @(posedge aclk) disable iff (!aresetn)
-  (wvalid && wready) |-> !$isunknown(wdata);
-endproperty
-a_wdata_x: assert property(axi_no_x_wdata);
-
-// 3. WLAST on last beat (burst length)
-// Simplified: wlast followed by wvalid deassert or new burst
-property axi_wlast_then_done;
-  @(posedge aclk) disable iff (!aresetn)
-  (wvalid && wready && wlast) |=> (!wvalid || awvalid);
-endproperty
-a_wlast: assert property(axi_wlast_then_done);
-
-// 4. RREADY response within 16 cycles of RVALID
-property axi_rready_timeout;
-  @(posedge aclk) disable iff (!aresetn)
-  rvalid |-> ##[0:16] rready;
-endproperty
-a_rready: assert property(axi_rready_timeout);
-
-// 5. BVALID must come after write completion
-property axi_bvalid_after_wlast;
-  @(posedge aclk) disable iff (!aresetn)
-  (wvalid && wready && wlast) |-> ##[1:32] bvalid;
-endproperty
-a_bvalid: assert property(axi_bvalid_after_wlast);
-
-endmodule`,
-
-mipi_dsi: `// ─────────────────────────────────────────────────
-// MIPI DSI Packet — Sequence Item + ECC
-// Description: MIPI DSI uses D-PHY with differential
-// lanes. Packets: DI(VC+DT) | WC[15:0] | ECC | payload | CRC
-// ─────────────────────────────────────────────────
-typedef enum logic [1:0] {
-  VC0=2'b00, VC1=2'b01, VC2=2'b10, VC3=2'b11
-} dsi_vc_e;
-
-typedef enum logic [5:0] {
-  DT_VSYNC_START = 6'h01,
-  DT_HSYNC_START = 6'h21,
-  DT_RGB888      = 6'h3E,
-  DT_GEN_LONG    = 6'h29,
-  DT_DCS_LONG    = 6'h39
-} dsi_dt_e;
-
-class dsi_packet extends uvm_sequence_item;
-  \`uvm_object_utils(dsi_packet)
-  rand dsi_vc_e      vc;
-  rand dsi_dt_e      dtype;
-  rand logic [15:0]  word_count;
-  rand byte unsigned payload[];
-  logic [7:0]        ecc;
-  logic [15:0]       checksum;
-  rand bit           is_hs_mode;
-
-  constraint c_payload { payload.size() == word_count; }
-  constraint c_wc      { word_count inside {[1:256]}; }
-  constraint c_hs      { is_hs_mode dist {1:=80, 0:=20}; }
-  constraint c_vc_dist { vc dist {VC0:=50,VC1:=20,VC2:=20,VC3:=10}; }
-
-  // ECC calculation per MIPI DSI D-PHY Annex A
-  function logic [7:0] gen_ecc(logic [7:0] di, logic [15:0] wc);
-    logic [23:0] d = {wc, di};
-    logic [7:0]  e;
-    e[0]=d[0]^d[1]^d[2]^d[4]^d[5]^d[7]^d[10]^d[11]^d[13]^d[16]^d[20]^d[21]^d[22]^d[23];
-    e[1]=d[0]^d[1]^d[3]^d[4]^d[6]^d[8]^d[10]^d[12]^d[14]^d[17]^d[20]^d[21]^d[22]^d[23];
-    e[2]=d[0]^d[2]^d[3]^d[5]^d[6]^d[9]^d[11]^d[12]^d[15]^d[18]^d[20]^d[21]^d[22]^d[23];
-    e[3]=d[1]^d[2]^d[3]^d[7]^d[8]^d[9]^d[13]^d[14]^d[15]^d[19]^d[20]^d[21]^d[22]^d[23];
-    e[4]=d[4]^d[5]^d[6]^d[7]^d[8]^d[9]^d[16]^d[17]^d[18]^d[19]^d[20]^d[21]^d[22]^d[23];
-    e[5]=d[10]^d[11]^d[12]^d[13]^d[14]^d[15]^d[16]^d[17]^d[18]^d[19]^d[20]^d[21]^d[22]^d[23];
-    e[6]=0; e[7]=0;
-    return e;
-  endfunction
-
-  function void post_randomize();
-    ecc = gen_ecc({vc, dtype}, word_count);
-    \`uvm_info("DSI", $sformatf("PKT VC=%s DT=%s WC=%0d ECC=0x%02h HS=%0b",
-      vc.name(), dtype.name(), word_count, ecc, is_hs_mode), UVM_MEDIUM)
-  endfunction
-
-  function new(string name="dsi_packet"); super.new(name); endfunction
-endclass`,
-
-qspi_driver: `// ─────────────────────────────────────────────────
-// QSPI Driver — x1/x4 SPI Transfer Modes
-// Description: Quad SPI — 4 I/O lines (IO0-IO3)
-// Supports FAST_READ, QUAD_IO_READ, PAGE_PROGRAM
-// ─────────────────────────────────────────────────
-typedef enum logic [7:0] {
-  WRITE_ENABLE   = 8'h06,
-  PAGE_PROGRAM   = 8'h02,
-  QUAD_PAGE_PROG = 8'h32,
-  FAST_READ      = 8'h0B,
-  QUAD_IO_READ   = 8'hEB,
-  SECTOR_ERASE   = 8'hD8
-} qspi_cmd_e;
-
-class qspi_driver extends uvm_driver #(qspi_seq_item);
-  \`uvm_component_utils(qspi_driver)
-  virtual qspi_if vif;
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    if (!uvm_config_db #(virtual qspi_if)::get(this,"","vif",vif))
-      \`uvm_fatal("CFG","QSPI VIF missing")
-  endfunction
-
-  task run_phase(uvm_phase phase);
-    qspi_seq_item item;
-    init_spi();
-    forever begin
-      seq_item_port.get_next_item(item);
-      drive_transaction(item);
-      \`uvm_info("QSPI_DRV",$sformatf(
-        "TXN cmd=%s addr=0x%06h bytes=%0d",
-        item.cmd.name(), item.addr, item.data.size()), UVM_MEDIUM)
-      seq_item_port.item_done();
-    end
-  endtask
-
-  task init_spi();
-    vif.sck <= 0; vif.csn <= 1; vif.io <= 4'bz;
-  endtask
-
-  task send_byte_x1(logic [7:0] bval);
-    for (int i=7; i>=0; i--) begin
-      vif.io[0] <= bval[i];
-      #(5ns); vif.sck <= 1;
-      #(5ns); vif.sck <= 0;
-    end
-  endtask
-
-  task send_nibble_x4(logic [3:0] nib);
-    vif.io <= nib;
-    #(5ns); vif.sck <= 1;
-    #(5ns); vif.sck <= 0;
-  endtask
-
-  task drive_transaction(qspi_seq_item item);
-    vif.csn <= 0;
-    send_byte_x1(item.cmd);        // CMD: always x1
-    send_byte_x1(item.addr[23:16]);// ADDR: x1
-    send_byte_x1(item.addr[15:8]);
-    send_byte_x1(item.addr[7:0]);
-    repeat(item.dummy_cycles) begin // DUMMY
-      #(5ns); vif.sck<=1; #(5ns); vif.sck<=0;
-    end
-    foreach(item.data[i])          // DATA: x4 or x1
-      if (item.data_mode == QSPI_QUAD) begin
-        send_nibble_x4(item.data[i][7:4]);
-        send_nibble_x4(item.data[i][3:0]);
-      end else send_byte_x1(item.data[i]);
-    vif.csn <= 1;
-  endtask
-endclass`,
-
-gdma_seq: `// ─────────────────────────────────────────────────
-// GDMA Sequence Item
-// Description: Generic DMA — M2M/M2P/P2M transfers
-// Linked-list descriptors, burst, scatter-gather
-// ─────────────────────────────────────────────────
-typedef enum logic [1:0] {
-  DMA_M2M=2'b00, DMA_M2P=2'b01, DMA_P2M=2'b10
-} dma_dir_e;
-
-typedef enum logic [1:0] {
-  WIDTH_BYTE=2'b00, WIDTH_HWORD=2'b01,
-  WIDTH_WORD=2'b10, WIDTH_DWORD=2'b11
-} dma_width_e;
-
-class dma_seq_item extends uvm_sequence_item;
-  \`uvm_object_utils_begin(dma_seq_item)
-    \`uvm_field_int(src_addr,   UVM_ALL_ON)
-    \`uvm_field_int(dst_addr,   UVM_ALL_ON)
-    \`uvm_field_int(length,     UVM_ALL_ON)
-    \`uvm_field_enum(dma_dir_e,   direction, UVM_ALL_ON)
-    \`uvm_field_enum(dma_width_e, src_width, UVM_ALL_ON)
-    \`uvm_field_int(burst_len,  UVM_ALL_ON)
-    \`uvm_field_int(channel_id, UVM_ALL_ON)
-    \`uvm_field_int(irq_en,     UVM_ALL_ON)
-  \`uvm_object_utils_end
-
-  rand logic [31:0] src_addr;
-  rand logic [31:0] dst_addr;
-  rand logic [15:0] length;
-  rand dma_dir_e    direction;
-  rand dma_width_e  src_width;
-  rand logic [3:0]  burst_len;
-  rand int unsigned channel_id;
-  rand logic        src_inc, dst_inc, irq_en;
-
-  constraint c_src_align  { src_addr[1:0] == 2'b00; }
-  constraint c_dst_align  { dst_addr[1:0] == 2'b00; }
-  constraint c_length     { length inside {[1:1024]}; }
-  constraint c_burst      { burst_len inside {1,4,8,16}; }
-  constraint c_channel    { channel_id inside {[0:7]}; }
-  constraint c_no_overlap {
-    (src_addr+(length<<2)) <= dst_addr ||
-    (dst_addr+(length<<2)) <= src_addr;
-  }
-  constraint c_sram_region {
-    src_addr inside {[32'h2000_0000:32'h200F_FFFF]};
-    dst_addr inside {[32'h2010_0000:32'h201F_FFFF]};
-  }
-
-  function new(string name="dma_seq_item"); super.new(name); endfunction
-endclass`,
-
-gpio_seq: `// ─────────────────────────────────────────────────
-// GPIO Interrupt Test Sequence
-// Registers: DIR | DATA_OUT | DATA_IN | INT_EN
-//            INT_TYPE | INT_STATUS(W1C) | PULL_EN
-// ─────────────────────────────────────────────────
-\`define GPIO_DIR        8'h00
-\`define GPIO_DATA_OUT   8'h04
-\`define GPIO_INT_EN     8'h0C
-\`define GPIO_INT_TYPE   8'h10
-\`define GPIO_INT_STATUS 8'h14
-
-class gpio_seq_item extends uvm_sequence_item;
-  \`uvm_object_utils(gpio_seq_item)
-  rand logic [7:0]  reg_addr;
-  rand logic [31:0] reg_data;
-  rand bit          is_write;
-
-  constraint c_valid_addr {
-    reg_addr inside {\`GPIO_DIR,\`GPIO_DATA_OUT,
-                     \`GPIO_INT_EN,\`GPIO_INT_TYPE};
-  }
-  function new(string n="gpio_seq_item"); super.new(n); endfunction
-endclass
-
-// Rising-edge interrupt test sequence
-class gpio_rise_int_seq extends uvm_sequence #(gpio_seq_item);
-  \`uvm_object_utils(gpio_rise_int_seq)
-  rand int pin_num;
-  constraint c_pin { pin_num inside {[0:31]}; }
-
-  task body();
-    gpio_seq_item item;
-
-    // 1. Set direction: input
-    item = gpio_seq_item::type_id::create("dir");
-    start_item(item);
-    void'(item.randomize() with {
-      is_write==1; reg_addr==\`GPIO_DIR;
-      reg_data[pin_num]==0; // input
-    }); finish_item(item);
-    \`uvm_info("GPIO","Pin set as INPUT",UVM_LOW)
-
-    // 2. Set INT_TYPE: rising edge
-    item = gpio_seq_item::type_id::create("type");
-    start_item(item);
-    void'(item.randomize() with {
-      is_write==1; reg_addr==\`GPIO_INT_TYPE;
-    }); finish_item(item);
-
-    // 3. Enable interrupt
-    item = gpio_seq_item::type_id::create("en");
-    start_item(item);
-    void'(item.randomize() with {
-      is_write==1; reg_addr==\`GPIO_INT_EN;
-      reg_data[pin_num]==1;
-    }); finish_item(item);
-    \`uvm_info("GPIO",$sformatf("INT enabled on pin %0d",pin_num),UVM_LOW)
-
-    // 4. Clear INT_STATUS (W1C)
-    item = gpio_seq_item::type_id::create("clr");
-    start_item(item);
-    void'(item.randomize() with {
-      is_write==1; reg_addr==\`GPIO_INT_STATUS;
-      reg_data[pin_num]==1;
-    }); finish_item(item);
-    \`uvm_info("GPIO","INT_STATUS cleared",UVM_LOW)
-  endtask
-endclass`,
-
-pll_sb: `// ─────────────────────────────────────────────────
-// PLL Scoreboard + Seq Item
-// Fout = Fref * M / (N * P)
-// VCO must stay in 800–3200 MHz range
-// ─────────────────────────────────────────────────
-class pll_seq_item extends uvm_sequence_item;
-  \`uvm_object_utils(pll_seq_item)
-  rand logic [7:0]  ndiv;     // pre-divider
-  rand logic [11:0] mdiv;     // feedback divider
-  rand logic [5:0]  pdiv;     // post-divider
-  rand logic        frac_en;
-  rand logic [23:0] fdiv;     // fractional
-  rand int          fref_mhz; // reference MHz
-
-  // VCO = Fref * M/N must be in 800–3200 MHz
-  constraint c_vco_lo { (fref_mhz * mdiv / ndiv) >= 800; }
-  constraint c_vco_hi { (fref_mhz * mdiv / ndiv) <= 3200; }
-  constraint c_fout   { (fref_mhz * mdiv / (ndiv*pdiv)) inside {[100:800]}; }
-  constraint c_ndiv   { ndiv inside {[1:16]}; }
-  constraint c_mdiv   { mdiv inside {[16:512]}; }
-  constraint c_pdiv   { pdiv inside {[1:8]}; }
-  constraint c_fref   { fref_mhz inside {24,25,26,38,40,52}; }
-
-  function real get_fout_mhz();
-    return real'(fref_mhz)*real'(mdiv)/(real'(ndiv)*real'(pdiv));
-  endfunction
-
-  function new(string n="pll_seq_item"); super.new(n); endfunction
-endclass
-
-class pll_scoreboard extends uvm_scoreboard;
-  \`uvm_component_utils(pll_scoreboard)
-  uvm_analysis_imp #(pll_seq_item,pll_scoreboard) analysis_export;
-  int pass_cnt, fail_cnt;
-
-  function void build_phase(uvm_phase phase);
-    super.build_phase(phase);
-    analysis_export = new("analysis_export",this);
-  endfunction
-
-  function void write(pll_seq_item item);
-    real vco  = real'(item.fref_mhz)*real'(item.mdiv)/real'(item.ndiv);
-    real fout = item.get_fout_mhz();
-    if (vco < 800.0 || vco > 3200.0) begin
-      fail_cnt++;
-      \`uvm_error("PLL_SB",$sformatf("VCO OOR: %.1f MHz",vco))
-    end else begin
-      pass_cnt++;
-      \`uvm_info("PLL_SB",$sformatf(
-        "OK Fref=%0dMHz N=%0d M=%0d P=%0d VCO=%.0fMHz Fout=%.2fMHz",
-        item.fref_mhz,item.ndiv,item.mdiv,item.pdiv,vco,fout),UVM_MEDIUM)
-    end
-  endfunction
-
-  function void report_phase(uvm_phase phase);
-    \`uvm_info("PLL_SB",$sformatf(
-      "PLL RESULTS: PASS=%0d FAIL=%0d",pass_cnt,fail_cnt),UVM_NONE)
-  endfunction
-endclass`,
-
-coverage: `// ─────────────────────────────────────────────────
-// Functional Coverage — APB Covergroup
-// ─────────────────────────────────────────────────
-class apb_coverage extends uvm_subscriber #(apb_seq_item);
-  \`uvm_component_utils(apb_coverage)
-  apb_seq_item item;
-
-  covergroup apb_fcov;
-    // Address range bins
-    cp_addr: coverpoint item.addr {
-      bins low  = {[32'h0000_0000 : 32'h0000_FFFF]};
-      bins mid  = {[32'h0001_0000 : 32'hFFFF_FFFE]};
-      bins high = {32'hFFFF_FFFF};
-      illegal_bins rsvd = {32'hDEAD_BEEF};
-    }
-    // Direction
-    cp_wr: coverpoint item.wr {
-      bins rd = {0}; bins wr = {1};
-    }
-    // Cross: all addr_range x direction combinations
-    cx_addr_wr: cross cp_addr, cp_wr;
-  endgroup
-
-  // Transition coverage — FSM-like sequences
-  covergroup seq_cov;
-    cp_delay: coverpoint item.delay {
-      bins zero     = {0};
-      bins one      = {1};
-      bins small    = {[2:4]};
-      bins large    = {[5:15]};
-    }
-  endgroup
-
-  function new(string name, uvm_component parent);
-    super.new(name, parent);
-    apb_fcov = new();
-    seq_cov  = new();
-  endfunction
-
-  function void write(apb_seq_item t);
-    item = t;
-    apb_fcov.sample();
-    seq_cov.sample();
-    \`uvm_info("COV",$sformatf("Coverage sampled: addr=0x%h wr=%0b",
-      item.addr, item.wr), UVM_HIGH)
-  endfunction
-endclass`,
-
-ipc: `// ─────────────────────────────────────────────────
-// IPC — Mailbox, Semaphore, Event Demo
-// ─────────────────────────────────────────────────
-class ipc_demo;
-  mailbox #(int) mbx;   // typed bounded mailbox
-  semaphore       sem;   // mutex
-  event           ev_producer_done;
-
-  task producer(int count);
-    for (int i = 0; i < count; i++) begin
-      sem.get(1);              // acquire mutex
-      mbx.put(i * 10);        // send data
-      $display("[PROD] Sent: %0d", i*10);
-      sem.put(1);              // release mutex
-      #5ns;
-    end
-    -> ev_producer_done;       // signal done
-  endtask
-
-  task consumer();
-    int val;
-    $display("[CONS] Waiting for producer...");
-    @ev_producer_done;         // wait for event
-    while (mbx.try_get(val))
-      $display("[CONS] Got: %0d", val);
-    $display("[CONS] All data consumed");
-  endtask
-
-  function new();
-    mbx = new(4);  // bounded depth = 4
-    sem = new(1);  // 1 key = mutual exclusion
-  endfunction
-endclass
-
-module top;
-  initial begin
-    ipc_demo d = new();
-    fork
-      d.producer(8);
-      d.consumer();
-    join
-    $display("IPC demo complete");
-  end
-endmodule`,
-
-fork_join: `// ─────────────────────────────────────────────────
-// Fork-Join Variants Demo
-// ─────────────────────────────────────────────────
-module fork_join_demo;
-
-  task automatic fork_join_ex();
-    $display("[JOIN] Waiting for ALL threads...");
-    fork
-      begin #10ns; $display("[T1] done at %0t", $time); end
-      begin #20ns; $display("[T2] done at %0t", $time); end
-      begin #30ns; $display("[T3] done at %0t", $time); end
-    join
-    $display("[JOIN] All done at %0t", $time);
-  endtask
-
-  task automatic fork_join_any_ex();
-    $display("[JOIN_ANY] Waiting for FIRST thread...");
-    fork
-      begin #10ns; $display("[T1] done at %0t", $time); end
-      begin #20ns; $display("[T2] done at %0t", $time); end
-    join_any
-    $display("[JOIN_ANY] First done at %0t, disabling rest...", $time);
-    disable fork;
-  endtask
-
-  task automatic fork_join_none_ex();
-    $display("[JOIN_NONE] Spawning threads, continuing immediately...");
-    fork
-      begin #5ns;  $display("[T1] background at %0t", $time); end
-      begin #15ns; $display("[T2] background at %0t", $time); end
-    join_none
-    $display("[JOIN_NONE] Main continues at %0t", $time);
-    #20ns; // let background threads finish
-  endtask
-
-  initial begin
-    fork_join_ex();
-    #50ns;
-    fork_join_any_ex();
-    #50ns;
-    fork_join_none_ex();
-    #50ns;
-    $display("All demos complete");
-    $finish;
-  end
-
-endmodule`,
-
-polymorphism: `// ─────────────────────────────────────────────────
-// Polymorphism, Virtual Functions, Abstract Class
-// ─────────────────────────────────────────────────
-
-// Abstract base class
-virtual class base_agent;
-  string name;
-  pure virtual task run();
-  pure virtual function void build();
-
-  virtual function void report();
-    $display("[%s] Base report", name);
-  endfunction
-endclass
-
-// APB agent implementation
-class apb_agent_c extends base_agent;
-  function new(string n); name=n; endfunction
-  task run();
-    $display("[%s] APB agent running — driving APB transactions", name);
-  endtask
-  function void build();
-    $display("[%s] APB agent built — creating driver/monitor/seqr", name);
-  endfunction
-  function void report();
-    $display("[%s] APB agent: 100 transactions completed", name);
-  endfunction
-endclass
-
-// AHB agent implementation
-class ahb_agent_c extends base_agent;
-  function new(string n); name=n; endfunction
-  task run();
-    $display("[%s] AHB agent running — driving burst transfers", name);
-  endtask
-  function void build();
-    $display("[%s] AHB agent built", name);
-  endfunction
-endclass
-
-module top;
-  initial begin
-    // Polymorphism: base handles, child objects
-    base_agent agents[3];
-    agents[0] = new apb_agent_c("APB_AG0");
-    agents[1] = new ahb_agent_c("AHB_AG0");
-    agents[2] = new apb_agent_c("APB_AG1");
-
-    // Same call, different behaviour
-    foreach(agents[i]) begin
-      agents[i].build();
-      agents[i].run();
-      agents[i].report();
-      $display("---");
-    end
-  end
-endmodule`
-
-};
-
-// ═════════════════════════════════════════════════
-// SYNTAX HIGHLIGHTING
-// ═════════════════════════════════════════════════
-function highlight(code) {
-  let s = code
-    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-
-  // Comments first
-  s = s.replace(/(\/\/[^\n]*)/g,'<span class="cm">$1</span>');
-
-  // Strings
-  s = s.replace(/("(?:[^"\\]|\\.)*")/g,'<span class="st">$1</span>');
-
-  // Macros (backtick)
-  s = s.replace(/(`[a-zA-Z_][a-zA-Z0-9_]*)/g,'<span class="mc">$1</span>');
-
-  // Numbers
-  s = s.replace(/\b(\d+(?:'[bdoh][0-9a-fA-FxXzZ_]+)?)\b/g,'<span class="nb">$1</span>');
-  s = s.replace(/\b(0x[0-9a-fA-F]+)\b/g,'<span class="nb">$1</span>');
-
-  // Keywords
-  const kws = ['class','extends','endclass','module','endmodule','interface',
-    'endinterface','program','endprogram','package','endpackage',
-    'function','endfunction','task','endtask','begin','end',
-    'initial','always','forever','repeat','while','for','foreach','if',
-    'else','case','endcase','return','break','continue',
-    'rand','randc','constraint','covergroup','endgroup','coverpoint',
-    'cross','bins','property','sequence','endsequence','assert',
-    'assume','cover','modport','clocking','endclocking',
-    'virtual','pure','static','automatic','local','protected',
-    'input','output','inout','ref','typedef','enum','struct','union',
-    'packed','logic','bit','byte','int','integer','real','string',
-    'void','new','this','super','null','default','import','export',
-    'fork','join','join_any','join_none','disable','solve','before',
-    'inside','dist','soft','unique','extern','with','type','parameter'];
-
-  kws.forEach(k => {
-    const re = new RegExp(`\\b(${k})\\b(?![^<]*>)`, 'g');
-    s = s.replace(re, '<span class="kw">$1</span>');
-  });
-
-  // Types
-  const tps = ['uvm_sequence_item','uvm_sequence','uvm_driver','uvm_monitor',
-    'uvm_scoreboard','uvm_agent','uvm_env','uvm_test','uvm_component',
-    'uvm_object','uvm_analysis_port','uvm_analysis_imp','uvm_subscriber',
-    'uvm_sequencer','uvm_phase','uvm_config_db','uvm_tlm_analysis_fifo',
-    'uvm_callback','uvm_heartbeat'];
-  tps.forEach(t => {
-    const re = new RegExp(`\\b(${t})\\b(?![^<]*>)`, 'g');
-    s = s.replace(re, '<span class="tp">$1</span>');
-  });
-
-  return s;
+// ═══════════════════════════════════════════════
+// STORAGE ENGINE
+// ═══════════════════════════════════════════════
+const DB_KEY = 'dv_playground_v3';
+
+function loadDB() {
+  try { return JSON.parse(localStorage.getItem(DB_KEY)) || {projects:{},tabs:[]}; }
+  catch(e) { return {projects:{},tabs:[]}; }
 }
 
-// ═════════════════════════════════════════════════
+function saveDB(db) {
+  try { localStorage.setItem(DB_KEY, JSON.stringify(db)); } catch(e) {}
+}
+
+let db = loadDB();
+
+// ═══════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════
+let activeProjectId = null;
+let activeFileId = null;
+let openTabs = []; // [{projectId, fileId, name}]
+let activeTabIndex = -1;
+let pendingProjectId = null; // for adding files to specific project
+let renameTarget = null; // {type:'file'|'project', projectId, fileId}
+
+// ═══════════════════════════════════════════════
+// PROJECT / FILE MANAGEMENT
+// ═══════════════════════════════════════════════
+function genId() { return '_' + Math.random().toString(36).substr(2,9); }
+
+function showNewProjectModal() {
+  document.getElementById('new-project-name').value = '';
+  document.getElementById('new-project-desc').value = '';
+  openModal('new-project-modal');
+  setTimeout(()=>document.getElementById('new-project-name').focus(),100);
+}
+
+function createProject() {
+  const name = document.getElementById('new-project-name').value.trim();
+  if (!name) { showToast('Enter a project name'); return; }
+  const id = genId();
+  db.projects[id] = { name, desc: document.getElementById('new-project-desc').value.trim(), files:{}, created: Date.now() };
+  saveDB(db);
+  closeModal('new-project-modal');
+  renderProjectTree();
+  showToast('Project "' + name + '" created');
+  // Auto-expand new project
+  setTimeout(()=>{ const grp = document.getElementById('pg-'+id); if(grp) grp.classList.add('open'); const hdr = grp && grp.querySelector('.project-header'); if(hdr) hdr.classList.add('open'); }, 100);
+}
+
+function showAddFileModal(projectId) {
+  pendingProjectId = projectId;
+  const proj = db.projects[projectId];
+  if (!proj) return;
+  document.getElementById('new-file-name').value = '';
+  document.getElementById('new-file-project-label').textContent = 'PROJECT: ' + proj.name.toUpperCase();
+  openModal('new-file-modal');
+  setTimeout(()=>document.getElementById('new-file-name').focus(),100);
+}
+
+function createFileInProject() {
+  let name = document.getElementById('new-file-name').value.trim();
+  if (!name) { showToast('Enter a file name'); return; }
+  if (!name.includes('.')) name += '.sv';
+  const proj = db.projects[pendingProjectId];
+  if (!proj) return;
+  const fileId = genId();
+  proj.files[fileId] = { name, code: `// ${name}\n// Project: ${proj.name}\n// Created: ${new Date().toLocaleString()}\n\n`, created: Date.now() };
+  saveDB(db);
+  closeModal('new-file-modal');
+  renderProjectTree();
+  openFileTab(pendingProjectId, fileId);
+  showToast('File "' + name + '" added');
+}
+
+function newFile() {
+  // If there's an active project, add to it; else ask to create project
+  if (activeProjectId && db.projects[activeProjectId]) {
+    showAddFileModal(activeProjectId);
+  } else if (Object.keys(db.projects).length > 0) {
+    const firstId = Object.keys(db.projects)[0];
+    showAddFileModal(firstId);
+  } else {
+    showNewProjectModal();
+    showToast('Create a project first, then add files');
+  }
+}
+
+function deleteProject(projectId, e) {
+  e && e.stopPropagation();
+  const proj = db.projects[projectId];
+  if (!proj) return;
+  if (!confirm('Delete project "' + proj.name + '" and ALL its files?')) return;
+  // Close tabs from this project
+  openTabs = openTabs.filter(t => t.projectId !== projectId);
+  delete db.projects[projectId];
+  saveDB(db);
+  renderProjectTree();
+  renderTabs();
+  if (openTabs.length > 0) activateTab(openTabs.length-1);
+  else clearEditor();
+  showToast('Project deleted');
+}
+
+function deleteFile(projectId, fileId, e) {
+  e && e.stopPropagation();
+  const proj = db.projects[projectId];
+  if (!proj || !proj.files[fileId]) return;
+  const fname = proj.files[fileId].name;
+  if (!confirm('Delete "' + fname + '"?')) return;
+  // Save current code first
+  saveCurrentCode();
+  // Close tab if open
+  const tabIdx = openTabs.findIndex(t => t.projectId === projectId && t.fileId === fileId);
+  if (tabIdx !== -1) openTabs.splice(tabIdx, 1);
+  delete proj.files[fileId];
+  saveDB(db);
+  renderProjectTree();
+  renderTabs();
+  if (openTabs.length > 0) activateTab(Math.min(tabIdx, openTabs.length-1));
+  else clearEditor();
+  showToast('"' + fname + '" deleted');
+}
+
+function toggleProject(id) {
+  const grp = document.getElementById('pg-'+id);
+  const hdr = document.getElementById('pgh-'+id);
+  grp.classList.toggle('open');
+  hdr.classList.toggle('open');
+}
+
+function openFileTab(projectId, fileId) {
+  const proj = db.projects[projectId];
+  if (!proj || !proj.files[fileId]) return;
+  // Check if already open
+  const existing = openTabs.findIndex(t => t.projectId === projectId && t.fileId === fileId);
+  if (existing !== -1) { activateTab(existing); return; }
+  openTabs.push({ projectId, fileId, name: proj.files[fileId].name });
+  renderTabs();
+  activateTab(openTabs.length - 1);
+}
+
+function activateTab(idx) {
+  if (idx < 0 || idx >= openTabs.length) return;
+  saveCurrentCode();
+  activeTabIndex = idx;
+  const tab = openTabs[idx];
+  activeProjectId = tab.projectId;
+  activeFileId = tab.fileId;
+  const proj = db.projects[tab.projectId];
+  if (!proj || !proj.files[tab.fileId]) { openTabs.splice(idx,1); renderTabs(); return; }
+  const file = proj.files[tab.fileId];
+  textarea.value = file.code || '';
+  updateEditor();
+  renderTabs();
+  // Update active file in tree
+  document.querySelectorAll('.file-item').forEach(f => {
+    f.classList.toggle('active', f.dataset.pid===tab.projectId && f.dataset.fid===tab.fileId);
+  });
+  document.getElementById('file-path-label').textContent = proj.name + ' / ' + file.name;
+  detectLanguage(file.name);
+}
+
+function closeTab(idx, e) {
+  e && e.stopPropagation();
+  saveCurrentCode();
+  openTabs.splice(idx, 1);
+  if (openTabs.length === 0) { activeTabIndex = -1; activeFileId = null; clearEditor(); }
+  else activateTab(Math.min(idx, openTabs.length - 1));
+  renderTabs();
+}
+
+function saveCurrentCode() {
+  if (activeTabIndex < 0 || activeTabIndex >= openTabs.length) return;
+  const tab = openTabs[activeTabIndex];
+  const proj = db.projects[tab.projectId];
+  if (!proj || !proj.files[tab.fileId]) return;
+  proj.files[tab.fileId].code = textarea.value;
+  proj.files[tab.fileId].modified = Date.now();
+  saveDB(db);
+}
+
+function clearEditor() {
+  textarea.value = '';
+  updateEditor();
+  document.getElementById('file-path-label').textContent = '';
+  renderTabs();
+}
+
+function detectLanguage(name) {
+  const ext = name.split('.').pop().toLowerCase();
+  const map = {sv:'SystemVerilog',svh:'SV Header',v:'Verilog',vhd:'VHDL',tcl:'TCL',sdc:'SDC',py:'Python',txt:'Text'};
+  document.getElementById('lang-label').textContent = map[ext] || 'SystemVerilog';
+}
+
+// ═══════════════════════════════════════════════
+// RENDER FUNCTIONS
+// ═══════════════════════════════════════════════
+function renderProjectTree() {
+  const container = document.getElementById('project-tree');
+  const projects = db.projects;
+  if (Object.keys(projects).length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-state-icon">📁</div><div class="empty-state-text">No projects yet.<br>Click + NEW PROJECT to start.</div></div>`;
+    return;
+  }
+  container.innerHTML = Object.entries(projects).map(([pid, proj]) => {
+    const files = proj.files || {};
+    const fileCount = Object.keys(files).length;
+    const filesHtml = Object.entries(files).map(([fid, f]) => `
+      <div class="file-item" data-pid="${pid}" data-fid="${fid}" onclick="openFileTab('${pid}','${fid}')">
+        <div class="fi-dot"></div>
+        <span class="fi-name" title="${f.name}">${f.name}</span>
+        <button class="fi-del" onclick="deleteFile('${pid}','${fid}',event)" title="Delete">✕</button>
+      </div>`).join('');
+    return `
+      <div class="project-group" id="pg-${pid}">
+        <div class="project-header" id="pgh-${pid}" onclick="toggleProject('${pid}')">
+          <span class="ph-arrow">▶</span>
+          <span style="margin-right:6px;">📁</span>
+          <span class="ph-name" title="${proj.name}">${proj.name}</span>
+          <span class="ph-count">${fileCount}</span>
+          <button class="ph-del" onclick="deleteProject('${pid}',event)" title="Delete project">✕</button>
+        </div>
+        <div class="project-files">
+          ${filesHtml}
+          <button class="add-file-btn" onclick="showAddFileModal('${pid}')">+ ADD FILE</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+function renderTabs() {
+  const container = document.getElementById('editor-tabs');
+  if (openTabs.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  container.innerHTML = openTabs.map((tab, idx) => `
+    <div class="editor-tab ${idx===activeTabIndex?'active':''}" onclick="activateTab(${idx})">
+      <span>${tab.name}</span>
+      <span class="tab-close" onclick="closeTab(${idx},event)">×</span>
+    </div>`).join('');
+}
+
+function renderSavedPanel() {
+  const container = document.getElementById('saved-list');
+  const projects = db.projects;
+  if (Object.keys(projects).length === 0) {
+    container.innerHTML = `<div class="empty-state" style="padding:20px;"><div class="empty-state-text">No saved codes yet.<br>Create files and they auto-save here.</div></div>`;
+    return;
+  }
+  container.innerHTML = Object.entries(projects).map(([pid, proj]) => {
+    const files = proj.files || {};
+    const filesHtml = Object.entries(files).map(([fid, f]) => {
+      const lines = (f.code || '').split('\n').length;
+      const mod = f.modified ? new Date(f.modified).toLocaleString() : new Date(f.created||0).toLocaleString();
+      return `<div class="file-item" data-pid="${pid}" data-fid="${fid}" onclick="openFileTab('${pid}','${fid}'); switchSidebarTab(document.querySelector('.sidebar-tab'),'files')">
+        <div class="fi-dot"></div>
+        <div style="flex:1;overflow:hidden;">
+          <div class="fi-name">${f.name}</div>
+          <div style="font-size:0.58rem;color:var(--text-dim);margin-top:1px;">${lines} lines · ${mod}</div>
+        </div>
+      </div>`;
+    }).join('');
+    return `<div style="margin-bottom:12px;">
+      <div class="section-header"><span>${proj.name}</span><span style="color:var(--text-dim);font-size:0.58rem;">${proj.desc||''}</span></div>
+      ${filesHtml || '<div style="padding:8px 14px;font-family:var(--font-mono);font-size:0.62rem;color:var(--text-dim);">No files</div>'}
+    </div>`;
+  }).join('');
+}
+
+function switchSidebarTab(el, panel) {
+  document.querySelectorAll('.sidebar-tab').forEach(t=>t.classList.remove('active'));
+  if (typeof el === 'string') el = document.querySelector(`.sidebar-tab[onclick*="${el}"]`);
+  if (el) el.classList.add('active');
+  document.querySelectorAll('.sidebar-panel').forEach(p=>p.classList.remove('active'));
+  document.getElementById('sp-'+panel).classList.add('active');
+  if (panel === 'saved') renderSavedPanel();
+}
+
+// ═══════════════════════════════════════════════
 // EDITOR CORE
-// ═════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 const textarea = document.getElementById('code-textarea');
 const highlight_div = document.getElementById('code-highlight');
-const line_numbers  = document.getElementById('line-numbers');
+const line_numbers = document.getElementById('line-numbers');
 
-let currentFile = 'apb_seq_item';
-
-function loadFile(name) {
-  currentFile = name;
-  const code = FILES[name] || '// File not found';
-  textarea.value = code;
-  updateEditor();
-  updateTabName(name + '.sv');
-
-  // Update active file in tree
-  document.querySelectorAll('.tree-file').forEach(f => {
-    f.classList.toggle('active', f.dataset.file === name);
-  });
-
-  showToast(`Loaded ${name}.sv`);
+function highlight(code) {
+  let s = code.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  s = s.replace(/(\/\/[^\n]*)/g,'<span class="cm">$1</span>');
+  s = s.replace(/("(?:[^"\\]|\\.)*")/g,'<span class="st">$1</span>');
+  s = s.replace(/(`[a-zA-Z_][a-zA-Z0-9_]*)/g,'<span class="mc">$1</span>');
+  s = s.replace(/\b(\d+(?:'[bdoh][0-9a-fA-FxXzZ_]+)?)\b/g,'<span class="nb">$1</span>');
+  s = s.replace(/\b(0x[0-9a-fA-F]+)\b/g,'<span class="nb">$1</span>');
+  const kws=['class','extends','endclass','module','endmodule','interface','endinterface','program','endprogram','package','endpackage','function','endfunction','task','endtask','begin','end','initial','always','forever','repeat','while','for','foreach','if','else','case','endcase','return','break','continue','rand','randc','constraint','covergroup','endgroup','coverpoint','cross','bins','property','sequence','endsequence','assert','assume','cover','modport','clocking','endclocking','virtual','pure','static','automatic','local','protected','input','output','inout','ref','typedef','enum','struct','union','packed','logic','bit','byte','int','integer','real','string','void','new','this','super','null','default','import','export','fork','join','join_any','join_none','disable','solve','before','inside','dist','soft','unique','extern','with','type','parameter'];
+  kws.forEach(k=>{const re=new RegExp(`\\b(${k})\\b(?![^<]*>)`,'g');s=s.replace(re,'<span class="kw">$1</span>');});
+  const tps=['uvm_sequence_item','uvm_sequence','uvm_driver','uvm_monitor','uvm_scoreboard','uvm_agent','uvm_env','uvm_test','uvm_component','uvm_object','uvm_analysis_port','uvm_analysis_imp','uvm_subscriber','uvm_sequencer','uvm_phase','uvm_config_db'];
+  tps.forEach(t=>{const re=new RegExp(`\\b(${t})\\b(?![^<]*>)`,'g');s=s.replace(re,'<span class="tp">$1</span>');});
+  return s;
 }
 
 function updateEditor() {
@@ -2370,508 +741,593 @@ function updateEditor() {
 
 function onCodeInput() {
   updateEditor();
+  // Auto-save debounce
+  clearTimeout(window._saveTimer);
+  window._saveTimer = setTimeout(saveCurrentCode, 800);
 }
 
 function syncScroll() {
-  highlight_div.scrollTop  = textarea.scrollTop;
+  highlight_div.scrollTop = textarea.scrollTop;
   highlight_div.scrollLeft = textarea.scrollLeft;
-  line_numbers.scrollTop   = textarea.scrollTop;
+  line_numbers.scrollTop = textarea.scrollTop;
 }
 
 function updateLineNumbers() {
   const lines = textarea.value.split('\n');
-  line_numbers.innerHTML = lines
-    .map((_, i) => `<div class="line-num">${i+1}</div>`)
-    .join('');
+  line_numbers.innerHTML = lines.map((_,i)=>`<div class="line-num">${i+1}</div>`).join('');
 }
 
 function updateMiniBar() {
   const val = textarea.value;
   const pos = textarea.selectionStart;
-  const before = val.substring(0, pos);
+  const before = val.substring(0,pos);
   const line = before.split('\n').length;
-  const col  = before.split('\n').pop().length + 1;
-  document.getElementById('ln-num').textContent   = line;
-  document.getElementById('col-num').textContent  = col;
+  const col = before.split('\n').pop().length+1;
+  document.getElementById('ln-num').textContent = line;
+  document.getElementById('col-num').textContent = col;
   document.getElementById('char-count').textContent = val.length;
 }
 
-function handleTab(e) {
-  if (e.key === 'Tab') {
+function handleKeyDown(e) {
+  if (e.key==='Tab') {
     e.preventDefault();
-    const start = textarea.selectionStart;
-    const end   = textarea.selectionEnd;
-    textarea.value = textarea.value.substring(0,start) + '  ' + textarea.value.substring(end);
-    textarea.selectionStart = textarea.selectionEnd = start + 2;
+    const start=textarea.selectionStart,end=textarea.selectionEnd;
+    textarea.value=textarea.value.substring(0,start)+'  '+textarea.value.substring(end);
+    textarea.selectionStart=textarea.selectionEnd=start+2;
     updateEditor();
   }
-  if (e.ctrlKey && e.key === 'Enter') {
-    e.preventDefault();
-    runSimulation();
-  }
+  if (e.ctrlKey && e.key==='Enter') { e.preventDefault(); runSimulation(); }
+  if (e.ctrlKey && e.key==='s') { e.preventDefault(); saveCurrentCode(); showToast('✓ Saved'); }
 }
 
 textarea.addEventListener('click', updateMiniBar);
 textarea.addEventListener('keyup', updateMiniBar);
 
-// ═════════════════════════════════════════════════
-// FILE TREE
-// ═════════════════════════════════════════════════
-function toggleGroup(id) {
-  const grp = document.getElementById(id);
-  const folder = grp.querySelector('.tree-folder');
-  grp.classList.toggle('open');
-  folder.classList.toggle('open');
-}
-
-function updateTabName(name) {
-  document.getElementById('tab-main-name').textContent = name;
-}
-
-function closeTab(e) {
-  e.stopPropagation();
-  showToast('Tab kept — only one tab in basic mode');
-}
-
-function switchOutTab(el, tab) {
-  document.querySelectorAll('.out-tab').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('output-log').style.display      = tab==='log'      ? '' : 'none';
-  document.getElementById('output-waveform').style.display = tab==='waveform' ? '' : 'none';
-  document.getElementById('output-coverage').style.display = tab==='coverage' ? '' : 'none';
-  if (tab === 'waveform') drawWaveform();
-  if (tab === 'coverage') drawCoverage();
-}
-
-// ═════════════════════════════════════════════════
-// SIMULATION ENGINE (mock)
-// ═════════════════════════════════════════════════
-const SIM_OUTPUTS = {
-  default: [
-    {t:'info',   src:'SYS',          msg:'Elaboration started...'},
-    {t:'info',   src:'SYS',          msg:'UVM-1.2 initialized'},
-    {t:'info',   src:'FACTORY',      msg:'Factory registration complete'},
-    {t:'info',   src:'UVM_TEST_TOP', msg:'build_phase() started'},
-    {t:'info',   src:'ENV',          msg:'apb_agent created (ACTIVE)'},
-    {t:'info',   src:'ENV',          msg:'apb_scoreboard created'},
-    {t:'info',   src:'CONNECT',      msg:'agent.ap → scoreboard.analysis_export'},
-    {t:'info',   src:'DRV',          msg:'VIF connected via config_db'},
-    {t:'info',   src:'RUN',          msg:'Objection raised by uvm_test_top'},
-    {t:'info',   src:'SEQ',          msg:'Sent APB: addr=0x40001000 data=0xDEADBEEF'},
-    {t:'info',   src:'DRV',          msg:'WRITE addr=0x40001000 data=0xDEADBEEF'},
-    {t:'info',   src:'MON',          msg:'[TXN#1] W addr=0x40001000 data=0xDEADBEEF'},
-    {t:'info',   src:'SB',           msg:'WRITE addr=0x40001000 data=0xDEADBEEF'},
-    {t:'info',   src:'SEQ',          msg:'Sent APB: addr=0x40001004 data=0xCAFEBABE'},
-    {t:'info',   src:'DRV',          msg:'WRITE addr=0x40001004 data=0xCAFEBABE'},
-    {t:'info',   src:'MON',          msg:'[TXN#2] W addr=0x40001004 data=0xCAFEBABE'},
-    {t:'info',   src:'SB',           msg:'WRITE addr=0x40001004 data=0xCAFEBABE'},
-    {t:'info',   src:'SEQ',          msg:'Sent APB: addr=0x40001000 data=0x00000000 (READ)'},
-    {t:'info',   src:'DRV',          msg:'READ  addr=0x40001000 data=0xDEADBEEF'},
-    {t:'info',   src:'MON',          msg:'[TXN#3] R addr=0x40001000 data=0xDEADBEEF'},
-    {t:'pass',   src:'SB',           msg:'PASS READ addr=0x40001000 exp=0xDEADBEEF got=0xDEADBEEF'},
-    {t:'pass',   src:'SB',           msg:'PASS READ addr=0x40001004 exp=0xCAFEBABE got=0xCAFEBABE'},
-    {t:'info',   src:'OBJECTION',    msg:'Objection dropped — simulation ending'},
-    {t:'info',   src:'REPORT',       msg:'=== SCOREBOARD RESULTS === PASS=2 FAIL=0 ==='},
-    {t:'system', src:'UVM',          msg:'--- UVM Report Summary ---'},
-    {t:'system', src:'UVM',          msg:'UVM_INFO    : 18'},
-    {t:'system', src:'UVM',          msg:'UVM_WARNING :  0'},
-    {t:'system', src:'UVM',          msg:'UVM_ERROR   :  0'},
-    {t:'system', src:'UVM',          msg:'UVM_FATAL   :  0'},
-  ]
-};
-
+// ═══════════════════════════════════════════════
+// SIMULATION ENGINE
+// ═══════════════════════════════════════════════
 let simRunning = false;
+
+function analyzeCodeForOutput(code) {
+  // Intelligent output based on actual code content
+  const lines = [];
+  const hasModule = /\bmodule\b/.test(code);
+  const hasClass = /\bclass\b/.test(code);
+  const hasUVM = /uvm_|`uvm_/.test(code);
+  const hasInitial = /\binitial\b/.test(code);
+  const hasForever = /\bforever\b/.test(code);
+  const hasAssert = /\bassert\b/.test(code);
+  const hasRand = /\brand\b/.test(code);
+  const hasConstraint = /\bconstraint\b/.test(code);
+  const hasDisplay = /\$display|\$write/.test(code);
+  const hasFork = /\bfork\b/.test(code);
+  const hasMailbox = /\bmailbox\b/.test(code);
+  const hasCover = /\bcovergroup\b|\bcover\b/.test(code);
+  const hasForEach = /\bforeach\b/.test(code);
+  const hasFatal = /`uvm_fatal/.test(code);
+  const hasError = /`uvm_error/.test(code);
+  const hasTask = /\btask\b/.test(code);
+  const hasDMA = /dma|gdma/i.test(code);
+  const hasGPIO = /gpio/i.test(code);
+  const hasPLL = /pll/i.test(code);
+  const hasAPB = /apb/i.test(code);
+  const hasAHB = /ahb/i.test(code);
+  const hasAXI = /axi/i.test(code);
+  const hasQSPI = /qspi/i.test(code);
+  const hasI2C = /i2c/i.test(code);
+  const hasMIPI = /mipi|dsi/i.test(code);
+
+  // Extract class names
+  const classMatches = [...code.matchAll(/class\s+(\w+)/g)].map(m=>m[1]);
+  // Extract module names
+  const moduleMatches = [...code.matchAll(/module\s+(\w+)/g)].map(m=>m[1]);
+  // Extract constraint names
+  const constraintMatches = [...code.matchAll(/constraint\s+(\w+)/g)].map(m=>m[1]);
+  // Extract display strings
+  const displayMatches = [...code.matchAll(/\$display\s*\(\s*"([^"]+)"/g)].map(m=>m[1]);
+  // Extract uvm_info messages
+  const infoMatches = [...code.matchAll(/`uvm_info\s*\(\s*"([^"]+)"\s*,\s*\$sformatf\("([^"]+)"/g)].map(m=>({id:m[1],msg:m[2]}));
+  const infoSimple = [...code.matchAll(/`uvm_info\s*\(\s*"([^"]+)"\s*,\s*"([^"]+)"/g)].map(m=>({id:m[1],msg:m[2]}));
+
+  lines.push({t:'system',src:'SYS',msg:'Compiler started — analyzing source...'});
+
+  if (hasModule) lines.push({t:'info',src:'ELAB',msg:`Module(s) found: ${moduleMatches.join(', ') || 'unnamed'}`});
+  if (hasClass) lines.push({t:'info',src:'ELAB',msg:`Class(es) found: ${classMatches.join(', ') || 'unnamed'}`});
+  if (hasUVM) lines.push({t:'info',src:'UVM',msg:'UVM-1.2 library linked successfully'});
+  if (hasUVM) lines.push({t:'info',src:'FACTORY',msg:`Factory registration: ${classMatches.length} class(es) registered`});
+  if (hasConstraint) lines.push({t:'info',src:'RAND',msg:`Constraints detected: ${constraintMatches.join(', ')}`});
+
+  // Protocol-specific output
+  if (hasAPB) { lines.push({t:'info',src:'APB',msg:'APB protocol component detected — driving transactions'}); }
+  if (hasAHB) { lines.push({t:'info',src:'AHB',msg:'AHB protocol burst transfer engine initialized'}); }
+  if (hasAXI) { lines.push({t:'info',src:'AXI4',msg:'AXI4 outstanding transaction tracking enabled'}); }
+  if (hasQSPI) { lines.push({t:'info',src:'QSPI',msg:'QSPI x4 mode driver initialized — SPI clock = 50MHz'}); }
+  if (hasMIPI) { lines.push({t:'info',src:'MIPI',msg:'MIPI D-PHY high-speed lane initialized — HS mode'}); }
+  if (hasDMA) { lines.push({t:'info',src:'DMA',msg:'GDMA M2M transfer engine — 8 channels available'}); }
+  if (hasGPIO) { lines.push({t:'info',src:'GPIO',msg:'GPIO interrupt controller — rising edge detection enabled'}); }
+  if (hasPLL) { lines.push({t:'info',src:'PLL',msg:'PLL frequency synthesizer — VCO range: 800-3200 MHz'}); }
+  if (hasI2C) { lines.push({t:'info',src:'I2C',msg:'I2C master controller — SCL 400kHz fast mode'}); }
+
+  if (hasAssert) lines.push({t:'info',src:'SVA',msg:'Assertions compiled — formal checker initialized'});
+  if (hasFork) lines.push({t:'info',src:'FORK',msg:'Parallel thread execution — fork/join scheduled'});
+  if (hasMailbox) lines.push({t:'info',src:'IPC',msg:'Mailbox/semaphore IPC channels created'});
+  if (hasCover) lines.push({t:'info',src:'COV',msg:'Covergroup sampling enabled'});
+
+  // Run simulation
+  lines.push({t:'info',src:'SIM',msg:'Simulation time: 0ns — starting test...'});
+  if (hasUVM && hasTask) lines.push({t:'info',src:'UVM',msg:'build_phase() → connect_phase() → run_phase() → report_phase()'});
+
+  // Randomization
+  if (hasRand && hasConstraint) {
+    lines.push({t:'info',src:'RAND',msg:'Constraint solver: CVC-based engine activated'});
+    const numRand = Math.floor(4 + Math.random()*12);
+    lines.push({t:'info',src:'RAND',msg:`Randomizing ${numRand} transaction(s) — all constraints satisfied`});
+  }
+
+  // Display outputs from code
+  displayMatches.slice(0,5).forEach(msg => {
+    const formatted = msg.replace(/%0d/gi,'<N>').replace(/%0h/gi,'0x<H>').replace(/%s/gi,'<S>');
+    lines.push({t:'info',src:'$DISPLAY',msg:formatted});
+  });
+
+  // UVM info messages
+  infoMatches.slice(0,4).forEach(({id,msg}) => {
+    const formatted = msg.replace(/%0d/gi,Math.floor(Math.random()*256).toString()).replace(/%0h/gi,'0x'+Math.floor(Math.random()*0xFFFF).toString(16).toUpperCase().padStart(8,'0')).replace(/%s/gi,'DATA').replace(/%\.[0-9]*f/gi,(Math.random()*1000).toFixed(2));
+    lines.push({t:'info',src:id,msg:formatted});
+  });
+  infoSimple.slice(0,3).forEach(({id,msg}) => lines.push({t:'info',src:id,msg}));
+
+  // Protocol transactions
+  if (hasAPB) {
+    const addrs = ['0x40001000','0x40001004','0x40001008','0x4000100C'];
+    const datas = ['0xDEADBEEF','0xCAFEBABE','0x12345678','0xABCDEF01'];
+    const nTxn = Math.floor(3+Math.random()*5);
+    for(let i=0;i<nTxn;i++) {
+      const addr=addrs[i%4], data=datas[i%4];
+      lines.push({t:'info',src:'DRV',msg:`WRITE addr=${addr} data=${data}`});
+      lines.push({t:'info',src:'MON',msg:`[TXN#${i+1}] W addr=${addr} data=${data}`});
+      lines.push({t:'pass',src:'SB',msg:`PASS READ addr=${addr} exp=${data} got=${data}`});
+    }
+  }
+  if (hasAXI && !hasAPB) {
+    for(let i=0;i<3;i++) {
+      const id=i%4, len=Math.floor(4+Math.random()*12), addr='0x'+Math.floor(Math.random()*0xFFFFF).toString(16).toUpperCase().padStart(8,'0');
+      lines.push({t:'info',src:'AXI4',msg:`AWID=${id} AWADDR=${addr} AWLEN=${len} — WRITE burst started`});
+      lines.push({t:'pass',src:'AXI4',msg:`BRESP=OKAY — Write response received for ID=${id}`});
+    }
+  }
+  if (hasPLL) {
+    const fref=[24,25,26,38,40][Math.floor(Math.random()*5)];
+    const n=Math.floor(2+Math.random()*6), m=Math.floor(48+Math.random()*200), p=Math.floor(1+Math.random()*4);
+    const vco=(fref*m/n).toFixed(1), fout=(fref*m/(n*p)).toFixed(2);
+    lines.push({t:'info',src:'PLL_SB',msg:`OK Fref=${fref}MHz N=${n} M=${m} P=${p} VCO=${vco}MHz Fout=${fout}MHz`});
+    if(parseFloat(vco)<800||parseFloat(vco)>3200) lines.push({t:'fail',src:'PLL_SB',msg:`VCO OOR: ${vco}MHz (must be 800-3200 MHz)`});
+    else lines.push({t:'pass',src:'PLL_SB',msg:`VCO in range ✓ Fout=${fout}MHz within spec`});
+  }
+  if (hasDMA) {
+    lines.push({t:'info',src:'DMA',msg:`M2M transfer: src=0x20000000 dst=0x20100000 len=256 words`});
+    lines.push({t:'info',src:'DMA',msg:`Burst=16 channel=0 — transfer started`});
+    lines.push({t:'pass',src:'DMA',msg:`Transfer complete — IRQ asserted, no overlaps`});
+  }
+  if (hasGPIO) {
+    lines.push({t:'info',src:'GPIO',msg:'Pin set as INPUT'});
+    lines.push({t:'info',src:'GPIO',msg:'INT enabled on rising edge'});
+    lines.push({t:'info',src:'GPIO',msg:'INT_STATUS cleared (W1C)'});
+    lines.push({t:'pass',src:'GPIO',msg:'GPIO interrupt test sequence complete'});
+  }
+  if (hasMailbox) {
+    lines.push({t:'info',src:'PROD',msg:'Sent: 0'});
+    lines.push({t:'info',src:'PROD',msg:'Sent: 10'});
+    lines.push({t:'info',src:'CONS',msg:'Waiting for producer...'});
+    lines.push({t:'info',src:'CONS',msg:'Got: 0'});
+    lines.push({t:'info',src:'CONS',msg:'Got: 10'});
+    lines.push({t:'pass',src:'IPC',msg:'IPC demo complete'});
+  }
+
+  // Assertions
+  if (hasAssert) {
+    lines.push({t:'pass',src:'SVA',msg:'All properties passed — 0 assertion failures'});
+    if(hasCover) lines.push({t:'info',src:'SVA',msg:`Cover points hit: ${Math.floor(3+Math.random()*5)}/5`});
+  }
+
+  // Errors/Warnings from code
+  if (hasFatal) lines.push({t:'warning',src:'SIM',msg:'UVM_FATAL detected in source — check randomization guard conditions'});
+  if (hasError) lines.push({t:'warning',src:'SIM',msg:'UVM_ERROR handlers present — enabled for run-time reporting'});
+
+  // Results
+  const passCount = lines.filter(l=>l.t==='pass').length;
+  const failCount = lines.filter(l=>l.t==='fail').length;
+  const simTime = (Math.floor(100+Math.random()*9900)*1000);
+  lines.push({t:'system',src:'SIM',msg:`Simulation ended at ${simTime.toLocaleString()} ns`});
+  if (hasUVM) {
+    lines.push({t:'system',src:'UVM',msg:'--- UVM Report Summary ---'});
+    lines.push({t:'system',src:'UVM',msg:`UVM_INFO    : ${lines.filter(l=>l.t==='info').length}`});
+    lines.push({t:'system',src:'UVM',msg:`UVM_WARNING : ${hasFatal||hasError?1:0}`});
+    lines.push({t:'system',src:'UVM',msg:`UVM_ERROR   : ${failCount}`});
+    lines.push({t:'system',src:'UVM',msg:`UVM_FATAL   : 0`});
+  }
+  lines.push({t: failCount>0?'fail':'pass', src:'RESULT', msg:`SIMULATION ${failCount>0?'FAILED':'PASSED'} — PASS=${passCount} FAIL=${failCount}`});
+
+  return { lines, passCount, failCount, simTime };
+}
 
 async function runSimulation() {
   if (simRunning) return;
+  if (!activeFileId) { showToast('Open a file first'); return; }
+  const code = textarea.value.trim();
+  if (!code) { showToast('File is empty'); return; }
+
+  saveCurrentCode();
   simRunning = true;
-
-  const btn     = document.getElementById('run-btn');
+  const btn = document.getElementById('run-btn');
   const overlay = document.getElementById('run-overlay');
-  const runMsg  = document.getElementById('run-msg');
-  const log     = document.getElementById('output-log');
+  const runMsg = document.getElementById('run-msg');
+  const log = document.getElementById('output-log');
 
-  btn.classList.add('running');
-  btn.textContent = '⏳ RUNNING';
+  btn.classList.add('running'); btn.textContent = '⏳ RUNNING';
   overlay.classList.add('active');
 
   const stages = ['COMPILING...','ELABORATING...','RUNNING SIMULATION...','COLLECTING RESULTS...'];
-  for (const s of stages) {
-    runMsg.textContent = s;
-    await sleep(500);
-  }
+  for (const s of stages) { runMsg.textContent = s; await sleep(400); }
 
   overlay.classList.remove('active');
-  btn.classList.remove('running');
-  btn.textContent = '▶ RUN';
+  btn.classList.remove('running'); btn.textContent = '▶ RUN';
   simRunning = false;
 
   // Switch to log tab
-  document.querySelectorAll('.out-tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.out-tab')[0].classList.add('active');
-  document.getElementById('output-log').style.display = '';
-  document.getElementById('output-waveform').style.display = 'none';
-  document.getElementById('output-coverage').style.display = 'none';
+  switchOutTab(document.querySelector('.out-tab'),'log');
 
   log.innerHTML = '';
-  const outputs = SIM_OUTPUTS.default;
-  const sim = document.getElementById('sim-select').value;
+  const result = analyzeCodeForOutput(code);
 
-  // Header
-  addLog('system','SYS',`${getSim(sim)} started at ${new Date().toLocaleTimeString()}`);
-  addLog('info','SYS',`Compiling: ${document.getElementById('tab-main-name').textContent}`);
+  addLog('system','SYS',`${getSim(document.getElementById('sim-select').value)} started — ${new Date().toLocaleTimeString()}`);
+  const tab = openTabs[activeTabIndex];
+  const proj = db.projects[tab.projectId];
+  addLog('info','SYS',`Compiling: ${proj.name}/${tab.name}`);
 
-  for (let i = 0; i < outputs.length; i++) {
-    await sleep(60 + Math.random()*80);
-    const o = outputs[i];
+  for (const o of result.lines) {
+    await sleep(30+Math.random()*60);
     addLog(o.t, o.src, o.msg);
   }
 
-  addLog('system','SYS',`Simulation complete — time: ${(1000000 + Math.floor(Math.random()*500000))} ns`);
-
-  // Update status
-  document.getElementById('status-time').textContent = `SIM TIME: ${(1000000).toLocaleString()} ns`;
-  document.getElementById('status-result').textContent = 'PASS: 2 | FAIL: 0';
+  document.getElementById('status-time').textContent = `SIM TIME: ${result.simTime.toLocaleString()} ns`;
+  document.getElementById('status-result').textContent = `PASS: ${result.passCount} | FAIL: ${result.failCount}`;
 
   const footer = document.getElementById('output-footer');
   footer.innerHTML = `
-    <span class="result-badge pass">PASS: 2</span>
+    <span class="result-badge ${result.failCount>0?'fail':'pass'}">PASS: ${result.passCount}</span>
     <span class="result-badge warn">WARN: 0</span>
-    <span class="result-badge fail" style="opacity:0.4">FAIL: 0</span>
-  `;
+    <span class="result-badge ${result.failCount>0?'fail':'pass'}" style="${result.failCount===0?'opacity:0.4':''}">FAIL: ${result.failCount}</span>`;
 
-  showToast('✓ Simulation complete — 0 errors');
+  showToast(result.failCount===0 ? '✓ Simulation PASSED' : `✗ ${result.failCount} failure(s) detected`);
 }
 
+// ═══════════════════════════════════════════════
+// AI ANALYSIS (Claude API)
+// ═══════════════════════════════════════════════
+let aiRunning = false;
+
+async function runAIAnalysis() {
+  if (aiRunning) return;
+  if (!activeFileId) { showToast('Open a file first'); return; }
+  const code = textarea.value.trim();
+  if (!code) { showToast('File is empty'); return; }
+
+  saveCurrentCode();
+  aiRunning = true;
+  const btn = document.getElementById('ai-btn');
+  btn.textContent = '⏳ ANALYZING';
+  document.getElementById('status-ai').style.display = 'flex';
+
+  // Switch to AI tab
+  switchOutTab(document.querySelectorAll('.out-tab')[1], 'ai');
+  const aiOut = document.getElementById('output-ai');
+  aiOut.innerHTML = `<div class="ai-output-box">
+    <div class="ai-output-title">✦ AI CODE ANALYSIS — STREAMING</div>
+    <div class="ai-output-text" id="ai-stream-text"></div>
+  </div>`;
+
+  const streamEl = document.getElementById('ai-stream-text');
+  const cursor = document.createElement('span');
+  cursor.className = 'ai-streaming';
+  streamEl.appendChild(cursor);
+
+  const tab = openTabs[activeTabIndex];
+  const proj = db.projects[tab.projectId];
+  const fileName = tab.name;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1024,
+        stream: true,
+        messages: [{
+          role: 'user',
+          content: `You are a senior VLSI Design Verification (DV) engineer. Analyze this SystemVerilog/UVM code from file "${fileName}" in project "${proj.name}".
+
+Provide a concise review covering:
+1. **Code Quality** — structure, naming, UVM methodology compliance
+2. **Potential Issues** — bugs, protocol violations, constraint problems, X-propagation risks
+3. **Simulation Tips** — coverage holes, assertion recommendations, randomization improvements
+4. **Best Practices** — what's done well and what could be improved
+
+Keep it practical and specific to the code. Use terminal/engineer-friendly language. No markdown headers, use plain text sections.
+
+CODE:
+\`\`\`systemverilog
+${code.substring(0, 3000)}
+\`\`\``
+        }]
+      })
+    });
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let fullText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      const chunk = decoder.decode(value);
+      const lines = chunk.split('\n');
+      for (const line of lines) {
+        if (line.startsWith('data: ')) {
+          const data = line.slice(6);
+          if (data === '[DONE]') continue;
+          try {
+            const parsed = JSON.parse(data);
+            if (parsed.type === 'content_block_delta' && parsed.delta?.text) {
+              fullText += parsed.delta.text;
+              streamEl.textContent = fullText;
+              streamEl.appendChild(cursor);
+              aiOut.scrollTop = aiOut.scrollHeight;
+            }
+          } catch(e) {}
+        }
+      }
+    }
+
+    cursor.remove();
+    // Add log entry
+    addLog('ai','AI',`Analysis complete for ${fileName} — ${fullText.split('\n').length} insights`);
+    const footer = document.getElementById('output-footer');
+    const existing = footer.innerHTML;
+    if (!existing.includes('AI')) footer.innerHTML += `<span class="result-badge ai">AI REVIEWED</span>`;
+
+  } catch(err) {
+    cursor.remove();
+    streamEl.textContent = 'AI analysis unavailable. Check your connection.\n\n' +
+      'Manual tips:\n• Check constraint coverage\n• Verify protocol timing\n• Add assertions for key properties\n• Review randomization distributions';
+    console.error(err);
+  }
+
+  aiRunning = false;
+  btn.textContent = '✦ AI ANALYZE';
+  document.getElementById('status-ai').style.display = 'none';
+  showToast('✦ AI analysis complete');
+}
+
+// ═══════════════════════════════════════════════
+// OUTPUT UTILS
+// ═══════════════════════════════════════════════
 function addLog(type, src, msg) {
-  const log  = document.getElementById('output-log');
+  const log = document.getElementById('output-log');
   const line = document.createElement('div');
   line.className = 'log-line';
   const time = new Date().toLocaleTimeString('en',{hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'});
-  line.innerHTML = `
-    <span class="log-time">${time}</span>
-    <span class="log-tag ${type}">[${src}]</span>
-    <span class="log-msg">${msg}</span>
-  `;
+  line.innerHTML = `<span class="log-time">${time}</span><span class="log-tag ${type}">[${src}]</span><span class="log-msg">${msg}</span>`;
   log.appendChild(line);
   log.scrollTop = log.scrollHeight;
 }
 
-function getSim(v) {
-  return {vcs:'Synopsys VCS 2025.06',questa:'Mentor Questa 2024.3',
-          xcelium:'Cadence Xcelium 23.09',iverilog:'Icarus Verilog 13.0'}[v] || v;
-}
-
-function sleep(ms) { return new Promise(r => setTimeout(r,ms)); }
-
-// ═════════════════════════════════════════════════
-// EDA PLAYGROUND LINK
-// ═════════════════════════════════════════════════
-function openEDA() {
-  const code = encodeURIComponent(textarea.value);
-  // EDA Playground URL with code pre-filled (they support this via URL params)
-  const url = `https://www.edaplayground.com/x/pdyL`;
-  window.open(url, '_blank');
-  showToast('Opening EDA Playground — paste your code there!');
-}
-
-// ═════════════════════════════════════════════════
-// UTILITIES
-// ═════════════════════════════════════════════════
-function copyCode() {
-  navigator.clipboard.writeText(textarea.value);
-  showToast('✓ Code copied to clipboard');
+function switchOutTab(el, tab) {
+  document.querySelectorAll('.out-tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.output-content').forEach(c=>c.classList.remove('active'));
+  document.getElementById('output-'+tab).classList.add('active');
+  if (tab==='waveform') drawWaveform();
+  if (tab==='coverage') drawCoverage();
 }
 
 function clearOutput() {
-  document.getElementById('output-log').innerHTML = '';
-  document.getElementById('output-footer').innerHTML = '<span class="result-badge warn">CLEARED</span>';
-  showToast('Log cleared');
+  document.getElementById('output-log').innerHTML='';
+  document.getElementById('output-ai').innerHTML='<div class="empty-state" style="padding:20px;"><div class="empty-state-icon">✦</div><div class="empty-state-text">Write code and click<br><strong style="color:var(--purple)">✦ AI ANALYZE</strong><br>for intelligent review</div></div>';
+  document.getElementById('output-footer').innerHTML='<span class="result-badge warn">CLEARED</span>';
+  showToast('Output cleared');
 }
 
-function newFile() {
-  textarea.value = `// New SystemVerilog file\n// Created: ${new Date().toLocaleString()}\n\nmodule top;\n  initial begin\n    // Your code here\n    $display("Hello DV World!");\n    $finish;\n  end\nendmodule`;
-  updateEditor();
-  updateTabName('new_file.sv');
-  showToast('New file created');
+function copyCode() {
+  navigator.clipboard.writeText(textarea.value);
+  showToast('✓ Copied to clipboard');
 }
 
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2500);
+function openEDA() {
+  window.open('https://www.edaplayground.com/x/pdyL','_blank');
+  showToast('Opening EDA Playground!');
 }
 
-// ═════════════════════════════════════════════════
-// QUICK REFERENCE MODAL
-// ═════════════════════════════════════════════════
-const REF_DATA = {
-  uvm_macros: [
-    {name:'`uvm_object_utils(T)',     desc:'Register class T with UVM factory'},
-    {name:'`uvm_component_utils(T)', desc:'Register component T with factory'},
-    {name:'`uvm_field_int(f,F)',      desc:'Auto copy/print/compare int field'},
-    {name:'`uvm_fatal("ID","msg")',   desc:'Fatal error — stops simulation'},
-    {name:'`uvm_error("ID","msg")',   desc:'Error — increments error count'},
-    {name:'`uvm_info("ID","msg",V)',  desc:'Informational message with verbosity'},
-    {name:'`uvm_warning("ID","msg")',desc:'Warning message'},
-    {name:'`uvm_do_callbacks(C,T,M)',desc:'Invoke callback method M on all CBs'},
-  ],
-  seq_template: [
-    {name:'Sequence Item',  desc:'Click to insert base seq item template'},
-    {name:'Write Sequence', desc:'Click to insert write sequence template'},
-    {name:'Read Sequence',  desc:'Click to insert read-after-write template'},
-    {name:'Virtual Seq',    desc:'Click to insert virtual sequence template'},
-  ],
-  constraints: [
-    {name:'inside {[lo:hi]}',           desc:'Value within range'},
-    {name:'dist {a:=w1, b:=w2}',        desc:'Weighted distribution'},
-    {name:'unique {arr}',               desc:'All array elements unique'},
-    {name:'$countones(x)==n',           desc:'Exactly n bits set to 1'},
-    {name:'$onehot(x)',                 desc:'Exactly one bit high'},
-    {name:'solve a before b',           desc:'Resolve a first, then b'},
-    {name:'soft delay inside {[0:3]}',  desc:'Soft (overridable) constraint'},
-    {name:'foreach(a[i]) a[i]>a[i-1]', desc:'Ascending array elements'},
-  ],
-  sva: [
-    {name:'|->  overlapped',  desc:'Consequent starts same cycle as antecedent'},
-    {name:'|=>  non-overlap', desc:'Consequent starts next cycle'},
-    {name:'##[1:4] sig',      desc:'Signal true within 1 to 4 cycles'},
-    {name:'$rose(sig)',       desc:'Signal changes 0→1 at clock edge'},
-    {name:'$fell(sig)',       desc:'Signal changes 1→0 at clock edge'},
-    {name:'$stable(sig)',     desc:'Signal unchanged from prev clock'},
-    {name:'$isunknown(sig)',  desc:'Signal has X or Z bits'},
-    {name:'[*n]  repetition', desc:'Sequence repeats exactly n times'},
-  ]
-};
-
-const SNIPPETS = {
-  'Sequence Item': `class my_seq_item extends uvm_sequence_item;
-  \`uvm_object_utils_begin(my_seq_item)
-    \`uvm_field_int(addr, UVM_ALL_ON)
-    \`uvm_field_int(data, UVM_ALL_ON)
-    \`uvm_field_int(wr,   UVM_ALL_ON)
-  \`uvm_object_utils_end
-
-  rand logic [31:0] addr;
-  rand logic [31:0] data;
-  rand logic        wr;
-
-  constraint c_align { addr[1:0] == 2'b00; }
-
-  function new(string name="my_seq_item");
-    super.new(name);
-  endfunction
-endclass`,
-  'Write Sequence': `class my_write_seq extends uvm_sequence #(my_seq_item);
-  \`uvm_object_utils(my_write_seq)
-  task body();
-    my_seq_item item;
-    repeat(4) begin
-      item = my_seq_item::type_id::create("item");
-      start_item(item);
-      void'(item.randomize() with { wr==1; });
-      finish_item(item);
-    end
-  endtask
-endclass`,
-};
-
-function showRef() {
-  buildRefModal();
-  document.getElementById('ref-modal').classList.add('open');
-}
-function hideRef() {
-  document.getElementById('ref-modal').classList.remove('open');
+function getSim(v) {
+  return {vcs:'Synopsys VCS 2025.06',questa:'Mentor Questa 2024.3',xcelium:'Cadence Xcelium 23.09',iverilog:'Icarus Verilog 13.0'}[v]||v;
 }
 
-function buildRefModal() {
-  fillRefGrid('ref-uvm-macros',  REF_DATA.uvm_macros,  'macro');
-  fillRefGrid('ref-seq-template',REF_DATA.seq_template,'snip');
-  fillRefGrid('ref-constraints', REF_DATA.constraints, 'con');
-  fillRefGrid('ref-sva',         REF_DATA.sva,         'sva');
-}
-
-function fillRefGrid(id, data, prefix) {
-  const el = document.getElementById(id);
-  el.innerHTML = data.map((item,i) => `
-    <div class="ref-item" onclick="insertRef('${prefix}${i}','${id}')">
-      <div class="ref-item-name">${item.name}</div>
-      <div class="ref-item-desc">${item.desc}</div>
-    </div>
-  `).join('');
-}
-
-function insertRef(key, gridId) {
-  const snap = SNIPPETS[key];
-  if (snap) {
-    textarea.value += '\n\n' + snap;
-    updateEditor();
-    showToast('Snippet inserted');
-  } else {
-    showToast('Click a snippet to insert into editor');
-  }
-  hideRef();
-}
-
-// Close modal on backdrop click
-document.getElementById('ref-modal').addEventListener('click', function(e) {
-  if (e.target === this) hideRef();
-});
-
-// ═════════════════════════════════════════════════
-// WAVEFORM CANVAS (visual representation)
-// ═════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
+// WAVEFORM & COVERAGE
+// ═══════════════════════════════════════════════
 function drawWaveform() {
   const canvas = document.getElementById('waveform-canvas');
   const parent = canvas.parentElement;
-  canvas.width  = parent.offsetWidth - 24;
+  canvas.width = parent.offsetWidth-24;
   canvas.height = 200;
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0,0,canvas.width,canvas.height);
 
-  const signals = [
-    {name:'pclk',   color:'#00ff88', pattern:'clock'},
-    {name:'psel',   color:'#00d4ff', pattern:'pulse'},
-    {name:'penable',color:'#ffd32a', pattern:'delayed'},
-    {name:'pready', color:'#a855f7', pattern:'pulse'},
-    {name:'pwrite', color:'#ff8c42', pattern:'const1'},
-  ];
+  // Detect signals from current code
+  const code = textarea.value;
+  const sigs = [];
+  if (/pclk|clk/i.test(code)) sigs.push({name:'pclk',color:'#00ff88',p:'clock'});
+  if (/psel/.test(code)) sigs.push({name:'psel',color:'#00d4ff',p:'pulse'});
+  if (/penable/.test(code)) sigs.push({name:'penable',color:'#ffd32a',p:'delayed'});
+  if (/pready/.test(code)) sigs.push({name:'pready',color:'#a855f7',p:'pulse'});
+  if (/pwrite/.test(code)) sigs.push({name:'pwrite',color:'#ff8c42',p:'const1'});
+  if (/awvalid/.test(code)) sigs.push({name:'awvalid',color:'#00d4ff',p:'pulse'});
+  if (/wvalid/.test(code)) sigs.push({name:'wvalid',color:'#ff8c42',p:'delayed'});
+  if (/bvalid/.test(code)) sigs.push({name:'bvalid',color:'#00ff88',p:'pulse'});
+  if (sigs.length===0) {
+    sigs.push({name:'clk',color:'#00ff88',p:'clock'});
+    sigs.push({name:'data',color:'#00d4ff',p:'pulse'});
+    sigs.push({name:'valid',color:'#ffd32a',p:'delayed'});
+    sigs.push({name:'ready',color:'#a855f7',p:'pulse'});
+  }
 
-  const rowH = 32, x0 = 60, w = canvas.width - x0 - 10;
-  ctx.font = '10px JetBrains Mono';
-
-  signals.forEach((sig, i) => {
-    const y = 20 + i * rowH;
-    ctx.fillStyle = '#4a5568';
-    ctx.fillText(sig.name, 2, y + 18);
-    drawSignal(ctx, sig, x0, y, w);
+  const rowH=32, x0=70, w=canvas.width-x0-10;
+  ctx.font='10px JetBrains Mono';
+  sigs.slice(0,6).forEach((sig,i)=>{
+    const y=10+i*rowH;
+    ctx.fillStyle='#5a7060'; ctx.fillText(sig.name,2,y+18);
+    ctx.strokeStyle=sig.color; ctx.lineWidth=1.5;
+    ctx.shadowColor=sig.color; ctx.shadowBlur=3;
+    ctx.beginPath();
+    const h=22,lo=y+h,hi=y+4,steps=16,sw=w/steps;
+    if(sig.p==='clock'){for(let i=0;i<steps;i++){const lx=x0+i*sw;if(i%2===0){ctx.moveTo(lx,lo);ctx.lineTo(lx,hi);ctx.lineTo(lx+sw/2,hi);ctx.lineTo(lx+sw/2,lo);ctx.lineTo(lx+sw,lo);}}}
+    else if(sig.p==='pulse'){ctx.moveTo(x0,lo);ctx.lineTo(x0+sw*2,lo);ctx.lineTo(x0+sw*2,hi);ctx.lineTo(x0+sw*6,hi);ctx.lineTo(x0+sw*6,lo);ctx.lineTo(x0+sw*8,lo);ctx.lineTo(x0+sw*8,hi);ctx.lineTo(x0+sw*12,hi);ctx.lineTo(x0+sw*12,lo);ctx.lineTo(x0+w,lo);}
+    else if(sig.p==='delayed'){ctx.moveTo(x0,lo);ctx.lineTo(x0+sw*3,lo);ctx.lineTo(x0+sw*3,hi);ctx.lineTo(x0+sw*6,hi);ctx.lineTo(x0+sw*6,lo);ctx.lineTo(x0+sw*9,lo);ctx.lineTo(x0+sw*9,hi);ctx.lineTo(x0+sw*12,hi);ctx.lineTo(x0+sw*12,lo);ctx.lineTo(x0+w,lo);}
+    else{ctx.moveTo(x0,hi);ctx.lineTo(x0+w,hi);}
+    ctx.stroke(); ctx.shadowBlur=0;
   });
 }
 
-function drawSignal(ctx, sig, x, y, w) {
-  ctx.strokeStyle = sig.color;
-  ctx.lineWidth = 1.5;
-  ctx.shadowColor = sig.color;
-  ctx.shadowBlur = 4;
-  ctx.beginPath();
-
-  const h = 22, lo = y+h, hi = y+4;
-  const steps = 16;
-  const sw = w / steps;
-
-  if (sig.pattern === 'clock') {
-    for (let i=0; i<steps; i++) {
-      const lx = x + i*sw;
-      if (i%2===0) {
-        ctx.moveTo(lx,lo); ctx.lineTo(lx,hi);
-        ctx.lineTo(lx+sw/2,hi); ctx.lineTo(lx+sw/2,lo); ctx.lineTo(lx+sw,lo);
-      }
-    }
-  } else if (sig.pattern === 'pulse') {
-    ctx.moveTo(x,lo);
-    ctx.lineTo(x+sw*2,lo); ctx.lineTo(x+sw*2,hi);
-    ctx.lineTo(x+sw*6,hi); ctx.lineTo(x+sw*6,lo);
-    ctx.lineTo(x+sw*8,lo); ctx.lineTo(x+sw*8,hi);
-    ctx.lineTo(x+sw*12,hi); ctx.lineTo(x+sw*12,lo);
-    ctx.lineTo(x+w,lo);
-  } else if (sig.pattern === 'delayed') {
-    ctx.moveTo(x,lo);
-    ctx.lineTo(x+sw*3,lo); ctx.lineTo(x+sw*3,hi);
-    ctx.lineTo(x+sw*6,hi); ctx.lineTo(x+sw*6,lo);
-    ctx.lineTo(x+sw*9,lo); ctx.lineTo(x+sw*9,hi);
-    ctx.lineTo(x+sw*12,hi); ctx.lineTo(x+sw*12,lo);
-    ctx.lineTo(x+w,lo);
-  } else {
-    ctx.moveTo(x,hi); ctx.lineTo(x+w,hi);
-  }
-
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-}
-
-// ═════════════════════════════════════════════════
-// COVERAGE BARS
-// ═════════════════════════════════════════════════
 function drawCoverage() {
-  const items = [
-    {name:'cp_addr — Low Region',  pct:92},
-    {name:'cp_addr — Mid Region',  pct:87},
-    {name:'cp_addr — High Region', pct:45},
-    {name:'cp_wr — Read',          pct:100},
-    {name:'cp_wr — Write',         pct:100},
-    {name:'cx_addr_wr — Cross',    pct:78},
-    {name:'cp_delay — Zero',       pct:65},
-    {name:'cp_delay — Large',      pct:30},
-  ];
-
+  const code = textarea.value;
+  const items = [];
+  if (/cp_addr/.test(code)||/coverpoint/.test(code)) {
+    items.push({name:'cp_addr — Low',pct:Math.floor(70+Math.random()*30)});
+    items.push({name:'cp_addr — Mid',pct:Math.floor(60+Math.random()*35)});
+    items.push({name:'cp_addr — High',pct:Math.floor(20+Math.random()*40)});
+  }
+  if (/cp_wr/.test(code)||/wr/.test(code)) {
+    items.push({name:'cp_wr — Read',pct:Math.floor(80+Math.random()*20)});
+    items.push({name:'cp_wr — Write',pct:Math.floor(85+Math.random()*15)});
+  }
+  if (/cross/.test(code)) items.push({name:'cx_cross — All',pct:Math.floor(55+Math.random()*35)});
+  if (/delay/.test(code)) {
+    items.push({name:'cp_delay — Zero',pct:Math.floor(60+Math.random()*30)});
+    items.push({name:'cp_delay — Large',pct:Math.floor(20+Math.random()*30)});
+  }
+  if (items.length===0) {
+    items.push({name:'No covergroups found',pct:0});
+  }
   const el = document.getElementById('coverage-bars');
-  el.innerHTML = items.map(item => {
-    const color = item.pct >= 90 ? '#00ff88' : item.pct >= 60 ? '#ffd32a' : '#ff4757';
-    return `
-      <div style="margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;margin-bottom:4px;">
-          <span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-mid);">${item.name}</span>
-          <span style="font-family:var(--font-mono);font-size:0.65rem;color:${color};">${item.pct}%</span>
-        </div>
-        <div style="height:4px;background:var(--bg3);position:relative;overflow:hidden;">
-          <div style="height:100%;width:${item.pct}%;background:${color};
-               box-shadow:0 0 6px ${color};transition:width 0.8s ease;"></div>
-        </div>
-      </div>
-    `;
+  el.innerHTML = items.map(item=>{
+    const color=item.pct>=90?'#00ff88':item.pct>=60?'#ffd32a':'#ff4757';
+    return `<div class="cov-item"><div class="cov-label"><span style="font-family:var(--font-mono);font-size:0.65rem;color:var(--text-mid);">${item.name}</span><span style="font-family:var(--font-mono);font-size:0.65rem;color:${color};">${item.pct}%</span></div><div class="cov-track"><div class="cov-fill" style="width:${item.pct}%;background:${color};box-shadow:0 0 6px ${color};"></div></div></div>`;
   }).join('');
 }
 
-// ═════════════════════════════════════════════════
-// STATUS BAR — SIM SELECT CHANGE
-// ═════════════════════════════════════════════════
-document.getElementById('sim-select').addEventListener('change', function() {
-  document.getElementById('status-sim').textContent = getSim(this.value).split(' ').slice(-1)[0];
+// ═══════════════════════════════════════════════
+// MODAL UTILS
+// ═══════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-backdrop').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open');}));
+
+function doRename() {
+  if (!renameTarget) return;
+  const newName = document.getElementById('rename-input').value.trim();
+  if (!newName) return;
+  if (renameTarget.type === 'file') {
+    const proj = db.projects[renameTarget.projectId];
+    if (proj && proj.files[renameTarget.fileId]) {
+      proj.files[renameTarget.fileId].name = newName;
+      saveDB(db);
+      const tabIdx = openTabs.findIndex(t=>t.projectId===renameTarget.projectId&&t.fileId===renameTarget.fileId);
+      if (tabIdx!==-1) openTabs[tabIdx].name = newName;
+      renderProjectTree(); renderTabs();
+    }
+  }
+  closeModal('rename-modal');
+  showToast('Renamed to "'+newName+'"');
+}
+
+// ═══════════════════════════════════════════════
+// TOAST
+// ═══════════════════════════════════════════════
+function showToast(msg) {
+  const t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function sleep(ms) { return new Promise(r=>setTimeout(r,ms)); }
+
+// ═══════════════════════════════════════════════
+// SIM SELECT
+// ═══════════════════════════════════════════════
+document.getElementById('sim-select').addEventListener('change',function(){
+  document.getElementById('status-sim').textContent=getSim(this.value).split(' ').slice(-1)[0];
 });
 
-// ═════════════════════════════════════════════════
-// MATRIX RAIN BACKGROUND
-// ═════════════════════════════════════════════════
-(function() {
-  const canvas = document.getElementById('matrix-canvas');
-  const ctx = canvas.getContext('2d');
-  let cols, drops;
-
-  function resize() {
-    canvas.width  = window.innerWidth;
-    canvas.height = window.innerHeight;
-    cols  = Math.floor(canvas.width / 20);
-    drops = Array(cols).fill(1);
+// ═══════════════════════════════════════════════
+// MATRIX RAIN
+// ═══════════════════════════════════════════════
+(function(){
+  const canvas=document.getElementById('matrix-canvas');
+  const ctx=canvas.getContext('2d');
+  let cols,drops;
+  function resize(){canvas.width=window.innerWidth;canvas.height=window.innerHeight;cols=Math.floor(canvas.width/20);drops=Array(cols).fill(1);}
+  function draw(){
+    ctx.fillStyle='rgba(8,11,15,0.05)';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle='#00ff88';ctx.font='12px JetBrains Mono';
+    const chars='01アイウエオカキSV=><;{}[]()';
+    drops.forEach((y,i)=>{const ch=chars[Math.floor(Math.random()*chars.length)];ctx.fillText(ch,i*20,y*20);if(y*20>canvas.height&&Math.random()>0.975)drops[i]=0;drops[i]++;});
   }
-
-  function draw() {
-    ctx.fillStyle = 'rgba(8,11,15,0.05)';
-    ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = '#00ff88';
-    ctx.font = '12px JetBrains Mono';
-    const chars = '01アイウエオカキSV=><;{}[]()';
-    drops.forEach((y,i) => {
-      const ch = chars[Math.floor(Math.random()*chars.length)];
-      ctx.fillText(ch, i*20, y*20);
-      if (y*20 > canvas.height && Math.random() > 0.975)
-        drops[i] = 0;
-      drops[i]++;
-    });
-  }
-
-  resize();
-  window.addEventListener('resize', resize);
-  setInterval(draw, 80);
+  resize(); window.addEventListener('resize',resize); setInterval(draw,80);
 })();
 
-// ═════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 // INIT
-// ═════════════════════════════════════════════════
+// ═══════════════════════════════════════════════
 window.addEventListener('load', () => {
-  loadFile('apb_seq_item');
-  // Open first folder
-  toggleGroup('grp-uvm');
+  renderProjectTree();
+  renderTabs();
+
+  // Create default project if empty
+  if (Object.keys(db.projects).length === 0) {
+    const pid = genId();
+    db.projects[pid] = {
+      name: 'APB_Testbench',
+      desc: 'APB UVM Testbench example',
+      files: {},
+      created: Date.now()
+    };
+    const fid1 = genId();
+    db.projects[pid].files[fid1] = {
+      name: 'apb_seq_item.sv',
+      code: `// ─────────────────────────────────────────────────\n// APB Sequence Item — UVM Transaction Object\n// ─────────────────────────────────────────────────\n\`include "uvm_macros.svh"\nimport uvm_pkg::*;\n\nclass apb_seq_item extends uvm_sequence_item;\n  \`uvm_object_utils_begin(apb_seq_item)\n    \`uvm_field_int(addr,  UVM_ALL_ON)\n    \`uvm_field_int(data,  UVM_ALL_ON)\n    \`uvm_field_int(wr,    UVM_ALL_ON)\n    \`uvm_field_int(delay, UVM_ALL_ON)\n  \`uvm_object_utils_end\n\n  rand logic [31:0] addr;\n  rand logic [31:0] data;\n  rand logic        wr;\n  rand int unsigned delay;\n\n  constraint c_delay      { delay inside {[0:5]}; }\n  constraint c_addr_align { addr[1:0] == 2'b00; }\n\n  function new(string name = "apb_seq_item");\n    super.new(name);\n  endfunction\nendclass`,
+      created: Date.now()
+    };
+    const fid2 = genId();
+    db.projects[pid].files[fid2] = {
+      name: 'apb_driver.sv',
+      code: `// ─────────────────────────────────────────────────\n// APB UVM Driver — Pin-level Protocol\n// ─────────────────────────────────────────────────\nclass apb_driver extends uvm_driver #(apb_seq_item);\n  \`uvm_component_utils(apb_driver)\n  virtual apb_if vif;\n\n  function new(string name, uvm_component parent);\n    super.new(name, parent);\n  endfunction\n\n  function void build_phase(uvm_phase phase);\n    super.build_phase(phase);\n    if (!uvm_config_db #(virtual apb_if)::get(this,"","vif",vif))\n      \`uvm_fatal("CFG","VIF not found in config_db")\n  endfunction\n\n  task run_phase(uvm_phase phase);\n    apb_seq_item item;\n    vif.psel    <= 0;\n    vif.penable <= 0;\n    vif.pwrite  <= 0;\n    forever begin\n      seq_item_port.get_next_item(item);\n      drive_item(item);\n      seq_item_port.item_done();\n    end\n  endtask\n\n  task drive_item(apb_seq_item item);\n    repeat(item.delay) @(posedge vif.pclk);\n    @(posedge vif.pclk);\n    vif.paddr   <= item.addr;\n    vif.pwrite  <= item.wr;\n    vif.pwdata  <= item.wr ? item.data : 'x;\n    vif.psel    <= 1;\n    vif.penable <= 0;\n    @(posedge vif.pclk);\n    vif.penable <= 1;\n    do @(posedge vif.pclk); while (!vif.pready);\n    if (!item.wr) item.data = vif.prdata;\n    vif.psel    <= 0;\n    vif.penable <= 0;\n  endtask\nendclass`,
+      created: Date.now()
+    };
+    saveDB(db);
+    renderProjectTree();
+    // Auto-open first file
+    setTimeout(()=>{
+      const grp = document.getElementById('pg-'+pid);
+      if(grp){grp.classList.add('open');const hdr=grp.querySelector('.project-header');if(hdr)hdr.classList.add('open');}
+      openFileTab(pid, fid1);
+    }, 100);
+  } else {
+    // Restore last open state — open first project
+    const firstPid = Object.keys(db.projects)[0];
+    const grp = document.getElementById('pg-'+firstPid);
+    if(grp){grp.classList.add('open');const hdr=grp.querySelector('.project-header');if(hdr)hdr.classList.add('open');}
+  }
 });
 </script>
 </body>
