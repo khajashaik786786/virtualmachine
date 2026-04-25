@@ -3,138 +3,741 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Khaja EDA Terminal</title>
+  <title>Khaja EDA Terminal Pro</title>
 
   <!-- ACE Editor -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ext-language_tools.js"></script>
 
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    @keyframes gradientShift {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes neonPulse {
+      0%, 100% { box-shadow: 0 0 5px #0ff, 0 0 10px #0ff, 0 0 20px #0ff; }
+      50% { box-shadow: 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff; }
+    }
+
+    @keyframes slideIn {
+      from { transform: translateY(-20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
     body {
       margin: 0;
-      font-family: monospace;
-      background: #0d1117;
+      font-family: 'Courier New', monospace;
+      background: linear-gradient(135deg, #0a0e27, #1a1a2e, #16213e);
+      background-size: 400% 400%;
+      animation: gradientShift 15s ease infinite;
       color: #c9d1d9;
+      overflow-x: hidden;
     }
+
     header {
-      background: linear-gradient(90deg,#1f6feb,#238636);
-      padding: 12px;
+      background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #06ffa5);
+      background-size: 300% 300%;
+      animation: gradientShift 8s ease infinite;
+      padding: 20px;
       text-align: center;
-      font-size: 22px;
+      font-size: 28px;
       font-weight: bold;
       color: white;
-      letter-spacing: 1px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+      letter-spacing: 3px;
+      box-shadow: 0 4px 20px rgba(0, 255, 255, 0.5);
+      position: relative;
+      overflow: hidden;
     }
-    #editor {
+
+    header::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+      animation: rotate 10s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .header-text {
+      position: relative;
+      z-index: 1;
+      text-shadow: 0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(0,255,255,0.6);
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+      padding: 15px;
+      height: calc(100vh - 200px);
+    }
+
+    .panel {
+      background: rgba(22, 27, 34, 0.95);
+      border-radius: 12px;
+      border: 2px solid #30363d;
+      box-shadow: 0 8px 32px rgba(0, 255, 255, 0.2);
+      overflow: hidden;
+      animation: slideIn 0.5s ease-out;
+      position: relative;
+    }
+
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
       width: 100%;
-      height: 350px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #0ff, transparent);
+      animation: scanline 3s linear infinite;
     }
-    #terminal {
-      height: 260px;
-      background: black;
-      color: #00ff00;
-      padding: 10px;
-      overflow-y: auto;
-      border-top: 1px solid #30363d;
+
+    @keyframes scanline {
+      to { left: 100%; }
     }
-    .controls {
-      padding: 10px;
-      background: #161b22;
-      border-top: 1px solid #30363d;
+
+    .panel-header {
+      background: linear-gradient(135deg, #1f6feb, #8b5cf6);
+      padding: 12px 15px;
+      font-weight: bold;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #0ff;
+      box-shadow: 0 2px 10px rgba(0, 255, 255, 0.3);
+    }
+
+    .panel-header-title {
       display: flex;
       align-items: center;
       gap: 10px;
     }
+
+    .status-indicator {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #06ffa5;
+      animation: neonPulse 2s infinite;
+    }
+
+    #editor {
+      width: 100%;
+      height: calc(100% - 50px);
+      font-size: 14px;
+    }
+
+    #terminal {
+      height: calc(100% - 50px);
+      background: #000;
+      color: #00ff00;
+      padding: 15px;
+      overflow-y: auto;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+    }
+
+    #terminal::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    #terminal::-webkit-scrollbar-track {
+      background: #0a0a0a;
+    }
+
+    #terminal::-webkit-scrollbar-thumb {
+      background: #0ff;
+      border-radius: 4px;
+    }
+
+    .controls {
+      padding: 15px;
+      background: linear-gradient(135deg, #161b22, #1a1a2e);
+      border-top: 2px solid #0ff;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      box-shadow: 0 -4px 20px rgba(0, 255, 255, 0.2);
+    }
+
     button {
-      padding: 8px 16px;
-      background: #238636;
-      border: none;
+      padding: 10px 20px;
+      background: linear-gradient(135deg, #8b5cf6, #6366f1);
+      border: 2px solid #a78bfa;
       color: white;
       cursor: pointer;
-      border-radius: 6px;
+      border-radius: 8px;
+      font-weight: bold;
+      font-family: monospace;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
     }
+
+    button::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 0;
+      height: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.3);
+      transform: translate(-50%, -50%);
+      transition: width 0.6s, height 0.6s;
+    }
+
+    button:hover::before {
+      width: 300px;
+      height: 300px;
+    }
+
     button:hover {
-      background: #2ea043;
+      transform: translateY(-2px);
+      box-shadow: 0 5px 20px rgba(139, 92, 246, 0.6);
+      border-color: #0ff;
     }
-    select {
-      padding: 6px;
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.run {
+      background: linear-gradient(135deg, #06ffa5, #00d4ff);
+      border-color: #06ffa5;
+    }
+
+    button.save {
+      background: linear-gradient(135deg, #ff006e, #ff4d6d);
+      border-color: #ff006e;
+    }
+
+    button.clear {
+      background: linear-gradient(135deg, #495057, #6c757d);
+      border-color: #6c757d;
+    }
+
+    select, input {
+      padding: 8px 12px;
       background: #0d1117;
-      color: white;
-      border: 1px solid #30363d;
+      color: #0ff;
+      border: 2px solid #30363d;
+      border-radius: 8px;
+      font-family: monospace;
+      transition: all 0.3s ease;
+    }
+
+    select:focus, input:focus {
+      outline: none;
+      border-color: #0ff;
+      box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+    }
+
+    select:hover, input:hover {
+      border-color: #8b5cf6;
+    }
+
+    .log-info { color: #00d4ff; }
+    .log-success { color: #06ffa5; font-weight: bold; }
+    .log-error { color: #ff006e; font-weight: bold; }
+    .log-warning { color: #ffa500; }
+    .log-uvm { color: #ffd700; }
+
+    .control-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    label {
+      color: #0ff;
+      font-weight: bold;
+      text-shadow: 0 0 5px rgba(0, 255, 255, 0.5);
+    }
+
+    .file-info {
+      background: rgba(13, 17, 23, 0.8);
+      padding: 8px 12px;
       border-radius: 6px;
+      border: 1px solid #30363d;
+      color: #06ffa5;
+      font-size: 12px;
+    }
+
+    #saveStatus {
+      padding: 8px 15px;
+      border-radius: 6px;
+      font-weight: bold;
+      display: none;
+      animation: slideIn 0.3s ease-out;
+    }
+
+    .toast-success {
+      background: #06ffa5;
+      color: #000;
+    }
+
+    .toast-error {
+      background: #ff006e;
+      color: #fff;
+    }
+
+    @media (max-width: 968px) {
+      .container {
+        grid-template-columns: 1fr;
+        height: auto;
+      }
+      
+      .panel {
+        height: 400px;
+      }
+    }
+
+    .loading {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+      border: 2px solid #0ff;
+      border-radius: 50%;
+      border-top-color: transparent;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
     }
   </style>
 </head>
 <body>
 
 <header>
-  🚀 KHAJA EDA TERMINAL 🚀
+  <div class="header-text">
+    ⚡ KHAJA EDA TERMINAL PRO ⚡
+  </div>
 </header>
 
-<div id="editor"></div>
+<div class="container">
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-header-title">
+        <div class="status-indicator"></div>
+        <span>📝 CODE EDITOR</span>
+      </div>
+      <div class="file-info" id="fileInfo">Untitled.sv</div>
+    </div>
+    <div id="editor"></div>
+  </div>
 
-<div class="controls">
-  <label>Simulator:</label>
-  <select id="simulator">
-    <option value="synopsys">Synopsys VCS</option>
-    <option value="questa">QuestaSim</option>
-    <option value="xcelium">Cadence Xcelium</option>
-  </select>
-
-  <button onclick="compileCode()">Compile</button>
-  <button onclick="runSim()">Run Simulation</button>
-  <button onclick="clearTerminal()">Clear</button>
+  <div class="panel">
+    <div class="panel-header">
+      <div class="panel-header-title">
+        <div class="status-indicator"></div>
+        <span>🖥️ SIMULATION TERMINAL</span>
+      </div>
+      <div class="file-info" id="simStatus">READY</div>
+    </div>
+    <div id="terminal"></div>
+  </div>
 </div>
 
-<div id="terminal"></div>
+<div class="controls">
+  <div class="control-group">
+    <label>🔧 Simulator:</label>
+    <select id="simulator">
+      <option value="vcs">Synopsys VCS</option>
+      <option value="questa">Mentor QuestaSim</option>
+      <option value="xcelium">Cadence Xcelium</option>
+      <option value="verilator">Verilator</option>
+      <option value="icarus">Icarus Verilog</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>📦 Testbench:</label>
+    <select id="testbench">
+      <option value="uvm">UVM</option>
+      <option value="systemverilog">SystemVerilog</option>
+      <option value="verilog">Verilog</option>
+      <option value="vhdl">VHDL</option>
+    </select>
+  </div>
+
+  <div class="control-group">
+    <label>📂 Filename:</label>
+    <input type="text" id="filename" value="testbench.sv" placeholder="filename.sv">
+  </div>
+
+  <button onclick="compileCode()">🔨 Compile</button>
+  <button class="run" onclick="runSim()">▶️ Run Simulation</button>
+  <button class="save" onclick="saveToCloud()">☁️ Save to Cloud</button>
+  <button onclick="loadExample()">📚 Load Example</button>
+  <button class="clear" onclick="clearTerminal()">🗑️ Clear</button>
+
+  <div id="saveStatus"></div>
+</div>
 
 <script>
+  // Initialize ACE Editor
   const editor = ace.edit("editor");
-  editor.setTheme("ace/theme/github_dark");
+  editor.setTheme("ace/theme/monokai");
   editor.session.setMode("ace/mode/verilog");
-  editor.setOptions({ fontSize: "14px", showPrintMargin: false, wrap: true });
+  editor.setOptions({
+    fontSize: "14px",
+    showPrintMargin: false,
+    wrap: true,
+    enableBasicAutocompletion: true,
+    enableLiveAutocompletion: true,
+    enableSnippets: true,
+    tabSize: 2
+  });
 
-  editor.setValue(`// Khaja EDA Terminal - SystemVerilog/UVM Example
-module tb;
+  // Default code
+  editor.setValue(`// Khaja EDA Terminal Pro - Advanced SystemVerilog/UVM Example
+\`timescale 1ns/1ps
+
+module adder_4bit (
+  input  logic [3:0] a,
+  input  logic [3:0] b,
+  input  logic       cin,
+  output logic [3:0] sum,
+  output logic       cout
+);
+  assign {cout, sum} = a + b + cin;
+endmodule
+
+module tb_adder;
+  logic [3:0] a, b, sum;
+  logic cin, cout;
+  
+  adder_4bit dut (.*);
+  
   initial begin
-    $display("Hello from Khaja EDA Terminal");
+    $display("=== Starting 4-bit Adder Testbench ===");
+    
+    // Test case 1
+    a = 4'b0011; b = 4'b0101; cin = 0;
+    #10;
+    $display("[TEST 1] %0d + %0d + %0d = %0d (cout=%0b)", a, b, cin, sum, cout);
+    
+    // Test case 2
+    a = 4'b1111; b = 4'b0001; cin = 0;
+    #10;
+    $display("[TEST 2] %0d + %0d + %0d = %0d (cout=%0b)", a, b, cin, sum, cout);
+    
+    // Test case 3
+    a = 4'b1111; b = 4'b1111; cin = 1;
+    #10;
+    $display("[TEST 3] %0d + %0d + %0d = %0d (cout=%0b)", a, b, cin, sum, cout);
+    
+    $display("=== Testbench Complete ===");
+    $finish;
   end
 endmodule`, -1);
 
-  function log(msg) {
+  // State management
+  let isCompiled = false;
+  let compiledCode = "";
+  let cloudFiles = JSON.parse(localStorage.getItem('edaFiles')) || {};
+
+  // Update filename display
+  document.getElementById('filename').addEventListener('input', function() {
+    document.getElementById('fileInfo').textContent = this.value;
+  });
+
+  // Terminal logging with colors
+  function log(msg, type = 'info') {
     const terminal = document.getElementById("terminal");
-    terminal.innerHTML += msg + "<br>";
+    const timestamp = new Date().toLocaleTimeString();
+    const className = `log-${type}`;
+    terminal.innerHTML += `<span class="${className}">[${timestamp}] ${msg}</span><br>`;
     terminal.scrollTop = terminal.scrollHeight;
   }
 
   function clearTerminal() {
     document.getElementById("terminal").innerHTML = "";
+    log("Terminal cleared", "info");
   }
 
+  // Realistic compilation simulation
   function compileCode() {
+    clearTerminal();
     const sim = document.getElementById("simulator").value;
-    log(`[INFO] Using Simulator: ${sim.toUpperCase()}`);
-    log("[INFO] Compiling SystemVerilog Code...");
-
+    const tb = document.getElementById("testbench").value;
+    const code = editor.getValue();
+    
+    document.getElementById('simStatus').textContent = "COMPILING...";
+    
+    log(`Starting compilation with ${sim.toUpperCase()}`, "info");
+    log(`Testbench type: ${tb.toUpperCase()}`, "info");
+    log("─".repeat(60), "info");
+    
+    // Simulate compiler checks
     setTimeout(() => {
-      log(`[${sim.toUpperCase()}] Compilation Successful ✔`);
-    }, 1000);
-  }
-
-  function runSim() {
-    const sim = document.getElementById("simulator").value;
-    log(`[INFO] Running Simulation on ${sim.toUpperCase()}...\`);
-
+      log(`Parsing source files...`, "info");
+    }, 300);
+    
     setTimeout(() => {
-      log("----------------------------------------");
-      log("UVM_INFO @ 0: reporter [RNTST] Running test...");
-      log("UVM_INFO @ 10: drv [DRV] Driving transactions...");
-      log("UVM_INFO @ 20: mon [MON] Capturing signals...");
-      log("UVM_INFO @ 30: scb [SCB] Checking results...");
-      log("----------------------------------------");
-      log(`[${sim.toUpperCase()}] UVM TEST PASSED ✅`);
+      log(`Analyzing syntax...`, "info");
+      
+      // Basic syntax check
+      if (!code.includes('module') && !code.includes('program')) {
+        log("ERROR: No module or program block found!", "error");
+        document.getElementById('simStatus').textContent = "COMPILE FAILED";
+        isCompiled = false;
+        return;
+      }
+    }, 700);
+    
+    setTimeout(() => {
+      log(`Building hierarchy...`, "info");
+    }, 1100);
+    
+    setTimeout(() => {
+      log(`Elaborating design...`, "info");
     }, 1500);
+    
+    setTimeout(() => {
+      if (sim === 'vcs') {
+        log("VCS: Compiling with -sverilog -timescale=1ns/1ps", "info");
+      } else if (sim === 'questa') {
+        log("QuestaSim: vlog -sv +acc -timescale 1ns/1ps", "info");
+      } else if (sim === 'xcelium') {
+        log("Xcelium: xmvlog -sv -timescale 1ns/1ps", "info");
+      }
+    }, 1900);
+    
+    setTimeout(() => {
+      log("─".repeat(60), "info");
+      log(`✓ Compilation SUCCESSFUL (${sim.toUpperCase()})`, "success");
+      log(`Generated: simv (executable)`, "success");
+      document.getElementById('simStatus').textContent = "COMPILED";
+      isCompiled = true;
+      compiledCode = code;
+    }, 2500);
   }
+
+  // Realistic simulation
+  function runSim() {
+    if (!isCompiled) {
+      log("ERROR: Please compile the code first!", "error");
+      return;
+    }
+    
+    const sim = document.getElementById("simulator").value;
+    const tb = document.getElementById("testbench").value;
+    
+    clearTerminal();
+    document.getElementById('simStatus').textContent = "SIMULATING...";
+    
+    log(`Launching ${sim.toUpperCase()} simulator...`, "info");
+    log("─".repeat(60), "info");
+    
+    setTimeout(() => {
+      log("Loading simulation snapshot...", "info");
+    }, 400);
+    
+    setTimeout(() => {
+      log("Initializing testbench...", "info");
+    }, 800);
+    
+    setTimeout(() => {
+      if (tb === 'uvm') {
+        log("UVM_INFO @ 0ns: reporter [RNTST] Running test...", "uvm");
+        log("UVM_INFO @ 5ns: uvm_test_top.env.agent.drv [DRIVER] Starting driver", "uvm");
+        log("UVM_INFO @ 10ns: uvm_test_top.env.agent.mon [MONITOR] Monitoring started", "uvm");
+      }
+    }, 1200);
+    
+    setTimeout(() => {
+      // Parse and simulate the actual code
+      const code = compiledCode;
+      
+      if (code.includes('$display')) {
+        const displays = code.match(/\$display\s*\([^)]+\)/g);
+        if (displays) {
+          displays.forEach((disp, idx) => {
+            setTimeout(() => {
+              const content = disp.replace(/\$display\s*\(\s*["']([^"']+)["'].*\)/, '$1');
+              log(content, "info");
+            }, 1600 + idx * 200);
+          });
+        }
+      }
+    }, 1600);
+    
+    setTimeout(() => {
+      if (tb === 'uvm') {
+        log("UVM_INFO @ 50ns: uvm_test_top.env.scoreboard [SCB] Checking transactions...", "uvm");
+        log("UVM_INFO @ 60ns: reporter [TEST] All checks passed", "uvm");
+      }
+    }, 2800);
+    
+    setTimeout(() => {
+      log("─".repeat(60), "info");
+      log("Simulation completed successfully", "success");
+      
+      if (tb === 'uvm') {
+        log("--- UVM Report Summary ---", "uvm");
+        log("** Report counts by severity", "uvm");
+        log("UVM_INFO    :   12", "uvm");
+        log("UVM_WARNING :    0", "uvm");
+        log("UVM_ERROR   :    0", "uvm");
+        log("UVM_FATAL   :    0", "uvm");
+        log(" **UVM TEST PASSED** ", "success");
+      } else {
+        log(" **TEST PASSED ✓** ", "success");
+      }
+      
+      log(`Exit code: 0`, "success");
+      document.getElementById('simStatus').textContent = "PASSED";
+    }, 3400);
+  }
+
+  // Save to cloud (localStorage)
+  function saveToCloud() {
+    const filename = document.getElementById('filename').value;
+    const code = editor.getValue();
+    const sim = document.getElementById('simulator').value;
+    const tb = document.getElementById('testbench').value;
+    
+    const saveData = {
+      code: code,
+      simulator: sim,
+      testbench: tb,
+      timestamp: new Date().toISOString()
+    };
+    
+    cloudFiles[filename] = saveData;
+    localStorage.setItem('edaFiles', JSON.stringify(cloudFiles));
+    
+    const status = document.getElementById('saveStatus');
+    status.className = 'toast-success';
+    status.textContent = `✓ Saved "${filename}" to cloud`;
+    status.style.display = 'inline-block';
+    
+    setTimeout(() => {
+      status.style.display = 'none';
+    }, 3000);
+    
+    log(`File "${filename}" saved to cloud storage`, "success");
+  }
+
+  // Load example code
+  function loadExample() {
+    const examples = {
+      'counter': `// 8-bit Up Counter with Reset
+module counter_8bit (
+  input  logic       clk,
+  input  logic       rst_n,
+  input  logic       en,
+  output logic [7:0] count
+);
+  always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n)
+      count <= 8'h00;
+    else if (en)
+      count <= count + 1;
+  end
+endmodule
+
+module tb_counter;
+  logic clk = 0;
+  logic rst_n, en;
+  logic [7:0] count;
+  
+  counter_8bit dut (.*);
+  
+  always #5 clk = ~clk;
+  
+  initial begin
+    $display("=== Counter Test ===");
+    rst_n = 0; en = 0;
+    #20 rst_n = 1;
+    #10 en = 1;
+    
+    repeat(20) begin
+      #10 $display("Time=%0t Count=%0d", $time, count);
+    end
+    
+    $finish;
+  end
+endmodule`,
+      'fifo': `// Synchronous FIFO
+module sync_fifo #(parameter DEPTH=8, WIDTH=8) (
+  input  logic             clk,
+  input  logic             rst_n,
+  input  logic             wr_en,
+  input  logic             rd_en,
+  input  logic [WIDTH-1:0] data_in,
+  output logic [WIDTH-1:0] data_out,
+  output logic             full,
+  output logic             empty
+);
+  logic [WIDTH-1:0] mem [0:DEPTH-1];
+  logic [$clog2(DEPTH):0] wr_ptr, rd_ptr;
+  
+  assign full = (wr_ptr[$clog2(DEPTH)] != rd_ptr[$clog2(DEPTH)]) &&
+                (wr_ptr[$clog2(DEPTH)-1:0] == rd_ptr[$clog2(DEPTH)-1:0]);
+  assign empty = (wr_ptr == rd_ptr);
+  
+  always_ff @(posedge clk or negedge rst_n) begin
+    if (!rst_n) begin
+      wr_ptr <= 0;
+      rd_ptr <= 0;
+    end else begin
+      if (wr_en && !full) begin
+        mem[wr_ptr[$clog2(DEPTH)-1:0]] <= data_in;
+        wr_ptr <= wr_ptr + 1;
+      end
+      if (rd_en && !empty) begin
+        data_out <= mem[rd_ptr[$clog2(DEPTH)-1:0]];
+        rd_ptr <= rd_ptr + 1;
+      end
+    end
+  end
+endmodule`
+    };
+    
+    const exampleKeys = Object.keys(examples);
+    const randomExample = exampleKeys[Math.floor(Math.random() * exampleKeys.length)];
+    editor.setValue(examples[randomExample], -1);
+    document.getElementById('filename').value = `${randomExample}_example.sv`;
+    document.getElementById('fileInfo').textContent = `${randomExample}_example.sv`;
+    log(`Loaded example: ${randomExample}`, "success");
+  }
+
+  // Auto-save feature
+  let autoSaveTimer;
+  editor.on('change', function() {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => {
+      isCompiled = false; // Reset compilation status on code change
+      document.getElementById('simStatus').textContent = "MODIFIED";
+    }, 500);
+  });
+
+  // Initial message
+  log("Welcome to Khaja EDA Terminal Pro! 🚀", "success");
+  log("Advanced Simulation Environment Ready", "info");
+  log("Type your code and click Compile → Run Simulation", "info");
 </script>
 
 </body>
