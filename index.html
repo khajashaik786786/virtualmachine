@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VLSI EDA Terminal</title>
+
+  <!-- ACE Editor CDN -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.32.6/ace.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: monospace;
+      background: #0d1117;
+      color: #c9d1d9;
+    }
+    header {
+      background: #161b22;
+      padding: 10px;
+      text-align: center;
+      font-size: 18px;
+      border-bottom: 1px solid #30363d;
+    }
+    #editor {
+      width: 100%;
+      height: 350px;
+    }
+    #terminal {
+      height: 250px;
+      background: black;
+      color: #00ff00;
+      padding: 10px;
+      overflow-y: auto;
+      border-top: 1px solid #30363d;
+    }
+    .btns {
+      padding: 10px;
+      background: #161b22;
+      border-top: 1px solid #30363d;
+    }
+    button {
+      padding: 8px 16px;
+      margin-right: 10px;
+      background: #238636;
+      border: none;
+      color: white;
+      cursor: pointer;
+      border-radius: 6px;
+    }
+    button:hover {
+      background: #2ea043;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  VLSI EDA Web Terminal (SystemVerilog + UVM Simulation Mock)
+</header>
+
+<div id="editor"></div>
+
+<div class="btns">
+  <button onclick="compileCode()">Compile</button>
+  <button onclick="runSim()">Run Simulation</button>
+  <button onclick="clearTerminal()">Clear</button>
+</div>
+
+<div id="terminal"></div>
+
+<script>
+  // Initialize ACE Editor
+  const editor = ace.edit("editor");
+  editor.setTheme("ace/theme/github_dark");
+  editor.session.setMode("ace/mode/verilog"); // closest to SystemVerilog
+  editor.setOptions({
+    fontSize: "14px",
+    showPrintMargin: false,
+    wrap: true
+  });
+
+  // Default SV/UVM code
+  editor.setValue(`// SystemVerilog + UVM Sample
+module tb;
+  initial begin
+    $display("Hello VLSI World");
+  end
+endmodule`, -1);
+
+  function log(msg) {
+    const terminal = document.getElementById("terminal");
+    terminal.innerHTML += msg + "<br>";
+    terminal.scrollTop = terminal.scrollHeight;
+  }
+
+  function clearTerminal() {
+    document.getElementById("terminal").innerHTML = "";
+  }
+
+  function compileCode() {
+    const code = editor.getValue();
+
+    log("[INFO] Compiling SystemVerilog Code...");
+
+    setTimeout(() => {
+      if (code.includes("module")) {
+        log("[SUCCESS] Compilation Passed (Mock VCS/Xcelium)");
+      } else {
+        log("[ERROR] Compilation Failed: No module found");
+      }
+    }, 1000);
+  }
+
+  function runSim() {
+    log("[INFO] Running Simulation...");
+
+    setTimeout(() => {
+      log("UVM_INFO @ 0: reporter [RNTST] Running test...");
+      log("UVM_INFO @ 10: drv [DRV] Driving transactions...");
+      log("UVM_INFO @ 20: scb [SCB] Checking results...");
+      log("UVM_PASS: Simulation completed successfully!");
+    }, 1500);
+  }
+</script>
+
+</body>
+</html>
