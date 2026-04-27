@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>EDA Verification Terminal</title>
+    <title>Virtual Machine - Custom VM v1.0</title>
     <style>
         * {
             margin: 0;
@@ -12,122 +12,272 @@
         }
 
         body {
-            font-family: 'Ubuntu Mono', 'Courier New', monospace;
-            background: #300a24;
-            color: #00ff00;
-            height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .vm-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #1e1e1e;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
         }
 
-        .terminal-container {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
+        .vm-header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            padding: 20px 30px;
+            border-bottom: 3px solid #3498db;
         }
 
-        .terminal-header {
-            background: linear-gradient(to bottom, #4e4e4e, #2d2d2d);
-            padding: 8px 12px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid #1a1a1a;
-        }
-
-        .terminal-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .terminal-button {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .close { background: #fc5753; }
-        .minimize { background: #fdbc40; }
-        .maximize { background: #34c749; }
-
-        .terminal-title {
-            flex: 1;
-            text-align: center;
-            color: #ddd;
-            font-size: 13px;
-            font-weight: 500;
-        }
-
-        .terminal-body {
-            flex: 1;
-            background: #300a24;
-            padding: 15px;
-            overflow-y: auto;
-            font-size: 14px;
-            line-height: 1.6;
-        }
-
-        .terminal-output {
+        .vm-title {
+            color: #fff;
+            font-size: 24px;
+            font-weight: bold;
             margin-bottom: 10px;
         }
 
-        .output-line {
-            margin: 2px 0;
+        .vm-specs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
         }
 
-        .prompt {
-            color: #8ae234;
+        .spec-item {
+            background: rgba(255,255,255,0.1);
+            padding: 12px;
+            border-radius: 8px;
+            color: #fff;
+        }
+
+        .spec-label {
+            font-size: 12px;
+            color: #bdc3c7;
+            margin-bottom: 5px;
+        }
+
+        .spec-value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .vm-body {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+            padding: 20px;
+            background: #2c2c2c;
+        }
+
+        .vm-screen {
+            background: #000;
+            border: 2px solid #444;
+            border-radius: 8px;
+            padding: 20px;
+            min-height: 600px;
+            font-family: 'Courier New', monospace;
+            color: #00ff00;
+            font-size: 14px;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .vm-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .control-section {
+            background: #363636;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #444;
+        }
+
+        .control-section h3 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 16px;
+            border-bottom: 2px solid #444;
+            padding-bottom: 8px;
+        }
+
+        .control-buttons {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(52,152,219,0.4);
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-warning {
+            background: #f39c12;
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background: #d68910;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 6px;
+            margin-top: 10px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.running {
+            background: #27ae60;
+        }
+
+        .status-dot.stopped {
+            background: #e74c3c;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .cpu-monitor {
+            margin-top: 10px;
+        }
+
+        .progress-bar {
+            background: #1e1e1e;
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 5px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3498db, #2ecc71);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 11px;
             font-weight: bold;
         }
 
-        .path {
-            color: #729fcf;
+        .memory-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 5px;
+            margin-top: 10px;
         }
 
-        .command {
-            color: #ffffff;
-        }
-
-        .error {
-            color: #ef2929;
-        }
-
-        .success {
-            color: #8ae234;
-        }
-
-        .warning {
-            color: #fcaf3e;
-        }
-
-        .info {
-            color: #729fcf;
-        }
-
-        .comment {
-            color: #888a85;
-        }
-
-        .input-line {
+        .memory-block {
+            height: 30px;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            border-radius: 4px;
             display: flex;
             align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #888;
+            transition: all 0.3s;
         }
 
-        #terminal-input {
+        .memory-block.used {
+            background: linear-gradient(135deg, #3498db, #2ecc71);
+            color: white;
+            border-color: #2ecc71;
+        }
+
+        .command-input {
+            position: sticky;
+            bottom: 0;
+            background: #000;
+            padding: 10px;
+            border-top: 2px solid #444;
+            display: flex;
+            gap: 10px;
+        }
+
+        .command-input input {
             flex: 1;
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #ffffff;
-            font-family: inherit;
-            font-size: inherit;
-            margin-left: 5px;
+            background: #1e1e1e;
+            border: 1px solid #444;
+            color: #00ff00;
+            padding: 10px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
         }
 
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 16px;
-            background: #00ff00;
+        .command-input input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .boot-screen {
+            animation: fadeIn 1s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .blink {
             animation: blink 1s infinite;
         }
 
@@ -136,634 +286,625 @@
             51%, 100% { opacity: 0; }
         }
 
-        .help-section {
-            margin: 10px 0;
-            border-left: 3px solid #729fcf;
-            padding-left: 10px;
+        .storage-bar {
+            margin-top: 10px;
         }
 
-        .tool-output {
+        .storage-info {
+            display: flex;
+            justify-content: space-between;
+            color: #bdc3c7;
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .register-display {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 5px;
+            margin-top: 10px;
             font-family: 'Courier New', monospace;
+            font-size: 11px;
+        }
+
+        .register-item {
+            background: #1e1e1e;
+            padding: 5px;
+            border-radius: 4px;
+            color: #3498db;
+        }
+
+        .process-list {
+            margin-top: 10px;
+            max-height: 150px;
+            overflow-y: auto;
+        }
+
+        .process-item {
+            background: #1e1e1e;
+            padding: 8px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 12px;
         }
 
-        ::-webkit-scrollbar {
-            width: 10px;
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        ::-webkit-scrollbar-track {
-            background: #1a0a14;
+        .tab-btn {
+            padding: 8px 16px;
+            background: #2c2c2c;
+            border: 1px solid #444;
+            color: #bdc3c7;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s;
         }
 
-        ::-webkit-scrollbar-thumb {
-            background: #555;
-            border-radius: 5px;
+        .tab-btn.active {
+            background: #3498db;
+            color: white;
+            border-color: #3498db;
         }
 
-        ::-webkit-scrollbar-thumb:hover {
-            background: #777;
+        .tab-content {
+            display: none;
         }
 
-        .banner {
-            color: #ad7fa8;
-            font-weight: bold;
-            text-align: center;
-            margin: 10px 0;
-        }
-
-        .file-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 5px;
-            margin: 5px 0;
-        }
-
-        .file-item {
-            color: #ffffff;
-        }
-
-        .dir-item {
-            color: #729fcf;
-            font-weight: bold;
-        }
-
-        .exec-item {
-            color: #8ae234;
-        }
-
-        table {
-            border-collapse: collapse;
-            margin: 10px 0;
-            width: 100%;
-        }
-
-        table td, table th {
-            padding: 5px 10px;
-            text-align: left;
-        }
-
-        table th {
-            color: #fcaf3e;
-            border-bottom: 1px solid #555;
+        .tab-content.active {
+            display: block;
         }
     </style>
 </head>
 <body>
-    <div class="terminal-container">
-        <div class="terminal-header">
-            <div class="terminal-buttons">
-                <div class="terminal-button close"></div>
-                <div class="terminal-button minimize"></div>
-                <div class="terminal-button maximize"></div>
+    <div class="vm-container">
+        <div class="vm-header">
+            <div class="vm-title">🖥️ Custom Virtual Machine v1.0</div>
+            <div class="vm-specs">
+                <div class="spec-item">
+                    <div class="spec-label">CPU</div>
+                    <div class="spec-value" id="cpu-model">CustomCPU x64</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">CPU Frequency</div>
+                    <div class="spec-value" id="cpu-freq">3.6 GHz</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">RAM</div>
+                    <div class="spec-value">16 GB DDR4</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Storage</div>
+                    <div class="spec-value">512 GB SSD</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Architecture</div>
+                    <div class="spec-value">64-bit</div>
+                </div>
+                <div class="spec-item">
+                    <div class="spec-label">Cores</div>
+                    <div class="spec-value">4 Cores</div>
+                </div>
             </div>
-            <div class="terminal-title">verification@eda-workstation: ~/verification_project</div>
         </div>
-        
-        <div class="terminal-body" id="terminal-output">
-            <!-- Output will be inserted here -->
-        </div>
-        
-        <div class="input-line" style="padding: 0 15px 15px 15px;">
-            <span class="prompt">verification@eda-workstation</span>:<span class="path">~/verification_project</span>$ 
-            <input type="text" id="terminal-input" autofocus autocomplete="off" spellcheck="false">
+
+        <div class="vm-body">
+            <div>
+                <div class="vm-screen" id="vm-screen">
+                    <!-- VM output will appear here -->
+                </div>
+                <div class="command-input">
+                    <input type="text" id="command-input" placeholder="Enter command..." disabled>
+                    <button class="btn btn-primary" id="execute-btn" onclick="executeCommand()" disabled>Execute</button>
+                </div>
+            </div>
+
+            <div class="vm-controls">
+                <div class="control-section">
+                    <h3>Power Management</h3>
+                    <div class="control-buttons">
+                        <button class="btn btn-success" onclick="bootVM()">🚀 Boot VM</button>
+                        <button class="btn btn-danger" onclick="shutdownVM()">⏻ Shutdown</button>
+                        <button class="btn btn-warning" onclick="restartVM()">🔄 Restart</button>
+                        <button class="btn btn-primary" onclick="pauseVM()">⏸ Pause</button>
+                    </div>
+                    <div class="status-indicator">
+                        <div class="status-dot stopped" id="status-dot"></div>
+                        <span id="vm-status" style="color: #e74c3c;">Powered Off</span>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>CPU Monitor</h3>
+                    <div class="cpu-monitor">
+                        <div style="color: #bdc3c7; font-size: 12px;">Usage: <span id="cpu-usage">0%</span></div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="cpu-progress" style="width: 0%">0%</div>
+                        </div>
+                        <div style="color: #bdc3c7; font-size: 12px; margin-top: 5px;">Frequency: <span id="cpu-current-freq">0.0 GHz</span></div>
+                    </div>
+
+                    <div class="register-display">
+                        <div class="register-item">RAX: <span id="reg-rax">0x0000</span></div>
+                        <div class="register-item">RBX: <span id="reg-rbx">0x0000</span></div>
+                        <div class="register-item">RCX: <span id="reg-rcx">0x0000</span></div>
+                        <div class="register-item">RDX: <span id="reg-rdx">0x0000</span></div>
+                        <div class="register-item">RIP: <span id="reg-rip">0x0000</span></div>
+                        <div class="register-item">RSP: <span id="reg-rsp">0x7FFF</span></div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Memory (RAM)</h3>
+                    <div style="color: #bdc3c7; font-size: 12px;">Used: <span id="ram-used">0 MB</span> / 16384 MB</div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="ram-progress" style="width: 0%">0%</div>
+                    </div>
+                    <div class="memory-grid" id="memory-grid">
+                        <!-- Memory blocks will be generated here -->
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Storage (SSD)</h3>
+                    <div class="storage-bar">
+                        <div class="storage-info">
+                            <span>Used: <span id="storage-used">2.5 GB</span></span>
+                            <span>Free: <span id="storage-free">509.5 GB</span></span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="storage-progress" style="width: 0.5%">0.5%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>Running Processes</h3>
+                    <div class="process-list" id="process-list">
+                        <div style="color: #888; font-size: 12px; text-align: center;">No processes running</div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
     <script>
-        // Terminal state
-        let currentDir = '/home/verification/verification_project';
-        let commandHistory = [];
-        let historyIndex = -1;
-        let fileSystem = {
-            '/home/verification': {
-                type: 'dir',
-                contents: {
-                    'verification_project': {
-                        type: 'dir',
-                        contents: {
-                            'rtl': {
-                                type: 'dir',
-                                contents: {
-                                    'fifo.sv': { type: 'file', content: 'module fifo...' },
-                                    'apb_slave.sv': { type: 'file', content: 'module apb_slave...' },
-                                    'uart.sv': { type: 'file', content: 'module uart...' }
-                                }
-                            },
-                            'tb': {
-                                type: 'dir',
-                                contents: {
-                                    'fifo_if.sv': { type: 'file', content: 'interface fifo_if...' },
-                                    'fifo_test.sv': { type: 'file', content: 'class fifo_test...' },
-                                    'tb_top.sv': { type: 'file', content: 'module tb_top...' }
-                                }
-                            },
-                            'sim': {
-                                type: 'dir',
-                                contents: {
-                                    'Makefile': { type: 'file', content: 'VCS = vcs\nall: compile run' }
-                                }
-                            },
-                            'reports': {
-                                type: 'dir',
-                                contents: {}
-                            },
-                            'scripts': {
-                                type: 'dir',
-                                contents: {
-                                    'run.sh': { type: 'file', content: '#!/bin/bash\nvcs ...' }
-                                }
-                            }
+        // Virtual Machine State
+        let vmState = {
+            powered: false,
+            booted: false,
+            paused: false,
+            cpuUsage: 0,
+            ramUsed: 0,
+            storageUsed: 2500, // MB
+            processes: [],
+            registers: {
+                rax: 0, rbx: 0, rcx: 0, rdx: 0,
+                rip: 0, rsp: 0x7FFF
+            },
+            memory: new Array(16384).fill(0), // 16GB simulated as array
+            filesystem: {
+                '/': {
+                    'boot': {},
+                    'home': {
+                        'user': {
+                            'documents': {},
+                            'downloads': {}
                         }
-                    }
+                    },
+                    'bin': {},
+                    'etc': {},
+                    'var': {}
                 }
-            }
+            },
+            currentDir: '/home/user'
         };
 
-        const terminalOutput = document.getElementById('terminal-output');
-        const terminalInput = document.getElementById('terminal-input');
-
-        // Initialize terminal
-        function initTerminal() {
-            printWelcomeBanner();
-            terminalInput.focus();
+        // Initialize memory grid
+        function initMemoryGrid() {
+            const grid = document.getElementById('memory-grid');
+            for (let i = 0; i < 16; i++) {
+                const block = document.createElement('div');
+                block.className = 'memory-block';
+                block.textContent = (i + 1) + 'GB';
+                block.id = 'mem-block-' + i;
+                grid.appendChild(block);
+            }
         }
 
-        function printWelcomeBanner() {
-            addOutput(`
-<div class="banner">
-╔═══════════════════════════════════════════════════════════════╗
-║         EDA VERIFICATION TERMINAL v2.0                        ║
-║         SystemVerilog/UVM Environment Ready                   ║
-╚═══════════════════════════════════════════════════════════════╝
-</div>
-<div class="success">✓ Synopsys VCS 2024.03 - Ready</div>
-<div class="success">✓ Mentor Questa 2024.1 - Ready</div>
-<div class="success">✓ Cadence Xcelium 23.09 - Ready</div>
-<div class="success">✓ UVM 1.2 Library - Loaded</div>
-<div class="info">
-Type 'help' for available commands
-Type 'tools' to see all EDA tools
-Type 'workflow' to see verification workflow examples
-</div>
-            `);
+        // Print to VM screen
+        function print(text, color = '#00ff00') {
+            const screen = document.getElementById('vm-screen');
+            const line = document.createElement('div');
+            line.style.color = color;
+            line.innerHTML = text;
+            screen.appendChild(line);
+            screen.scrollTop = screen.scrollHeight;
         }
 
-        function addOutput(html) {
-            terminalOutput.innerHTML += html;
-            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+        function clearScreen() {
+            document.getElementById('vm-screen').innerHTML = '';
         }
 
-        function executeCommand(cmd) {
-            const trimmedCmd = cmd.trim();
-            if (!trimmedCmd) return;
+        // Boot sequence
+        async function bootVM() {
+            if (vmState.powered) {
+                print('VM is already running!', '#f39c12');
+                return;
+            }
 
-            // Add to history
-            commandHistory.push(trimmedCmd);
-            historyIndex = commandHistory.length;
+            vmState.powered = true;
+            vmState.booted = false;
+            updateStatus('Booting...', 'running');
+            clearScreen();
 
-            // Display command
-            addOutput(`<div class="output-line"><span class="prompt">verification@eda-workstation</span>:<span class="path">${getCurrentDirShort()}</span>$ <span class="command">${escapeHtml(trimmedCmd)}</span></div>`);
+            // BIOS Screen
+            print('═══════════════════════════════════════════════════════════', '#3498db');
+            print('              CUSTOM BIOS v1.0 - System POST', '#3498db');
+            print('═══════════════════════════════════════════════════════════', '#3498db');
+            print('');
+            await sleep(500);
 
-            // Parse and execute
-            const parts = trimmedCmd.split(/\s+/);
-            const command = parts[0];
+            print('Detecting CPU...', '#bdc3c7');
+            await sleep(300);
+            print('  ✓ CustomCPU x64 @ 3.6 GHz (4 cores) detected', '#27ae60');
+            vmState.cpuUsage = 25;
+            updateCPU();
+            await sleep(300);
+
+            print('Detecting Memory...', '#bdc3c7');
+            await sleep(300);
+            print('  ✓ 16384 MB RAM detected and tested', '#27ae60');
+            vmState.ramUsed = 512;
+            updateRAM();
+            await sleep(300);
+
+            print('Detecting Storage...', '#bdc3c7');
+            await sleep(300);
+            print('  ✓ 512 GB SSD detected', '#27ae60');
+            await sleep(300);
+
+            print('Initializing devices...', '#bdc3c7');
+            await sleep(400);
+            print('  ✓ Keyboard initialized', '#27ae60');
+            print('  ✓ Network adapter initialized', '#27ae60');
+            print('  ✓ Display adapter initialized', '#27ae60');
+            await sleep(500);
+
+            print('');
+            print('POST completed successfully!', '#27ae60');
+            print('');
+            await sleep(500);
+
+            // Bootloader
+            print('═══════════════════════════════════════════════════════════', '#3498db');
+            print('              CustomOS Bootloader v1.0', '#3498db');
+            print('═══════════════════════════════════════════════════════════', '#3498db');
+            print('');
+            await sleep(300);
+
+            print('Loading kernel...', '#f39c12');
+            await sleep(500);
+            print('  ✓ Kernel loaded at 0x100000', '#27ae60');
+            vmState.registers.rip = 0x100000;
+            updateRegisters();
+            await sleep(300);
+
+            print('Initializing system...', '#f39c12');
+            await sleep(400);
+            print('  ✓ Memory manager initialized', '#27ae60');
+            print('  ✓ Process scheduler initialized', '#27ae60');
+            print('  ✓ File system mounted', '#27ae60');
+            print('  ✓ Network stack loaded', '#27ae60');
+            vmState.ramUsed = 1024;
+            updateRAM();
+            await sleep(500);
+
+            // Start system processes
+            addProcess('init', 1, 1);
+            addProcess('kernel', 2, 5);
+            addProcess('systemd', 3, 2);
+            
+            print('');
+            print('═══════════════════════════════════════════════════════════', '#27ae60');
+            print('        Welcome to CustomOS v1.0 - Ready!', '#27ae60');
+            print('═══════════════════════════════════════════════════════════', '#27ae60');
+            print('');
+            print('Type "help" for available commands', '#3498db');
+            print('');
+
+            vmState.booted = true;
+            vmState.cpuUsage = 15;
+            updateCPU();
+            updateStatus('Running', 'running');
+            
+            document.getElementById('command-input').disabled = false;
+            document.getElementById('execute-btn').disabled = false;
+            document.getElementById('command-input').focus();
+
+            showPrompt();
+        }
+
+        function showPrompt() {
+            if (!vmState.booted) return;
+            print(`<span style="color: #3498db;">user@customos</span>:<span style="color: #27ae60;">${vmState.currentDir}</span>$ <span class="blink">_</span>`, '#fff');
+        }
+
+        async function shutdownVM() {
+            if (!vmState.powered) {
+                print('VM is already powered off!', '#e74c3c');
+                return;
+            }
+
+            print('');
+            print('Shutting down...', '#f39c12');
+            await sleep(300);
+            print('Stopping services...', '#bdc3c7');
+            await sleep(300);
+            vmState.processes = [];
+            updateProcessList();
+            print('Unmounting filesystems...', '#bdc3c7');
+            await sleep(300);
+            print('System halted.', '#e74c3c');
+            await sleep(500);
+
+            vmState.powered = false;
+            vmState.booted = false;
+            vmState.cpuUsage = 0;
+            vmState.ramUsed = 0;
+            updateCPU();
+            updateRAM();
+            updateStatus('Powered Off', 'stopped');
+            
+            document.getElementById('command-input').disabled = true;
+            document.getElementById('execute-btn').disabled = true;
+        }
+
+        async function restartVM() {
+            await shutdownVM();
+            await sleep(1000);
+            await bootVM();
+        }
+
+        function pauseVM() {
+            if (!vmState.powered) return;
+            vmState.paused = !vmState.paused;
+            updateStatus(vmState.paused ? 'Paused' : 'Running', 'running');
+            print(vmState.paused ? 'VM Paused' : 'VM Resumed', '#f39c12');
+        }
+
+        // Command execution
+        function executeCommand() {
+            const input = document.getElementById('command-input');
+            const cmd = input.value.trim();
+            
+            if (!cmd) return;
+
+            // Remove the prompt line
+            const screen = document.getElementById('vm-screen');
+            const lastChild = screen.lastChild;
+            if (lastChild) screen.removeChild(lastChild);
+
+            print(`<span style="color: #3498db;">user@customos</span>:<span style="color: #27ae60;">${vmState.currentDir}</span>$ ${cmd}`, '#fff');
+            
+            input.value = '';
+            processCommand(cmd);
+        }
+
+        function processCommand(cmd) {
+            const parts = cmd.split(' ');
+            const command = parts[0].toLowerCase();
             const args = parts.slice(1);
 
-            if (commands[command]) {
-                commands[command](args);
-            } else {
-                addOutput(`<div class="error">Command not found: ${command}. Type 'help' for available commands.</div>`);
-            }
-        }
-
-        // Command handlers
-        const commands = {
-            help: () => {
-                addOutput(`
-<div class="help-section">
-<div class="warning">═══ BASIC COMMANDS ═══</div>
-<div class="info">ls, pwd, cd, mkdir, rm, cat, clear, history</div>
-
-<div class="warning">═══ SYNOPSYS VCS ═══</div>
-<div class="info">vcs          - Compile SystemVerilog/UVM code</div>
-<div class="info">simv         - Run compiled simulation</div>
-<div class="info">dve          - Open waveform viewer</div>
-<div class="info">urg          - Generate coverage reports</div>
-
-<div class="warning">═══ MENTOR QUESTA ═══</div>
-<div class="info">vlog         - Compile Verilog/SystemVerilog</div>
-<div class="info">vsim         - Start simulation</div>
-<div class="info">vcover       - Coverage utilities</div>
-
-<div class="warning">═══ CADENCE XCELIUM ═══</div>
-<div class="info">xrun         - Compile and simulate</div>
-<div class="info">imc          - Coverage analysis</div>
-
-<div class="warning">═══ VERIFICATION ═══</div>
-<div class="info">workflow     - Show verification workflow</div>
-<div class="info">tools        - List all EDA tools</div>
-<div class="info">runtest      - Quick test execution</div>
-<div class="info">coverage     - Generate coverage report</div>
-</div>
-                `);
-            },
-
-            tools: () => {
-                addOutput(`
-<table>
-<tr><th>Tool</th><th>Vendor</th><th>Purpose</th><th>Status</th></tr>
-<tr><td>VCS</td><td>Synopsys</td><td>Simulator</td><td class="success">✓ Ready</td></tr>
-<tr><td>Design Compiler</td><td>Synopsys</td><td>Synthesis</td><td class="success">✓ Ready</td></tr>
-<tr><td>DVE</td><td>Synopsys</td><td>Waveform Viewer</td><td class="success">✓ Ready</td></tr>
-<tr><td>URG</td><td>Synopsys</td><td>Coverage</td><td class="success">✓ Ready</td></tr>
-<tr><td>Questa</td><td>Mentor</td><td>Simulator</td><td class="success">✓ Ready</td></tr>
-<tr><td>ModelSim</td><td>Mentor</td><td>Simulator</td><td class="success">✓ Ready</td></tr>
-<tr><td>Xcelium</td><td>Cadence</td><td>Simulator</td><td class="success">✓ Ready</td></tr>
-<tr><td>Genus</td><td>Cadence</td><td>Synthesis</td><td class="success">✓ Ready</td></tr>
-<tr><td>Verdi</td><td>Synopsys</td><td>Debug</td><td class="success">✓ Ready</td></tr>
-<tr><td>SpyGlass</td><td>Synopsys</td><td>Lint/CDC</td><td class="success">✓ Ready</td></tr>
-</table>
-                `);
-            },
-
-            workflow: () => {
-                addOutput(`
-<div class="help-section">
-<div class="warning">═══ TYPICAL VERIFICATION WORKFLOW ═══</div>
-
-<div class="success">Step 1: Compile RTL and Testbench</div>
-<div class="comment">$ vcs -sverilog -ntb_opts uvm-1.2 -debug_all rtl/*.sv tb/*.sv</div>
-
-<div class="success">Step 2: Run Simulation</div>
-<div class="comment">$ ./simv +UVM_TESTNAME=my_test +UVM_VERBOSITY=UVM_MEDIUM</div>
-
-<div class="success">Step 3: View Waveforms</div>
-<div class="comment">$ dve -vpd waves.vpd &</div>
-
-<div class="success">Step 4: Generate Coverage Report</div>
-<div class="comment">$ urg -dir simv.vdb -format both</div>
-
-<div class="success">Step 5: View Coverage Report</div>
-<div class="comment">$ firefox urgReport/dashboard.html &</div>
-
-<div class="info">Try: runtest - for automated workflow</div>
-</div>
-                `);
-            },
-
-            vcs: (args) => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Synopsys VCS Compiler Version 2024.03-SP1</div>
-<div class="info">Parsing design files...</div>
-<div class="comment">Analyzing file: rtl/fifo.sv</div>
-<div class="comment">Analyzing file: rtl/apb_slave.sv</div>
-<div class="comment">Analyzing file: tb/fifo_if.sv</div>
-<div class="comment">Analyzing file: tb/fifo_test.sv</div>
-<div class="comment">Analyzing file: tb/tb_top.sv</div>
-<div class="info">Loading UVM package...</div>
-<div class="success">✓ UVM-1.2 loaded successfully</div>
-<div class="info">Elaborating design...</div>
-<div class="success">✓ Elaboration completed</div>
-<div class="info">Generating executable 'simv'...</div>
-<div class="success">✓ Compilation successful!</div>
-<div class="warning">CPU time: 12.3 seconds to compile</div>
-<div class="success">Output: ./simv</div>
-</div>`);
-            },
-
-            simv: (args) => {
-                const testName = args.find(a => a.includes('UVM_TESTNAME'))?.split('=')[1] || 'base_test';
-                addOutput(`<div class="tool-output">
-<div class="warning">Synopsys VCS Simulation - simv</div>
-<div class="info">Loading simulation...</div>
-<div class="comment">UVM_INFO @ 0: reporter [RNTST] Running test ${testName}...</div>
-<div class="comment">UVM_INFO @ 0: uvm_test_top [BUILD] Build phase starting</div>
-<div class="comment">UVM_INFO @ 0: uvm_test_top.env [BUILD] Environment built</div>
-<div class="comment">UVM_INFO @ 0: uvm_test_top.env.agent [BUILD] Agent created</div>
-<div class="comment">UVM_INFO @ 100: uvm_test_top.env.agent.driver [DRV] Driving transaction</div>
-<div class="comment">UVM_INFO @ 250: uvm_test_top.env.scoreboard [SCB] Transaction checked - PASS</div>
-<div class="comment">UVM_INFO @ 500: uvm_test_top.env.scoreboard [SCB] Transaction checked - PASS</div>
-<div class="success">--- UVM Report Summary ---</div>
-<div class="success">** Report counts by severity</div>
-<div class="success">UVM_INFO :   125</div>
-<div class="success">UVM_WARNING :   0</div>
-<div class="success">UVM_ERROR :   0</div>
-<div class="success">UVM_FATAL :   0</div>
-<div class="success">** Report counts by id</div>
-<div class="success">[RNTST]     1</div>
-<div class="success">[SCB]      50</div>
-<div class="success">[DRV]      50</div>
-<div class="success">✓✓✓ SIMULATION PASSED ✓✓✓</div>
-<div class="warning">Simulation time: 5000 ns</div>
-<div class="warning">CPU time: 8.2 seconds</div>
-</div>`);
-            },
-
-            dve: () => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Synopsys DVE (Discovery Visualization Environment)</div>
-<div class="info">Opening waveform viewer...</div>
-<div class="comment">Loading VPD file: waves.vpd</div>
-<div class="success">✓ Waveform database loaded</div>
-<div class="success">✓ DVE GUI opened in background</div>
-<div class="info">Signals available: 1,234</div>
-<div class="info">Total simulation time: 5000 ns</div>
-<div class="comment">DVE process ID: 12345</div>
-</div>`);
-            },
-
-            urg: () => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Synopsys URG (Unified Report Generator)</div>
-<div class="info">Processing coverage database...</div>
-<div class="comment">Reading: simv.vdb</div>
-<div class="info">Generating coverage reports...</div>
-<div class="success">✓ Line Coverage: 98.5%</div>
-<div class="success">✓ Branch Coverage: 96.2%</div>
-<div class="success">✓ FSM Coverage: 100.0%</div>
-<div class="success">✓ Toggle Coverage: 94.8%</div>
-<div class="success">✓ Functional Coverage: 95.3%</div>
-<div class="info">Writing HTML report...</div>
-<div class="success">✓ Report generated: urgReport/dashboard.html</div>
-<div class="info">View with: firefox urgReport/dashboard.html &</div>
-</div>`);
-            },
-
-            vlog: (args) => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Mentor Questa - vlog Compiler</div>
-<div class="info">QuestaSim-64 vlog 2024.1 Compiler</div>
-<div class="comment">-- Compiling module fifo</div>
-<div class="comment">-- Compiling module apb_slave</div>
-<div class="comment">-- Compiling interface fifo_if</div>
-<div class="comment">-- Compiling package uvm_pkg</div>
-<div class="success">Top level modules:</div>
-<div class="success">    tb_top</div>
-<div class="success">✓ Compilation successful</div>
-</div>`);
-            },
-
-            vsim: (args) => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Mentor QuestaSim - Starting simulation</div>
-<div class="info"># vsim work.tb_top</div>
-<div class="comment"># Loading work.tb_top</div>
-<div class="comment"># Loading work.fifo</div>
-<div class="comment"># Loading uvm_pkg</div>
-<div class="info"># run -all</div>
-<div class="comment">UVM_INFO @ 0ns: Starting test...</div>
-<div class="success">PASS: All transactions verified</div>
-<div class="success">✓ Simulation completed successfully</div>
-<div class="warning">Time: 5000 ns</div>
-</div>`);
-            },
-
-            xrun: (args) => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Cadence Xcelium - xrun</div>
-<div class="info">xcelium 23.09-s001</div>
-<div class="comment">Compiling SystemVerilog files...</div>
-<div class="comment">    Compiling package uvm_pkg</div>
-<div class="comment">    Compiling module fifo</div>
-<div class="comment">    Compiling module tb_top</div>
-<div class="success">✓ Compile successful</div>
-<div class="info">Elaborating design...</div>
-<div class="success">✓ Elaboration successful</div>
-<div class="info">Running simulation...</div>
-<div class="comment">UVM testbench executing...</div>
-<div class="success">SIMULATION PASSED</div>
-<div class="warning">Simulation complete via $finish(1) at time 5000 NS</div>
-</div>`);
-            },
-
-            runtest: () => {
-                addOutput(`<div class="tool-output">
-<div class="warning">═══ AUTOMATED VERIFICATION WORKFLOW ═══</div>
-<div class="info">[1/5] Compiling design files...</div>
-<div class="success">✓ VCS compilation successful</div>
-<div class="info">[2/5] Running simulation...</div>
-<div class="success">✓ Simulation PASSED (0 errors, 0 warnings)</div>
-<div class="info">[3/5] Generating coverage...</div>
-<div class="success">✓ Coverage: 96.8% (Line: 98.5%, Branch: 96.2%)</div>
-<div class="info">[4/5] Creating waveform database...</div>
-<div class="success">✓ Waveforms saved: waves.vpd</div>
-<div class="info">[5/5] Generating reports...</div>
-<div class="success">✓ All reports generated in reports/</div>
-<div class="warning">
-═══════════════════════════════════════
-Total time: 23.5 seconds
-Status: ALL TESTS PASSED ✓
-═══════════════════════════════════════
-</div>
-</div>`);
-            },
-
-            coverage: () => {
-                addOutput(`<div class="tool-output">
-<div class="warning">═══ COVERAGE REPORT SUMMARY ═══</div>
-<table>
-<tr><th>Metric</th><th>Coverage</th><th>Status</th></tr>
-<tr><td>Line Coverage</td><td>98.5%</td><td class="success">✓ PASS</td></tr>
-<tr><td>Branch Coverage</td><td>96.2%</td><td class="success">✓ PASS</td></tr>
-<tr><td>Toggle Coverage</td><td>94.8%</td><td class="success">✓ PASS</td></tr>
-<tr><td>FSM Coverage</td><td>100.0%</td><td class="success">✓ PASS</td></tr>
-<tr><td>Assertion Coverage</td><td>100.0%</td><td class="success">✓ PASS</td></tr>
-<tr><td>Functional Coverage</td><td>95.3%</td><td class="success">✓ PASS</td></tr>
-</table>
-<div class="success">Overall Coverage: 97.5% - EXCELLENT</div>
-<div class="info">Detailed report: reports/coverage_report.html</div>
-</div>`);
-            },
-
-            ls: (args) => {
-                const path = args[0] || currentDir;
-                const items = getDirectoryContents(path);
-                if (items) {
-                    let output = '<div class="file-list">';
-                    Object.keys(items).forEach(name => {
-                        const item = items[name];
-                        const className = item.type === 'dir' ? 'dir-item' : 
-                                        name.endsWith('.sh') ? 'exec-item' : 'file-item';
-                        output += `<div class="${className}">${name}${item.type === 'dir' ? '/' : ''}</div>`;
-                    });
-                    output += '</div>';
-                    addOutput(output);
-                } else {
-                    addOutput(`<div class="error">ls: cannot access '${path}': No such file or directory</div>`);
-                }
-            },
-
-            pwd: () => {
-                addOutput(`<div class="info">${currentDir}</div>`);
-            },
-
-            cd: (args) => {
-                if (!args[0] || args[0] === '~') {
-                    currentDir = '/home/verification/verification_project';
-                    addOutput(`<div class="info">Changed to home directory</div>`);
-                } else if (args[0] === '..') {
-                    const parts = currentDir.split('/').filter(p => p);
-                    parts.pop();
-                    currentDir = '/' + parts.join('/');
-                    addOutput(`<div class="info">Changed to parent directory</div>`);
-                } else {
-                    const newPath = resolvePath(args[0]);
-                    if (pathExists(newPath)) {
-                        currentDir = newPath;
-                        addOutput(`<div class="info">Changed directory to ${currentDir}</div>`);
-                    } else {
-                        addOutput(`<div class="error">cd: ${args[0]}: No such file or directory</div>`);
+            const commands = {
+                help: () => {
+                    print('Available commands:', '#3498db');
+                    print('  help      - Show this help', '#bdc3c7');
+                    print('  clear     - Clear screen', '#bdc3c7');
+                    print('  ls        - List files', '#bdc3c7');
+                    print('  pwd       - Print working directory', '#bdc3c7');
+                    print('  cd [dir]  - Change directory', '#bdc3c7');
+                    print('  ps        - List processes', '#bdc3c7');
+                    print('  top       - System monitor', '#bdc3c7');
+                    print('  free      - Memory usage', '#bdc3c7');
+                    print('  df        - Disk usage', '#bdc3c7');
+                    print('  uname     - System information', '#bdc3c7');
+                    print('  date      - Current date/time', '#bdc3c7');
+                    print('  calc      - Simple calculator', '#bdc3c7');
+                    print('  stress    - CPU stress test', '#bdc3c7');
+                    print('  memtest   - Memory test', '#bdc3c7');
+                },
+                clear: () => {
+                    clearScreen();
+                },
+                ls: () => {
+                    print('documents/  downloads/', '#3498db');
+                },
+                pwd: () => {
+                    print(vmState.currentDir, '#bdc3c7');
+                },
+                cd: () => {
+                    if (args[0] === '..') {
+                        const parts = vmState.currentDir.split('/').filter(p => p);
+                        parts.pop();
+                        vmState.currentDir = '/' + parts.join('/');
                     }
+                    print(`Changed to ${vmState.currentDir}`, '#27ae60');
+                },
+                ps: () => {
+                    print('PID   NAME        CPU%   MEM', '#3498db');
+                    vmState.processes.forEach(p => {
+                        print(`${p.pid}     ${p.name.padEnd(12)}${p.cpu}%     ${p.mem}MB`, '#bdc3c7');
+                    });
+                },
+                top: () => {
+                    print('System Monitor:', '#3498db');
+                    print(`CPU Usage: ${vmState.cpuUsage}%`, '#bdc3c7');
+                    print(`RAM Used: ${vmState.ramUsed} MB / 16384 MB`, '#bdc3c7');
+                    print(`Processes: ${vmState.processes.length}`, '#bdc3c7');
+                },
+                free: () => {
+                    const used = vmState.ramUsed;
+                    const total = 16384;
+                    const free = total - used;
+                    print('              total        used        free', '#3498db');
+                    print(`Mem:       ${total}        ${used}        ${free}`, '#bdc3c7');
+                },
+                df: () => {
+                    const total = 512000;
+                    const used = vmState.storageUsed;
+                    const free = total - used;
+                    print('Filesystem      Size    Used   Avail  Use%', '#3498db');
+                    print(`/dev/sda1      ${total}MB  ${used}MB  ${free}MB   ${Math.round(used/total*100)}%`, '#bdc3c7');
+                },
+                uname: () => {
+                    print('CustomOS 1.0.0 x86_64 GNU/Linux', '#27ae60');
+                },
+                date: () => {
+                    print(new Date().toString(), '#bdc3c7');
+                },
+                calc: () => {
+                    if (args.length === 0) {
+                        print('Usage: calc <expression>', '#f39c12');
+                        print('Example: calc 2 + 2', '#bdc3c7');
+                    } else {
+                        try {
+                            const expr = args.join(' ');
+                            const result = eval(expr);
+                            print(`${expr} = ${result}`, '#27ae60');
+                        } catch (e) {
+                            print('Error: Invalid expression', '#e74c3c');
+                        }
+                    }
+                },
+                stress: async () => {
+                    print('Starting CPU stress test...', '#f39c12');
+                    for (let i = 0; i < 10; i++) {
+                        vmState.cpuUsage = Math.min(100, 20 + Math.random() * 80);
+                        updateCPU();
+                        await sleep(200);
+                    }
+                    vmState.cpuUsage = 15;
+                    updateCPU();
+                    print('Stress test completed', '#27ae60');
+                },
+                memtest: async () => {
+                    print('Running memory test...', '#f39c12');
+                    for (let i = 0; i < 16; i++) {
+                        vmState.ramUsed = (i + 1) * 1024;
+                        updateRAM();
+                        await sleep(100);
+                    }
+                    vmState.ramUsed = 1024;
+                    updateRAM();
+                    print('Memory test passed', '#27ae60');
                 }
-            },
+            };
 
-            cat: (args) => {
-                if (!args[0]) {
-                    addOutput(`<div class="error">cat: missing file operand</div>`);
-                    return;
-                }
-                const file = getFileObject(resolvePath(args[0]));
-                if (file && file.type === 'file') {
-                    addOutput(`<div class="info">${escapeHtml(file.content)}</div>`);
+            if (commands[command]) {
+                commands[command]();
+            } else {
+                print(`Command not found: ${command}`, '#e74c3c');
+            }
+
+            showPrompt();
+        }
+
+        // UI Updates
+        function updateStatus(text, state) {
+            document.getElementById('vm-status').textContent = text;
+            document.getElementById('vm-status').style.color = state === 'running' ? '#27ae60' : '#e74c3c';
+            document.getElementById('status-dot').className = `status-dot ${state}`;
+        }
+
+        function updateCPU() {
+            const usage = vmState.cpuUsage;
+            document.getElementById('cpu-usage').textContent = usage + '%';
+            document.getElementById('cpu-progress').style.width = usage + '%';
+            document.getElementById('cpu-progress').textContent = usage + '%';
+            const freq = (3.6 * (usage / 100)).toFixed(1);
+            document.getElementById('cpu-current-freq').textContent = freq + ' GHz';
+        }
+
+        function updateRAM() {
+            const used = vmState.ramUsed;
+            const total = 16384;
+            const percent = (used / total * 100).toFixed(1);
+            document.getElementById('ram-used').textContent = used;
+            document.getElementById('ram-progress').style.width = percent + '%';
+            document.getElementById('ram-progress').textContent = percent + '%';
+
+            // Update memory blocks
+            const blocksUsed = Math.ceil(used / 1024);
+            for (let i = 0; i < 16; i++) {
+                const block = document.getElementById('mem-block-' + i);
+                if (i < blocksUsed) {
+                    block.classList.add('used');
                 } else {
-                    addOutput(`<div class="error">cat: ${args[0]}: No such file or directory</div>`);
+                    block.classList.remove('used');
                 }
-            },
+            }
+        }
 
-            mkdir: (args) => {
-                if (!args[0]) {
-                    addOutput(`<div class="error">mkdir: missing operand</div>`);
-                    return;
-                }
-                addOutput(`<div class="success">✓ Directory created: ${args[0]}</div>`);
-            },
+        function updateRegisters() {
+            document.getElementById('reg-rax').textContent = '0x' + vmState.registers.rax.toString(16).toUpperCase().padStart(4, '0');
+            document.getElementById('reg-rbx').textContent = '0x' + vmState.registers.rbx.toString(16).toUpperCase().padStart(4, '0');
+            document.getElementById('reg-rcx').textContent = '0x' + vmState.registers.rcx.toString(16).toUpperCase().padStart(4, '0');
+            document.getElementById('reg-rdx').textContent = '0x' + vmState.registers.rdx.toString(16).toUpperCase().padStart(4, '0');
+            document.getElementById('reg-rip').textContent = '0x' + vmState.registers.rip.toString(16).toUpperCase().padStart(4, '0');
+            document.getElementById('reg-rsp').textContent = '0x' + vmState.registers.rsp.toString(16).toUpperCase().padStart(4, '0');
+        }
 
-            rm: (args) => {
-                if (!args[0]) {
-                    addOutput(`<div class="error">rm: missing operand</div>`);
-                    return;
-                }
-                addOutput(`<div class="success">✓ Removed: ${args[0]}</div>`);
-            },
+        function addProcess(name, pid, cpu) {
+            const mem = Math.floor(Math.random() * 100) + 10;
+            vmState.processes.push({ name, pid, cpu, mem });
+            vmState.ramUsed += mem;
+            updateRAM();
+            updateProcessList();
+        }
 
-            clear: () => {
-                terminalOutput.innerHTML = '';
-            },
-
-            history: () => {
-                commandHistory.forEach((cmd, idx) => {
-                    addOutput(`<div class="info">${idx + 1}  ${escapeHtml(cmd)}</div>`);
+        function updateProcessList() {
+            const list = document.getElementById('process-list');
+            if (vmState.processes.length === 0) {
+                list.innerHTML = '<div style="color: #888; font-size: 12px; text-align: center;">No processes running</div>';
+            } else {
+                list.innerHTML = '';
+                vmState.processes.forEach(p => {
+                    const item = document.createElement('div');
+                    item.className = 'process-item';
+                    item.innerHTML = `
+                        <span style="color: #3498db;">${p.name}</span>
+                        <span style="color: #27ae60;">PID: ${p.pid}</span>
+                        <span style="color: #f39c12;">${p.cpu}%</span>
+                    `;
+                    list.appendChild(item);
                 });
-            },
-
-            make: (args) => {
-                const target = args[0] || 'all';
-                addOutput(`<div class="tool-output">
-<div class="info">make: Entering directory '${currentDir}/sim'</div>
-<div class="comment">vcs -sverilog -ntb_opts uvm-1.2 ../rtl/*.sv ../tb/*.sv</div>
-<div class="success">✓ Compilation successful</div>
-<div class="comment">./simv +UVM_TESTNAME=base_test</div>
-<div class="success">✓ Simulation PASSED</div>
-<div class="info">make: Leaving directory '${currentDir}/sim'</div>
-</div>`);
-            },
-
-            verdi: () => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Synopsys Verdi - Debug Platform</div>
-<div class="info">Opening Verdi GUI...</div>
-<div class="success">✓ Verdi launched successfully</div>
-<div class="info">Loading design hierarchy...</div>
-<div class="comment">Process ID: 54321</div>
-</div>`);
-            },
-
-            dc_shell: () => {
-                addOutput(`<div class="tool-output">
-<div class="warning">Design Compiler Shell (Synopsys)</div>
-<div class="info">dc_shell-xg-t> </div>
-<div class="comment">Design Compiler ready for synthesis commands</div>
-<div class="info">Use 'exit' to return to terminal</div>
-</div>`);
             }
-        };
-
-        // Helper functions
-        function getCurrentDirShort() {
-            return currentDir.replace('/home/verification/', '~/');
         }
 
-        function getDirectoryContents(path) {
-            const obj = getFileObject(path);
-            return obj && obj.type === 'dir' ? obj.contents : null;
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
         }
 
-        function getFileObject(path) {
-            const parts = path.split('/').filter(p => p);
-            let current = fileSystem;
-            
-            for (let part of parts) {
-                if (current[part]) {
-                    current = current[part];
-                } else if (current.contents && current.contents[part]) {
-                    current = current.contents[part];
-                } else {
-                    return null;
-                }
-            }
-            return current;
-        }
-
-        function resolvePath(path) {
-            if (path.startsWith('/')) return path;
-            if (path.startsWith('~')) return path.replace('~', '/home/verification/verification_project');
-            return currentDir + '/' + path;
-        }
-
-        function pathExists(path) {
-            return getFileObject(path) !== null;
-        }
-
-        function escapeHtml(text) {
-            const div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
-        }
-
-        // Input handling
-        terminalInput.addEventListener('keydown', (e) => {
+        // Enter key support
+        document.getElementById('command-input').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
-                const command = terminalInput.value;
-                terminalInput.value = '';
-                executeCommand(command);
-            } else if (e.key === 'ArrowUp') {
-                e.preventDefault();
-                if (historyIndex > 0) {
-                    historyIndex--;
-                    terminalInput.value = commandHistory[historyIndex];
-                }
-            } else if (e.key === 'ArrowDown') {
-                e.preventDefault();
-                if (historyIndex < commandHistory.length - 1) {
-                    historyIndex++;
-                    terminalInput.value = commandHistory[historyIndex];
-                } else {
-                    historyIndex = commandHistory.length;
-                    terminalInput.value = '';
-                }
-            } else if (e.key === 'Tab') {
-                e.preventDefault();
-                // Basic tab completion could be added here
+                executeCommand();
             }
-        });
-
-        // Keep focus on input
-        document.addEventListener('click', () => {
-            terminalInput.focus();
         });
 
         // Initialize
-        initTerminal();
+        initMemoryGrid();
+        updateCPU();
+        updateRAM();
+        updateRegisters();
+        updateProcessList();
     </script>
 </body>
 </html>
