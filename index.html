@@ -3,2216 +3,1677 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VLSI Nexus — Advanced Verification Learning Platform</title>
-<link href="https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,300&family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<title>DV_HUB — Shaik Khaja Mohiddeen | Design Verification Engineer</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono&family=Orbitron:wght@400;500;600;700;800;900&family=Exo+2:wght@100;200;300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
-:root {
-  --void:#04070d;
-  --deep:#060c18;
-  --dark:#081020;
-  --panel:#0a1628;
-  --card:#0d1e35;
-  --lift:#112244;
-  --border:rgba(0,200,255,0.12);
-  --border2:rgba(0,200,255,0.25);
-  --cyan:#00c8ff;
-  --cyan2:#00e5ff;
-  --green:#00ff9d;
-  --green2:#00e87a;
-  --orange:#ff6b00;
+/* ═══════════════════════════════════════════
+   ROOT
+═══════════════════════════════════════════ */
+:root{
+  --void:#050c0a;
+  --deep:#070f0d;
+  --dark:#0a1410;
+  --panel:#0d1a15;
+  --card:#111f18;
+  --lift:#162a20;
+  --green:#00ff88;
+  --green2:#00cc6a;
+  --green3:#00ff9d;
+  --orange:#ff6600;
+  --orange2:#ff8c00;
+  --cyan:#00e5ff;
   --red:#ff2d55;
   --yellow:#ffd500;
-  --purple:#7c3aed;
-  --pink:#ff0099;
-  --teal:#00ffcc;
-  --gold:#ffc200;
-  --text:#c8d8f0;
-  --text2:#7a9ab8;
-  --text3:#3a5a78;
+  --white:#e8f4ee;
+  --text:#a8c4b0;
+  --text2:#5a8068;
+  --text3:#2a4a36;
+  --border:rgba(0,255,136,0.1);
+  --border2:rgba(0,255,136,0.22);
+  --glow:0 0 24px rgba(0,255,136,0.4);
+  --glow-o:0 0 24px rgba(255,102,0,0.4);
   --mono:'Share Tech Mono',monospace;
   --display:'Orbitron',monospace;
-  --body:'Rajdhani',sans-serif;
-  --ui:'Exo 2',sans-serif;
-  --glow-c:0 0 24px rgba(0,200,255,0.5);
-  --glow-g:0 0 24px rgba(0,255,157,0.5);
-  --glow-o:0 0 24px rgba(255,107,0,0.5);
+  --body:'Exo 2',sans-serif;
+  --ui:'Rajdhani',sans-serif;
 }
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;}
-body{font-family:var(--body);background:var(--void);color:var(--text);overflow-x:hidden;min-height:100vh;}
+body{
+  font-family:var(--body);
+  background:var(--void);
+  color:var(--white);
+  overflow-x:hidden;
+  cursor:crosshair;
+}
 
-/* ── BACKGROUND ── */
+/* Grid bg */
 body::before{
-  content:'';position:fixed;inset:0;
-  background:
-    radial-gradient(ellipse 80% 50% at 20% 20%,rgba(0,100,200,0.06) 0%,transparent 60%),
-    radial-gradient(ellipse 60% 40% at 80% 80%,rgba(0,200,100,0.04) 0%,transparent 60%),
-    radial-gradient(ellipse 40% 60% at 50% 50%,rgba(124,58,237,0.03) 0%,transparent 70%);
-  pointer-events:none;z-index:0;
-}
-
-/* Grid overlay */
-body::after{
-  content:'';position:fixed;inset:0;
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:
-    linear-gradient(rgba(0,200,255,0.025) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,200,255,0.025) 1px,transparent 1px);
-  background-size:60px 60px;
-  pointer-events:none;z-index:0;
-  animation:grid-drift 20s linear infinite;
+    linear-gradient(rgba(0,255,136,0.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(0,255,136,0.018) 1px,transparent 1px);
+  background-size:50px 50px;
 }
-@keyframes grid-drift{0%{background-position:0 0;}100%{background-position:60px 60px;}}
+/* Glow orbs */
+body::after{
+  content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 30%,rgba(0,255,136,0.04) 0%,transparent 60%),
+    radial-gradient(ellipse 40% 60% at 85% 70%,rgba(255,102,0,0.03) 0%,transparent 60%);
+}
 
-/* ═══════ SCROLLBAR ═══════ */
-::-webkit-scrollbar{width:5px;height:5px;}
-::-webkit-scrollbar-track{background:var(--deep);}
-::-webkit-scrollbar-thumb{background:rgba(0,200,255,0.3);border-radius:3px;}
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;}
+::-webkit-scrollbar-track{background:var(--void);}
+::-webkit-scrollbar-thumb{background:var(--green2);border-radius:2px;}
 
-/* ═══════ NAVIGATION ═══════ */
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:1000;
-  background:rgba(4,7,13,0.92);
+  height:60px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 40px;
+  background:rgba(5,12,10,0.92);
   border-bottom:1px solid var(--border);
   backdrop-filter:blur(20px);
-  height:64px;display:flex;align-items:center;
-  padding:0 32px;gap:0;
 }
 .nav-logo{
   font-family:var(--display);
-  font-weight:900;font-size:1.1rem;
+  font-size:1.1rem;font-weight:800;
   letter-spacing:3px;
-  background:linear-gradient(135deg,var(--cyan),var(--green));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  text-shadow:none;
-  margin-right:40px;white-space:nowrap;
-  position:relative;
+  color:var(--green);
+  text-shadow:var(--glow);
+  text-decoration:none;
 }
-.nav-logo::after{
-  content:'BETA';
-  position:absolute;top:-6px;right:-30px;
-  font-size:0.45rem;letter-spacing:2px;
-  color:var(--orange);background:rgba(255,107,0,0.15);
-  border:1px solid rgba(255,107,0,0.4);
-  padding:1px 4px;border-radius:3px;
-  font-family:var(--mono);
-}
-.nav-links{display:flex;align-items:center;gap:2px;flex:1;}
+.nav-links{display:flex;gap:4px;align-items:center;}
 .nav-link{
-  padding:8px 16px;
-  font-family:var(--ui);font-size:0.78rem;font-weight:500;
-  letter-spacing:0.5px;color:var(--text2);
-  cursor:pointer;border-radius:6px;
-  transition:all 0.2s;white-space:nowrap;border:none;background:none;
+  font-family:var(--mono);font-size:0.7rem;letter-spacing:2px;
+  color:var(--text2);padding:8px 16px;
+  border:none;background:none;cursor:pointer;
+  transition:color 0.2s;text-decoration:none;
 }
-.nav-link:hover{color:var(--cyan);background:rgba(0,200,255,0.08);}
-.nav-link.active{color:var(--cyan);background:rgba(0,200,255,0.1);}
-.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
-.nav-badge{
-  font-family:var(--mono);font-size:0.62rem;
-  padding:4px 12px;border-radius:20px;
-  display:flex;align-items:center;gap:6px;white-space:nowrap;
+.nav-link:hover,.nav-link.active{color:var(--green);}
+.nav-cta{
+  font-family:var(--mono);font-size:0.68rem;letter-spacing:2px;
+  padding:8px 20px;
+  background:transparent;
+  border:1px solid var(--green);
+  color:var(--green);cursor:pointer;
+  transition:all 0.2s;text-decoration:none;
+  border-radius:2px;
 }
-.nb-green{background:rgba(0,255,157,0.1);color:var(--green);border:1px solid rgba(0,255,157,0.25);}
-.nb-cyan{background:rgba(0,200,255,0.1);color:var(--cyan);border:1px solid rgba(0,200,255,0.25);}
-.pulse-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 2s infinite;}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:0.4;transform:scale(0.7);}}
+.nav-cta:hover{background:var(--green);color:var(--void);box-shadow:var(--glow);}
 
-/* ═══════ HERO ═══════ */
-.hero{
+/* Mobile nav toggle */
+.nav-toggle{display:none;background:none;border:none;color:var(--green);font-size:1.2rem;cursor:pointer;}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+#home{
   min-height:100vh;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  padding:80px 32px 60px;
+  display:grid;
+  grid-template-columns:1fr 420px;
+  gap:60px;
+  align-items:center;
+  padding:100px 80px 60px;
   position:relative;z-index:1;
-  text-align:center;
 }
 .hero-eyebrow{
-  font-family:var(--mono);font-size:0.7rem;
-  letter-spacing:4px;color:var(--cyan);
-  margin-bottom:20px;
-  display:flex;align-items:center;gap:12px;
+  font-family:var(--mono);font-size:0.72rem;
+  letter-spacing:4px;color:var(--green);
+  margin-bottom:20px;display:flex;align-items:center;gap:10px;
 }
-.hero-eyebrow::before,.hero-eyebrow::after{
-  content:'';flex:1;max-width:60px;height:1px;
-  background:linear-gradient(90deg,transparent,var(--cyan));
-}
-.hero-eyebrow::after{background:linear-gradient(90deg,var(--cyan),transparent);}
-
-.hero-title{
+.hero-eyebrow::before{content:'//';color:var(--text3);}
+.hero-name{
   font-family:var(--display);
-  font-size:clamp(2.5rem,7vw,6rem);
-  font-weight:900;
+  font-size:clamp(2.8rem,5.5vw,5.5rem);
+  font-weight:900;line-height:0.92;
   letter-spacing:-1px;
-  line-height:0.95;
-  margin-bottom:8px;
+  margin-bottom:12px;
 }
-.ht-1{
-  background:linear-gradient(135deg,#fff 0%,var(--cyan) 50%,var(--green) 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  display:block;
+.hero-name .line1{color:var(--white);display:block;}
+.hero-name .line2{
+  color:var(--green);display:block;
+  text-shadow:0 0 40px rgba(0,255,136,0.5);
 }
-.ht-2{
-  background:linear-gradient(135deg,var(--green) 0%,var(--cyan2) 60%,#fff 100%);
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  display:block;font-size:0.6em;letter-spacing:8px;margin-top:6px;font-weight:400;
+.hero-title-tag{
+  font-family:var(--mono);font-size:1rem;
+  letter-spacing:4px;color:var(--orange);
+  margin-bottom:28px;
+  text-shadow:var(--glow-o);
 }
+.hero-desc{
+  font-family:var(--ui);font-size:1rem;font-weight:300;
+  color:var(--text);line-height:1.8;
+  max-width:520px;margin-bottom:36px;
+}
+.hero-btns{display:flex;gap:14px;flex-wrap:wrap;}
+.btn-primary{
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:2px;
+  padding:13px 28px;
+  background:var(--green);color:var(--void);
+  border:1px solid var(--green);cursor:pointer;
+  font-weight:700;transition:all 0.2s;
+  border-radius:2px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-primary:hover{background:transparent;color:var(--green);box-shadow:var(--glow);}
+.btn-outline{
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:2px;
+  padding:13px 28px;
+  background:transparent;color:var(--orange);
+  border:1px solid var(--orange);cursor:pointer;
+  transition:all 0.2s;border-radius:2px;text-decoration:none;
+  display:inline-flex;align-items:center;gap:8px;
+}
+.btn-outline:hover{background:var(--orange);color:var(--void);box-shadow:var(--glow-o);}
 
-.hero-sub{
-  font-family:var(--ui);font-size:1.1rem;font-weight:300;
-  color:var(--text2);max-width:600px;margin:24px auto 0;
-  line-height:1.7;letter-spacing:0.3px;
+/* Hero radar/circle graphic */
+.hero-visual{
+  display:flex;align-items:center;justify-content:center;
+  position:relative;
 }
-.hero-sub strong{color:var(--text);font-weight:600;}
+.radar-wrap{position:relative;width:360px;height:360px;}
+.radar-circle{
+  position:absolute;
+  border:1px solid rgba(0,255,136,0.12);
+  border-radius:50%;
+  top:50%;left:50%;
+  transform:translate(-50%,-50%);
+  animation:radar-pulse 3s ease-in-out infinite;
+}
+.radar-circle:nth-child(1){width:360px;height:360px;animation-delay:0s;}
+.radar-circle:nth-child(2){width:260px;height:260px;animation-delay:0.5s;border-color:rgba(0,255,136,0.18);}
+.radar-circle:nth-child(3){width:160px;height:160px;animation-delay:1s;border-color:rgba(0,255,136,0.25);}
+@keyframes radar-pulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
+
+/* Rotating scan line */
+.radar-scan{
+  position:absolute;top:50%;left:50%;
+  width:50%;height:1px;
+  background:linear-gradient(90deg,transparent,var(--green));
+  transform-origin:left center;
+  animation:scan-rotate 4s linear infinite;
+}
+@keyframes scan-rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+.radar-tags{
+  position:absolute;
+  top:50%;right:-20px;transform:translateY(-50%);
+  display:flex;flex-direction:column;gap:20px;
+}
+.radar-tag{
+  font-family:var(--mono);font-size:0.72rem;
+  letter-spacing:3px;color:var(--green);
+  opacity:0.7;animation:tag-blink 2s ease-in-out infinite;
+  text-align:right;
+}
+.radar-tag:nth-child(1){animation-delay:0s;}
+.radar-tag:nth-child(2){animation-delay:0.4s;}
+.radar-tag:nth-child(3){animation-delay:0.8s;}
+.radar-tag:nth-child(4){animation-delay:1.2s;}
+.radar-tag:nth-child(5){animation-delay:1.6s;}
+@keyframes tag-blink{0%,100%{opacity:0.7;}50%{opacity:1;color:var(--green3);}}
 
 .hero-stats{
-  display:flex;gap:40px;margin:48px auto 0;
-  flex-wrap:wrap;justify-content:center;
+  display:flex;gap:32px;margin-top:40px;
+  padding-top:24px;border-top:1px solid var(--border);
 }
-.hstat{text-align:center;}
-.hstat-num{
-  font-family:var(--display);font-size:2rem;font-weight:800;
-  background:linear-gradient(135deg,var(--cyan),var(--green));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+.hstat{text-align:left;}
+.hstat-n{
+  font-family:var(--display);font-size:1.8rem;font-weight:900;
+  color:var(--green);line-height:1;
 }
-.hstat-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;color:var(--text3);margin-top:4px;}
+.hstat-l{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text2);margin-top:4px;}
 
-.hero-cta{
-  display:flex;gap:16px;margin-top:48px;flex-wrap:wrap;justify-content:center;
+/* ═══════════════════════════════════════════
+   SECTIONS COMMON
+═══════════════════════════════════════════ */
+section{position:relative;z-index:1;}
+.container{max-width:1200px;margin:0 auto;padding:0 40px;}
+.section-wrap{padding:90px 40px;}
+.sec-label{
+  font-family:var(--mono);font-size:0.62rem;
+  letter-spacing:4px;color:var(--green);
+  margin-bottom:10px;display:flex;align-items:center;gap:10px;
 }
-.btn-primary{
-  padding:14px 36px;
-  background:linear-gradient(135deg,var(--cyan),#0066ff);
-  border:none;border-radius:8px;
-  font-family:var(--ui);font-size:0.9rem;font-weight:700;
-  letter-spacing:1px;color:#000;cursor:pointer;
-  transition:all 0.25s;
-  box-shadow:0 0 32px rgba(0,200,255,0.3),0 4px 20px rgba(0,0,0,0.5);
+.sec-label::before{content:'//';color:var(--text3);}
+.sec-title{
+  font-family:var(--display);
+  font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;
+  letter-spacing:1px;color:var(--white);
+  margin-bottom:6px;
 }
-.btn-primary:hover{transform:translateY(-2px);box-shadow:0 0 48px rgba(0,200,255,0.5),0 8px 32px rgba(0,0,0,0.5);}
-.btn-secondary{
-  padding:14px 36px;
-  background:transparent;
-  border:1px solid var(--border2);
-  border-radius:8px;
-  font-family:var(--ui);font-size:0.9rem;font-weight:600;
-  letter-spacing:1px;color:var(--cyan);cursor:pointer;
-  transition:all 0.25s;
+.sec-sub{
+  font-family:var(--ui);font-size:0.95rem;font-weight:300;
+  color:var(--text2);margin-bottom:48px;
 }
-.btn-secondary:hover{background:rgba(0,200,255,0.08);border-color:var(--cyan);transform:translateY(-2px);}
+.divider{
+  width:60px;height:2px;
+  background:linear-gradient(90deg,var(--green),transparent);
+  margin:16px 0 48px;
+}
 
-/* Scroll indicator */
-.scroll-hint{
-  position:absolute;bottom:32px;left:50%;transform:translateX(-50%);
-  font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;
-  color:var(--text3);display:flex;flex-direction:column;align-items:center;gap:8px;
+/* ═══════════════════════════════════════════
+   ABOUT
+═══════════════════════════════════════════ */
+#about{background:var(--deep);}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.about-text p{
+  font-family:var(--ui);font-size:0.95rem;font-weight:300;
+  color:var(--text);line-height:1.85;margin-bottom:16px;
 }
-.scroll-arrow{
-  width:20px;height:30px;border:1px solid var(--text3);border-radius:10px;
-  position:relative;
-}
-.scroll-arrow::after{
-  content:'';position:absolute;top:4px;left:50%;transform:translateX(-50%);
-  width:3px;height:6px;background:var(--cyan);border-radius:2px;
-  animation:scroll-anim 2s ease-in-out infinite;
-}
-@keyframes scroll-anim{0%,100%{transform:translateX(-50%) translateY(0);opacity:1;}100%{transform:translateX(-50%) translateY(12px);opacity:0;}}
-
-/* ═══════ SECTION WRAPPER ═══════ */
-section{position:relative;z-index:1;padding:80px 32px;}
-.section-label{
-  font-family:var(--mono);font-size:0.62rem;letter-spacing:4px;
-  color:var(--cyan);margin-bottom:12px;
-  display:flex;align-items:center;gap:10px;
-}
-.section-label::before{content:'//';color:var(--text3);}
-.section-title{
-  font-family:var(--display);font-size:clamp(1.6rem,3vw,2.4rem);
-  font-weight:800;letter-spacing:-0.5px;
-  background:linear-gradient(135deg,#fff,var(--text));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  margin-bottom:8px;
-}
-.section-sub{font-family:var(--ui);font-size:0.95rem;color:var(--text2);font-weight:300;max-width:500px;}
-.section-head{margin-bottom:48px;}
-.container{max-width:1400px;margin:0 auto;}
-
-/* ═══════ PROTOCOL GRID ═══════ */
-.proto-grid{
-  display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(300px,1fr));
-  gap:2px;
-  background:var(--border);
+.about-text strong{color:var(--green);font-weight:600;}
+.about-highlights{display:flex;flex-direction:column;gap:14px;margin-top:28px;}
+.ah-item{
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;
+  background:var(--card);
   border:1px solid var(--border);
-  border-radius:16px;
-  overflow:hidden;
+  border-left:3px solid var(--green);
+  border-radius:2px;
 }
-.proto-card{
-  background:var(--panel);
-  padding:28px 24px;
-  cursor:pointer;
+.ah-icon{font-size:1.1rem;flex-shrink:0;}
+.ah-text{font-family:var(--ui);font-size:0.88rem;color:var(--text);}
+.ah-text strong{color:var(--white);}
+
+.about-details{display:flex;flex-direction:column;gap:16px;}
+.detail-card{
+  background:var(--card);border:1px solid var(--border);
+  padding:22px 24px;border-radius:4px;
+  transition:border-color 0.2s;
+}
+.detail-card:hover{border-color:var(--border2);}
+.dc-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;color:var(--green);margin-bottom:8px;}
+.dc-value{font-family:var(--ui);font-size:0.9rem;color:var(--white);font-weight:600;}
+.dc-sub{font-family:var(--ui);font-size:0.78rem;color:var(--text2);margin-top:4px;}
+
+/* ═══════════════════════════════════════════
+   SKILLS
+═══════════════════════════════════════════ */
+#skills{background:var(--void);}
+.skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
+.skill-card{
+  background:var(--card);border:1px solid var(--border);
+  padding:24px;border-radius:4px;
   transition:all 0.25s;
-  position:relative;
-  overflow:hidden;
+  position:relative;overflow:hidden;
 }
-.proto-card::before{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,var(--card-color,var(--cyan)) 0%,transparent 50%);
-  opacity:0;transition:opacity 0.3s;
-}
-.proto-card:hover{background:var(--lift);transform:scale(1.01);}
-.proto-card:hover::before{opacity:0.04;}
-.proto-card.active-card{background:var(--lift);}
-.proto-card.active-card::after{
+.skill-card::before{
   content:'';position:absolute;top:0;left:0;right:0;height:2px;
-  background:var(--card-color,var(--cyan));
-  box-shadow:0 0 12px var(--card-color,var(--cyan));
+  background:var(--card-accent,var(--green));
+  box-shadow:0 0 10px var(--card-accent,var(--green));
 }
-
-.pc-header{display:flex;align-items:flex-start;gap:14px;margin-bottom:14px;}
-.pc-icon{
-  width:46px;height:46px;border-radius:10px;
+.skill-card:hover{border-color:var(--border2);transform:translateY(-3px);}
+.sk-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+.sk-icon{
+  width:40px;height:40px;border-radius:8px;
   display:flex;align-items:center;justify-content:center;
-  font-size:1.3rem;flex-shrink:0;
-  background:rgba(0,0,0,0.3);
-  border:1px solid rgba(255,255,255,0.06);
+  font-size:1.1rem;
+  background:rgba(0,255,136,0.06);
+  border:1px solid var(--border);
+  flex-shrink:0;
 }
-.pc-title{
-  font-family:var(--display);font-size:0.9rem;font-weight:700;
-  letter-spacing:1px;color:#fff;margin-bottom:4px;
+.sk-name{font-family:var(--display);font-size:0.78rem;font-weight:700;letter-spacing:1px;color:var(--white);}
+.sk-category{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text2);margin-top:2px;}
+.sk-tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;}
+.sk-tag{
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:1px;
+  padding:3px 9px;border-radius:2px;
+  background:rgba(0,255,136,0.06);
+  border:1px solid rgba(0,255,136,0.15);
+  color:var(--text2);
 }
-.pc-type{font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;}
-.pc-desc{font-family:var(--ui);font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:16px;}
-.pc-tags{display:flex;flex-wrap:wrap;gap:6px;}
-.pc-tag{
-  font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;
-  padding:3px 8px;border-radius:4px;
-  background:rgba(255,255,255,0.04);
-  border:1px solid rgba(255,255,255,0.08);
-  color:var(--text3);
+.sk-level{margin-top:14px;}
+.sk-level-label{
+  display:flex;justify-content:space-between;
+  font-family:var(--mono);font-size:0.58rem;color:var(--text3);margin-bottom:5px;
 }
-.pc-arrow{
-  margin-top:auto;font-size:0.7rem;color:var(--text3);
-  transition:all 0.2s;display:flex;align-items:center;gap:6px;
-  font-family:var(--mono);letter-spacing:1px;margin-top:16px;
+.sk-bar{height:2px;background:rgba(255,255,255,0.06);border-radius:1px;overflow:hidden;}
+.sk-fill{
+  height:100%;border-radius:1px;
+  background:linear-gradient(90deg,var(--card-accent,var(--green)),var(--green3));
+  transition:width 1.5s cubic-bezier(.4,0,.2,1);
 }
-.proto-card:hover .pc-arrow{color:var(--card-color,var(--cyan));transform:translateX(4px);}
 
-/* ═══════ PROTOCOL DETAIL MODAL ═══════ */
+/* ═══════════════════════════════════════════
+   PROJECTS
+═══════════════════════════════════════════ */
+#projects{background:var(--deep);}
+.projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px;}
+.proj-card{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:6px;overflow:hidden;
+  transition:all 0.25s;cursor:pointer;
+}
+.proj-card:hover{border-color:var(--border2);transform:translateY(-4px);box-shadow:0 8px 40px rgba(0,0,0,0.5);}
+.proj-top{
+  padding:24px 24px 20px;
+  border-bottom:1px solid var(--border);
+  position:relative;
+}
+.proj-top::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:2px;
+  background:var(--proj-color,var(--green));
+  box-shadow:0 0 8px var(--proj-color,var(--green));
+}
+.proj-id{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text3);margin-bottom:6px;}
+.proj-title{font-family:var(--display);font-size:0.9rem;font-weight:700;letter-spacing:1px;color:var(--white);margin-bottom:8px;}
+.proj-desc{font-family:var(--ui);font-size:0.82rem;color:var(--text);line-height:1.6;}
+.proj-body{padding:18px 24px;}
+.proj-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.proj-tag{
+  font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;
+  padding:3px 9px;
+  border:1px solid rgba(255,255,255,0.08);
+  color:var(--text3);border-radius:2px;
+}
+.proj-link{
+  display:flex;align-items:center;gap:6px;
+  font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;
+  color:var(--green);transition:opacity 0.2s;
+  cursor:pointer;border:none;background:none;padding:0;
+}
+.proj-link:hover{opacity:0.7;}
+
+/* ═══════════════════════════════════════════
+   CODING — Full content panels
+═══════════════════════════════════════════ */
+#coding{background:var(--void);}
+.coding-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:32px;overflow-x:auto;}
+.ctab{
+  font-family:var(--mono);font-size:0.68rem;letter-spacing:2px;
+  padding:12px 24px;color:var(--text2);
+  cursor:pointer;border:none;background:none;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all 0.2s;white-space:nowrap;
+}
+.ctab:hover{color:var(--green);}
+.ctab.active{color:var(--green);border-bottom-color:var(--green);}
+.ctab-content{display:none;}
+.ctab-content.active{display:block;animation:fade-in 0.3s ease;}
+@keyframes fade-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* Code block */
+.code-section{margin-bottom:32px;}
+.code-header{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--panel);
+  padding:10px 16px;
+  border:1px solid var(--border);
+  border-bottom:none;
+  border-radius:4px 4px 0 0;
+}
+.code-filename{font-family:var(--mono);font-size:0.65rem;letter-spacing:1px;color:var(--green);}
+.code-lang{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text3);}
+.code-copy{
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:1px;
+  padding:4px 12px;border:1px solid var(--border2);
+  background:transparent;color:var(--text2);cursor:pointer;
+  border-radius:2px;transition:all 0.2s;
+}
+.code-copy:hover{border-color:var(--green);color:var(--green);}
+pre{
+  background:var(--dark);
+  border:1px solid var(--border);
+  border-radius:0 0 4px 4px;
+  padding:20px;
+  overflow-x:auto;
+  font-family:var(--mono);
+  font-size:0.72rem;
+  line-height:1.75;
+  color:#abb2bf;
+}
+pre::-webkit-scrollbar{height:4px;}
+pre::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
+/* Syntax */
+.kw{color:#c678dd;}.fn{color:#61afef;}.str{color:#98c379;}
+.cm{color:#4a5568;font-style:italic;}.num{color:#d19a66;}
+.tp{color:#e5c07b;}.mc{color:#e06c75;}.dir{color:#ff8c42;}
+.op{color:#56b6c2;}
+
+/* Text content */
+.text-section{
+  background:var(--card);border:1px solid var(--border);
+  border-radius:6px;padding:32px;margin-bottom:24px;
+}
+.ts-title{font-family:var(--display);font-size:1rem;font-weight:700;color:var(--white);margin-bottom:16px;letter-spacing:1px;}
+.ts-body{font-family:var(--ui);font-size:0.88rem;color:var(--text);line-height:1.85;}
+.ts-body h3{font-family:var(--mono);font-size:0.75rem;letter-spacing:2px;color:var(--green);margin:18px 0 8px;}
+.ts-body p{margin-bottom:10px;}
+.ts-body ul{margin-left:20px;margin-bottom:10px;}
+.ts-body li{margin-bottom:6px;}
+.ts-body code{
+  font-family:var(--mono);font-size:0.72rem;
+  background:var(--dark);border:1px solid var(--border);
+  padding:1px 6px;border-radius:3px;color:var(--green);
+}
+.ts-body strong{color:var(--white);}
+.flow-box{
+  background:var(--dark);border:1px solid var(--border);
+  border-left:3px solid var(--green);
+  border-radius:0 4px 4px 0;
+  padding:16px 20px;margin:16px 0;
+  font-family:var(--mono);font-size:0.7rem;
+  line-height:2.2;color:var(--text2);
+}
+.flow-arrow{color:var(--green);}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:16px 0;}
+.info-card{
+  background:var(--dark);border:1px solid var(--border);
+  padding:14px;border-radius:4px;
+}
+.ic-l{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text3);margin-bottom:5px;}
+.ic-v{font-family:var(--display);font-size:0.85rem;font-weight:700;color:var(--green);}
+.ic-s{font-family:var(--ui);font-size:0.72rem;color:var(--text2);margin-top:3px;}
+.badge{
+  display:inline-flex;align-items:center;gap:5px;
+  font-family:var(--mono);font-size:0.6rem;letter-spacing:1px;
+  padding:4px 10px;border-radius:2px;margin:4px;
+}
+.badge-green{background:rgba(0,255,136,0.1);color:var(--green);border:1px solid rgba(0,255,136,0.25);}
+.badge-orange{background:rgba(255,102,0,0.1);color:var(--orange);border:1px solid rgba(255,102,0,0.25);}
+.badge-cyan{background:rgba(0,229,255,0.1);color:var(--cyan);border:1px solid rgba(0,229,255,0.25);}
+.verdict{
+  display:flex;align-items:flex-start;gap:10px;
+  padding:14px 16px;border-radius:4px;margin:8px 0;
+  font-family:var(--ui);font-size:0.85rem;line-height:1.5;
+}
+.verdict.pass{background:rgba(0,255,136,0.06);border:1px solid rgba(0,255,136,0.2);color:var(--text);}
+.verdict.warn{background:rgba(255,213,0,0.06);border:1px solid rgba(255,213,0,0.2);color:var(--text);}
+.verdict.fail{background:rgba(255,45,85,0.06);border:1px solid rgba(255,45,85,0.2);color:var(--text);}
+.verdict-icon{flex-shrink:0;font-size:1rem;}
+
+/* ═══════════════════════════════════════════
+   CONTACT
+═══════════════════════════════════════════ */
+#contact{background:var(--deep);}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
+.contact-info{display:flex;flex-direction:column;gap:16px;}
+.ci-item{
+  display:flex;align-items:center;gap:16px;
+  padding:18px 20px;
+  background:var(--card);border:1px solid var(--border);
+  border-radius:4px;transition:border-color 0.2s;
+  text-decoration:none;
+}
+.ci-item:hover{border-color:var(--border2);}
+.ci-icon{
+  width:38px;height:38px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:1rem;background:rgba(0,255,136,0.06);
+  border:1px solid var(--border);flex-shrink:0;
+}
+.ci-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text3);margin-bottom:3px;}
+.ci-value{font-family:var(--ui);font-size:0.9rem;color:var(--white);}
+.contact-form{display:flex;flex-direction:column;gap:14px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.form-group{display:flex;flex-direction:column;gap:6px;}
+.form-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;color:var(--text2);}
+.form-input,.form-textarea{
+  background:var(--card);
+  border:1px solid var(--border);
+  border-radius:3px;
+  padding:12px 14px;
+  font-family:var(--ui);font-size:0.88rem;
+  color:var(--white);outline:none;
+  transition:border-color 0.2s;
+}
+.form-input:focus,.form-textarea:focus{border-color:var(--green);}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--text3);}
+.form-textarea{resize:vertical;min-height:130px;}
+.form-submit{
+  font-family:var(--mono);font-size:0.72rem;letter-spacing:2px;
+  padding:14px 28px;
+  background:var(--green);color:var(--void);
+  border:1px solid var(--green);cursor:pointer;
+  font-weight:700;transition:all 0.2s;border-radius:2px;
+  align-self:flex-start;
+}
+.form-submit:hover{background:transparent;color:var(--green);box-shadow:var(--glow);}
+
+/* ═══════════════════════════════════════════
+   PROJECT MODAL
+═══════════════════════════════════════════ */
 .modal-overlay{
   position:fixed;inset:0;
-  background:rgba(4,7,13,0.95);
+  background:rgba(5,12,10,0.96);
   backdrop-filter:blur(12px);
-  z-index:2000;
-  display:none;align-items:flex-start;justify-content:center;
-  padding:20px;overflow-y:auto;
+  z-index:2000;display:none;
+  align-items:flex-start;justify-content:center;
+  padding:40px 20px;overflow-y:auto;
 }
 .modal-overlay.open{display:flex;}
 .modal{
   background:var(--dark);
   border:1px solid var(--border2);
-  border-radius:20px;
-  width:100%;max-width:1100px;
+  border-radius:8px;
+  width:100%;max-width:900px;
   margin:auto;
   overflow:hidden;
-  box-shadow:0 0 100px rgba(0,0,0,0.8),0 0 40px rgba(0,200,255,0.08);
-  animation:modal-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+  box-shadow:0 0 80px rgba(0,0,0,0.9),var(--glow);
+  animation:modal-in 0.3s cubic-bezier(.34,1.56,.64,1);
 }
-@keyframes modal-in{from{opacity:0;transform:scale(0.92) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);}}
-.modal-top-bar{
-  padding:0 24px;
-  height:56px;display:flex;align-items:center;
-  border-bottom:1px solid var(--border);
-  background:var(--panel);
-  gap:12px;
+@keyframes modal-in{from{opacity:0;transform:scale(0.93)translateY(20px);}to{opacity:1;transform:scale(1)translateY(0);}}
+.modal-bar{
+  padding:0 20px;height:50px;
+  display:flex;align-items:center;gap:10px;
+  background:var(--panel);border-bottom:1px solid var(--border);
 }
-.modal-dots{display:flex;gap:7px;}
-.modal-dot{width:12px;height:12px;border-radius:50%;}
-.modal-dot:nth-child(1){background:#ff5f56;}
-.modal-dot:nth-child(2){background:#ffbd2e;}
-.modal-dot:nth-child(3){background:#27c93f;}
-.modal-title-bar{
-  flex:1;display:flex;align-items:center;justify-content:center;gap:10px;
-  font-family:var(--display);font-size:0.75rem;letter-spacing:3px;color:var(--text2);
-}
-.modal-close{
-  background:none;border:none;color:var(--text3);cursor:pointer;
-  font-size:1rem;padding:6px;border-radius:6px;transition:all 0.15s;
-  margin-left:auto;
-}
-.modal-close:hover{color:var(--red);background:rgba(255,45,85,0.1);}
+.modal-dots{display:flex;gap:6px;}
+.mdot{width:11px;height:11px;border-radius:50%;}
+.mdot:nth-child(1){background:#ff5f56;}.mdot:nth-child(2){background:#ffbd2e;}.mdot:nth-child(3){background:#27c93f;}
+.modal-filename{flex:1;text-align:center;font-family:var(--mono);font-size:0.68rem;letter-spacing:2px;color:var(--text2);}
+.modal-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:1rem;padding:4px;transition:color 0.15s;}
+.modal-close:hover{color:var(--red);}
+.modal-body{padding:32px;max-height:80vh;overflow-y:auto;}
+.modal-body::-webkit-scrollbar{width:4px;}
+.modal-body::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
 
-.modal-body{display:flex;min-height:600px;}
-.modal-sidebar{
-  width:220px;flex-shrink:0;
-  border-right:1px solid var(--border);
-  padding:20px 0;
-  background:var(--panel);
-}
-.ms-section{margin-bottom:4px;}
-.ms-label{
-  font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;
-  color:var(--text3);padding:10px 16px 4px;
-}
-.ms-item{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 16px;
-  font-family:var(--ui);font-size:0.78rem;color:var(--text2);
-  cursor:pointer;transition:all 0.15s;
-  border-left:2px solid transparent;
-}
-.ms-item:hover{background:rgba(0,200,255,0.05);color:var(--text);}
-.ms-item.active{background:rgba(0,200,255,0.08);color:var(--cyan);border-left-color:var(--cyan);}
-.ms-dot{width:5px;height:5px;border-radius:50%;background:currentColor;flex-shrink:0;}
-
-.modal-content{flex:1;overflow-y:auto;padding:32px;}
-.modal-content::-webkit-scrollbar{width:4px;}
-.modal-content::-webkit-scrollbar-thumb{background:rgba(0,200,255,0.2);}
-
-/* Content sections */
-.content-section{display:none;}
-.content-section.active{display:block;}
-
-.content-h1{
-  font-family:var(--display);font-size:1.4rem;font-weight:800;
-  color:#fff;margin-bottom:8px;letter-spacing:0.5px;
-}
-.content-h2{
-  font-family:var(--ui);font-size:1rem;font-weight:700;
-  color:var(--cyan);margin:24px 0 10px;letter-spacing:0.5px;
-}
-.content-p{font-family:var(--ui);font-size:0.85rem;color:var(--text2);line-height:1.8;margin-bottom:12px;}
-.content-badge{
-  display:inline-flex;align-items:center;gap:6px;
-  font-family:var(--mono);font-size:0.62rem;letter-spacing:1px;
-  padding:4px 12px;border-radius:20px;margin-bottom:20px;
-}
-.cb-cyan{background:rgba(0,200,255,0.1);color:var(--cyan);border:1px solid rgba(0,200,255,0.3);}
-.cb-green{background:rgba(0,255,157,0.1);color:var(--green);border:1px solid rgba(0,255,157,0.3);}
-.cb-orange{background:rgba(255,107,0,0.1);color:var(--orange);border:1px solid rgba(255,107,0,0.3);}
-
-/* Spec table */
-.spec-table{
-  width:100%;border-collapse:collapse;margin:16px 0;
-  font-family:var(--mono);font-size:0.72rem;
-}
-.spec-table th{
-  background:rgba(0,200,255,0.06);color:var(--cyan);
-  padding:8px 12px;text-align:left;font-weight:400;letter-spacing:1px;
-  border:1px solid var(--border);
-}
-.spec-table td{
-  padding:8px 12px;color:var(--text2);
-  border:1px solid rgba(0,200,255,0.06);
-}
-.spec-table tr:hover td{background:rgba(0,200,255,0.03);color:var(--text);}
-
-/* Code block */
-.code-block{
-  background:#040810;
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:16px;
-  font-family:var(--mono);font-size:0.72rem;
-  color:var(--text);line-height:1.7;
-  margin:16px 0;overflow-x:auto;
-  position:relative;
-}
-.code-block::before{
-  content:attr(data-lang);
-  position:absolute;top:8px;right:12px;
-  font-size:0.58rem;letter-spacing:2px;color:var(--text3);
-}
-.kw{color:#c678dd;}.fn{color:#61afef;}.str{color:#98c379;}
-.cm{color:#4a5568;font-style:italic;}.num{color:#d19a66;}
-.tp{color:#e5c07b;}.mc{color:#e06c75;}
-
-/* Timing diagram */
-.timing-diagram{
-  background:#040810;border:1px solid var(--border);
-  border-radius:8px;padding:20px;margin:16px 0;
-  overflow-x:auto;
-}
-.td-title{font-family:var(--mono);font-size:0.62rem;letter-spacing:2px;color:var(--text3);margin-bottom:16px;}
-.td-row{display:flex;align-items:center;gap:12px;margin-bottom:8px;}
-.td-label{font-family:var(--mono);font-size:0.65rem;color:var(--text2);width:80px;flex-shrink:0;text-align:right;}
-.td-wave{flex:1;height:24px;position:relative;}
-.td-wave svg{width:100%;height:100%;}
-
-/* Info cards */
-.info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px;margin:16px 0;}
-.info-card{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:8px;padding:14px;
-}
-.ic-label{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text3);margin-bottom:6px;}
-.ic-value{font-family:var(--display);font-size:1rem;font-weight:700;color:#fff;}
-.ic-sub{font-family:var(--ui);font-size:0.72rem;color:var(--text2);margin-top:4px;}
-
-/* Pin diagram */
-.pin-diagram{
-  background:#040810;border:1px solid var(--border);
-  border-radius:8px;padding:20px;margin:16px 0;
-  display:flex;justify-content:center;
-}
-
-/* Alert/note boxes */
-.note-box{
-  padding:12px 16px;border-radius:8px;
-  margin:12px 0;font-family:var(--ui);font-size:0.82rem;line-height:1.6;
-  display:flex;gap:10px;align-items:flex-start;
-}
-.nb-info{background:rgba(0,200,255,0.06);border-left:3px solid var(--cyan);color:var(--text);}
-.nb-warn{background:rgba(255,213,0,0.06);border-left:3px solid var(--yellow);color:var(--text);}
-.nb-tip{background:rgba(0,255,157,0.06);border-left:3px solid var(--green);color:var(--text);}
-.nb-icon{flex-shrink:0;font-size:0.9rem;}
-
-/* PPT Slide preview */
-.slide-viewer{margin:16px 0;}
-.slide-controls{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
-.slide-btn{
-  background:var(--card);border:1px solid var(--border);
-  border-radius:6px;padding:6px 16px;
-  font-family:var(--mono);font-size:0.68rem;color:var(--text2);cursor:pointer;
-  transition:all 0.15s;
-}
-.slide-btn:hover{background:rgba(0,200,255,0.08);color:var(--cyan);border-color:var(--border2);}
-.slide-btn.active{background:rgba(0,200,255,0.1);color:var(--cyan);border-color:var(--border2);}
-.slide-counter{font-family:var(--mono);font-size:0.65rem;color:var(--text3);}
-.slide-container{
-  background:#040810;border:1px solid var(--border);
-  border-radius:10px;overflow:hidden;
-  aspect-ratio:16/9;position:relative;
-  display:flex;align-items:center;justify-content:center;
-}
-.slide{
-  width:100%;height:100%;padding:32px 40px;
-  display:none;flex-direction:column;
-  font-family:var(--ui);position:absolute;inset:0;
-}
-.slide.active{display:flex;}
-.slide-num{
-  position:absolute;bottom:12px;right:16px;
-  font-family:var(--mono);font-size:0.55rem;color:var(--text3);
-}
-.slide-logo{
-  position:absolute;bottom:12px;left:16px;
-  font-family:var(--display);font-size:0.55rem;letter-spacing:2px;
-  background:linear-gradient(135deg,var(--cyan),var(--green));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-}
-
-/* ═══════ LEARNING PATHS ═══════ */
-.paths-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
-.path-card{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:16px;padding:28px;
-  transition:all 0.25s;cursor:pointer;
-  position:relative;overflow:hidden;
-}
-.path-card::after{
-  content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
-  background:linear-gradient(90deg,var(--path-color,var(--cyan)),transparent);
-}
-.path-card:hover{transform:translateY(-4px);border-color:var(--border2);background:var(--card);}
-.path-level{
-  font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;
-  margin-bottom:16px;display:inline-flex;align-items:center;gap:6px;
-  padding:4px 10px;border-radius:20px;
-}
-.pl-beginner{background:rgba(0,255,157,0.1);color:var(--green);border:1px solid rgba(0,255,157,0.25);}
-.pl-intermediate{background:rgba(0,200,255,0.1);color:var(--cyan);border:1px solid rgba(0,200,255,0.25);}
-.pl-advanced{background:rgba(255,107,0,0.1);color:var(--orange);border:1px solid rgba(255,107,0,0.25);}
-.pl-expert{background:rgba(124,58,237,0.1);color:#a78bfa;border:1px solid rgba(124,58,237,0.25);}
-.path-title{font-family:var(--display);font-size:1rem;font-weight:700;color:#fff;margin-bottom:8px;}
-.path-desc{font-family:var(--ui);font-size:0.82rem;color:var(--text2);line-height:1.6;margin-bottom:20px;}
-.path-modules{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
-.path-module{
-  display:flex;align-items:center;gap:8px;
-  font-family:var(--ui);font-size:0.78rem;color:var(--text2);
-}
-.pm-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
-.path-progress{margin-top:auto;}
-.pp-label{display:flex;justify-content:space-between;font-family:var(--mono);font-size:0.6rem;color:var(--text3);margin-bottom:6px;}
-.pp-track{height:3px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;}
-.pp-fill{height:100%;border-radius:2px;transition:width 1s ease;}
-
-/* ═══════ TOOLS SECTION ═══════ */
-.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
-.tool-card{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:12px;padding:24px;
-  display:flex;flex-direction:column;gap:12px;
-  transition:all 0.2s;cursor:pointer;
-}
-.tool-card:hover{border-color:var(--border2);background:var(--card);transform:translateY(-2px);}
-.tc-icon{
-  width:48px;height:48px;border-radius:12px;
-  display:flex;align-items:center;justify-content:center;
-  font-size:1.5rem;
-}
-.tc-title{font-family:var(--ui);font-size:0.9rem;font-weight:700;color:#fff;}
-.tc-desc{font-family:var(--ui);font-size:0.78rem;color:var(--text2);line-height:1.5;}
-.tc-tag{
-  font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;
-  padding:3px 8px;border-radius:4px;align-self:flex-start;
-}
-.tt-free{background:rgba(0,255,157,0.1);color:var(--green);}
-.tt-premium{background:rgba(255,107,0,0.1);color:var(--orange);}
-.tt-open{background:rgba(0,200,255,0.1);color:var(--cyan);}
-
-/* ═══════ QUIZ / PRACTICE ═══════ */
-.quiz-container{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:16px;padding:36px;max-width:800px;margin:0 auto;
-}
-.quiz-header{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:32px;
-}
-.quiz-prog{
-  display:flex;gap:6px;
-}
-.qp-dot{
-  width:8px;height:8px;border-radius:50%;
-  background:rgba(255,255,255,0.1);transition:all 0.3s;
-}
-.qp-dot.done{background:var(--green);}
-.qp-dot.current{background:var(--cyan);}
-.quiz-score{font-family:var(--display);font-size:0.8rem;color:var(--text2);}
-
-.quiz-q{font-family:var(--ui);font-size:1rem;font-weight:600;color:#fff;margin-bottom:24px;line-height:1.6;}
-.quiz-opts{display:flex;flex-direction:column;gap:10px;}
-.quiz-opt{
-  padding:14px 18px;
-  background:rgba(255,255,255,0.03);
-  border:1px solid var(--border);
-  border-radius:8px;
-  font-family:var(--ui);font-size:0.85rem;color:var(--text2);
-  cursor:pointer;transition:all 0.2s;
-  display:flex;align-items:center;gap:12px;
-}
-.quiz-opt:hover{border-color:var(--border2);background:rgba(0,200,255,0.05);color:var(--text);}
-.quiz-opt.correct{border-color:var(--green);background:rgba(0,255,157,0.08);color:var(--green);}
-.quiz-opt.wrong{border-color:var(--red);background:rgba(255,45,85,0.08);color:var(--red);}
-.opt-letter{
-  width:28px;height:28px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-family:var(--mono);font-size:0.65rem;
-  background:rgba(255,255,255,0.06);flex-shrink:0;
-}
-.quiz-next{
-  margin-top:24px;width:100%;
-  padding:14px;background:linear-gradient(135deg,var(--cyan),#0066ff);
-  border:none;border-radius:8px;
-  font-family:var(--ui);font-size:0.9rem;font-weight:700;color:#000;
-  cursor:pointer;display:none;transition:all 0.2s;
-  box-shadow:0 0 24px rgba(0,200,255,0.3);
-}
-.quiz-next:hover{transform:translateY(-1px);box-shadow:0 0 36px rgba(0,200,255,0.5);}
-.quiz-next.show{display:block;}
-
-/* ═══════ SIMULATOR TEASER ═══════ */
-.sim-teaser{
-  background:var(--panel);border:1px solid var(--border);
-  border-radius:20px;overflow:hidden;
-}
-.st-header{
-  background:var(--dark);border-bottom:1px solid var(--border);
-  padding:14px 20px;display:flex;align-items:center;gap:10px;
-}
-.st-dots{display:flex;gap:6px;}
-.st-dot{width:10px;height:10px;border-radius:50%;}
-.st-btn{
-  padding:6px 18px;border-radius:6px;
-  font-family:var(--mono);font-size:0.68rem;cursor:pointer;
-  transition:all 0.2s;border:1px solid;
-}
-.st-run{background:linear-gradient(135deg,var(--cyan),#0066ff);border-color:var(--cyan);color:#000;font-weight:700;}
-.st-run:hover{box-shadow:0 0 20px rgba(0,200,255,0.5);}
-.st-body{display:grid;grid-template-columns:1fr 1fr;}
-.st-editor{padding:20px;font-family:var(--mono);font-size:0.72rem;line-height:1.7;border-right:1px solid var(--border);}
-.st-output{padding:20px;font-family:var(--mono);font-size:0.68rem;line-height:1.8;}
-.so-line{display:flex;gap:8px;padding:2px 0;}
-.so-tag{flex-shrink:0;font-weight:700;}
-.so-tag.pass{color:var(--green);}
-.so-tag.info{color:var(--cyan);}
-.so-tag.warn{color:var(--yellow);}
-.so-msg{color:var(--text);}
-
-/* ═══════ FOOTER ═══════ */
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
 footer{
   position:relative;z-index:1;
   background:var(--void);
   border-top:1px solid var(--border);
-  padding:60px 32px 32px;
-}
-.footer-grid{
-  max-width:1400px;margin:0 auto;
-  display:grid;grid-template-columns:2fr 1fr 1fr 1fr;
-  gap:48px;margin-bottom:48px;
-}
-.footer-brand{}
-.fb-logo{
-  font-family:var(--display);font-size:1rem;font-weight:900;
-  letter-spacing:2px;
-  background:linear-gradient(135deg,var(--cyan),var(--green));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  margin-bottom:12px;
-}
-.fb-desc{font-family:var(--ui);font-size:0.82rem;color:var(--text3);line-height:1.7;max-width:280px;}
-.footer-col-title{font-family:var(--mono);font-size:0.62rem;letter-spacing:2px;color:var(--cyan);margin-bottom:16px;}
-.footer-links{display:flex;flex-direction:column;gap:10px;}
-.footer-link{
-  font-family:var(--ui);font-size:0.8rem;color:var(--text3);
-  text-decoration:none;cursor:pointer;transition:color 0.2s;
-}
-.footer-link:hover{color:var(--text);}
-.footer-bottom{
-  max-width:1400px;margin:0 auto;
-  padding-top:24px;border-top:1px solid var(--border);
+  padding:40px;
   display:flex;align-items:center;justify-content:space-between;
-  flex-wrap:wrap;gap:16px;
+  flex-wrap:wrap;gap:20px;
 }
-.footer-copy{
-  font-family:var(--mono);font-size:0.62rem;color:var(--text3);
-  letter-spacing:0.5px;line-height:1.7;
-}
+.footer-logo{font-family:var(--display);font-size:0.85rem;font-weight:800;letter-spacing:3px;color:var(--green);}
+.footer-copy{font-family:var(--mono);font-size:0.62rem;letter-spacing:1px;color:var(--text3);line-height:1.8;text-align:center;}
 .footer-copy strong{color:var(--text2);}
-.footer-tech{
-  display:flex;gap:16px;flex-wrap:wrap;
+.footer-links{display:flex;gap:20px;}
+.footer-link{font-family:var(--mono);font-size:0.62rem;letter-spacing:1px;color:var(--text3);cursor:pointer;transition:color 0.2s;border:none;background:none;}
+.footer-link:hover{color:var(--green);}
+
+/* ═══════════════════════════════════════════
+   SCROLL ANIMATIONS
+═══════════════════════════════════════════ */
+.reveal{opacity:0;transform:translateY(24px);transition:all 0.6s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:1100px){
+  #home{grid-template-columns:1fr;padding:100px 40px 60px;text-align:center;}
+  .hero-visual{display:none;}
+  .hero-btns{justify-content:center;}
+  .hero-stats{justify-content:center;}
 }
-.ft-badge{
-  font-family:var(--mono);font-size:0.58rem;letter-spacing:1px;
-  padding:3px 8px;border-radius:4px;
-  background:rgba(0,200,255,0.06);color:var(--text3);
-  border:1px solid var(--border);
+@media(max-width:768px){
+  nav{padding:0 20px;}
+  .nav-links{display:none;position:fixed;top:60px;left:0;right:0;background:rgba(5,12,10,0.98);border-bottom:1px solid var(--border);flex-direction:column;padding:16px;gap:0;}
+  .nav-links.open{display:flex;}
+  .nav-toggle{display:block;}
+  .section-wrap{padding:60px 20px;}
+  .about-grid,.contact-grid{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+  footer{flex-direction:column;text-align:center;}
 }
 
-/* ═══════ PARTICLES ═══════ */
-.particles{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;}
-.particle{
-  position:absolute;
-  width:1px;height:1px;
-  background:var(--cyan);
-  border-radius:50%;
-  opacity:0;
-  animation:particle-float linear infinite;
+/* Scanline effect */
+.scanline{
+  position:fixed;inset:0;pointer-events:none;z-index:9999;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);
 }
-@keyframes particle-float{
-  0%{transform:translateY(100vh) translateX(0);opacity:0;}
-  10%{opacity:0.6;}
-  90%{opacity:0.3;}
-  100%{transform:translateY(-20px) translateX(var(--drift));opacity:0;}
+/* Noise overlay */
+.noise{
+  position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:0.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
-
-/* ═══════ TABS ═══════ */
-.tab-nav{display:flex;gap:4px;margin-bottom:32px;border-bottom:1px solid var(--border);padding-bottom:0;}
-.tab-btn{
-  padding:10px 20px;
-  font-family:var(--ui);font-size:0.82rem;font-weight:500;
-  color:var(--text3);cursor:pointer;
-  border-bottom:2px solid transparent;margin-bottom:-1px;
-  transition:all 0.2s;background:none;border-top:none;border-left:none;border-right:none;
-  letter-spacing:0.3px;
-}
-.tab-btn:hover{color:var(--text2);}
-.tab-btn.active{color:var(--cyan);border-bottom-color:var(--cyan);}
-.tab-content{display:none;}
-.tab-content.active{display:block;}
-
-/* Responsive */
-@media(max-width:900px){
-  .footer-grid{grid-template-columns:1fr 1fr;}
-  .modal-body{flex-direction:column;}
-  .modal-sidebar{width:100%;border-right:none;border-bottom:1px solid var(--border);display:flex;overflow-x:auto;padding:10px 0;}
-  .ms-item{flex-shrink:0;border-left:none;border-bottom:2px solid transparent;}
-  .ms-item.active{border-left-color:transparent;border-bottom-color:var(--cyan);}
-  .st-body{grid-template-columns:1fr;}
-  .proto-grid{grid-template-columns:1fr;}
-}
-
-/* Highlight animation */
-@keyframes highlight-in{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.anim-in{animation:highlight-in 0.4s ease forwards;}
-
-/* Chip diagram styles */
-.chip-diagram{
-  background:#040810;border:1px solid var(--border);
-  border-radius:12px;padding:24px;margin:16px 0;
-  display:flex;flex-direction:column;align-items:center;gap:16px;
-}
-.chip-box{
-  border:2px solid var(--cyan);border-radius:8px;
-  padding:16px 32px;position:relative;
-  display:flex;flex-direction:column;align-items:center;gap:4px;
-  min-width:140px;
-}
-.chip-name{font-family:var(--display);font-size:0.7rem;letter-spacing:2px;color:var(--cyan);}
-.chip-pins{display:flex;justify-content:space-between;width:100%;margin-top:8px;}
-.chip-pin{font-family:var(--mono);font-size:0.58rem;color:var(--text3);}
-.arrow-flow{font-family:var(--mono);font-size:0.65rem;color:var(--text3);display:flex;align-items:center;gap:8px;}
 </style>
 </head>
 <body>
 
-<div class="particles" id="particles"></div>
+<div class="scanline"></div>
+<div class="noise"></div>
 
-<!-- NAVIGATION -->
+<!-- ══════ NAV ══════ -->
 <nav>
-  <div class="nav-logo">VLSI NEXUS</div>
-  <div class="nav-links">
-    <button class="nav-link active" onclick="scrollTo('protocols')">Protocols</button>
-    <button class="nav-link" onclick="scrollTo('learning')">Learning Paths</button>
-    <button class="nav-link" onclick="scrollTo('tools')">Tools</button>
-    <button class="nav-link" onclick="scrollTo('practice')">Practice</button>
-    <button class="nav-link" onclick="scrollTo('simulator')">Simulator</button>
+  <a class="nav-logo" href="#home">DV_HUB</a>
+  <div class="nav-links" id="nav-links">
+    <a class="nav-link active" href="#home" onclick="navClick(this)">HOME</a>
+    <a class="nav-link" href="#about" onclick="navClick(this)">ABOUT</a>
+    <a class="nav-link" href="#skills" onclick="navClick(this)">SKILLS</a>
+    <a class="nav-link" href="#projects" onclick="navClick(this)">PROJECTS</a>
+    <a class="nav-link" href="#coding" onclick="navClick(this)">CODING</a>
+    <a class="nav-link" href="#contact" onclick="navClick(this)">CONTACT</a>
   </div>
-  <div class="nav-right">
-    <div class="nav-badge nb-green"><span class="pulse-dot"></span>LIVE</div>
-    <div class="nav-badge nb-cyan">IEEE 1800-2017</div>
-  </div>
+  <a class="nav-cta" href="#contact">HIRE ME</a>
+  <button class="nav-toggle" onclick="toggleNav()">☰</button>
 </nav>
 
-<!-- HERO -->
-<section class="hero" id="hero">
-  <div class="hero-eyebrow">ADVANCED VLSI VERIFICATION PLATFORM</div>
-  <h1 class="hero-title">
-    <span class="ht-1">VLSI NEXUS</span>
-    <span class="ht-2">VERIFICATION ENGINEERING</span>
-  </h1>
-  <p class="hero-sub">Master <strong>SystemVerilog · UVM · Protocol Verification</strong> with real-time simulations, interactive learning, and industry-grade tools. All protocols. All concepts. Zero fluff.</p>
-
-  <div class="hero-stats">
-    <div class="hstat"><div class="hstat-num">18+</div><div class="hstat-label">PROTOCOLS</div></div>
-    <div class="hstat"><div class="hstat-num">200+</div><div class="hstat-label">CODE EXAMPLES</div></div>
-    <div class="hstat"><div class="hstat-num">50+</div><div class="hstat-label">PPT SLIDES</div></div>
-    <div class="hstat"><div class="hstat-num">∞</div><div class="hstat-label">SIMULATIONS</div></div>
-  </div>
-
-  <div class="hero-cta">
-    <button class="btn-primary" onclick="scrollTo('protocols')">Explore Protocols →</button>
-    <button class="btn-secondary" onclick="scrollTo('learning')">View Learning Paths</button>
-  </div>
-
-  <div class="scroll-hint">
-    <div class="scroll-arrow"></div>
-    SCROLL TO EXPLORE
-  </div>
-</section>
-
-<!-- PROTOCOLS -->
-<section id="protocols">
-<div class="container">
-  <div class="section-head">
-    <div class="section-label">PROTOCOLS & STANDARDS</div>
-    <h2 class="section-title">Every Protocol You Need</h2>
-    <p class="section-sub">From high-speed serial to low-power management — complete reference with code, timing, and slides.</p>
-  </div>
-
-  <div class="proto-grid" id="proto-grid">
-    <!-- Filled by JS -->
-  </div>
-</div>
-</section>
-
-<!-- LEARNING PATHS -->
-<section id="learning" style="background:linear-gradient(180deg,transparent,rgba(0,200,255,0.02),transparent);">
-<div class="container">
-  <div class="section-head">
-    <div class="section-label">CURRICULUM</div>
-    <h2 class="section-title">Structured Learning Paths</h2>
-    <p class="section-sub">From zero to principal verification engineer — follow proven roadmaps.</p>
-  </div>
-  <div class="paths-grid" id="paths-grid"></div>
-</div>
-</section>
-
-<!-- TOOLS -->
-<section id="tools">
-<div class="container">
-  <div class="section-head">
-    <div class="section-label">ECOSYSTEM</div>
-    <h2 class="section-title">Industry Tools & Resources</h2>
-    <p class="section-sub">EDA tools, simulators, and utilities used by real engineers.</p>
-  </div>
-  <div class="tools-grid" id="tools-grid"></div>
-</div>
-</section>
-
-<!-- PRACTICE -->
-<section id="practice" style="background:linear-gradient(180deg,transparent,rgba(0,255,157,0.015),transparent);">
-<div class="container">
-  <div class="section-head">
-    <div class="section-label">ASSESSMENT</div>
-    <h2 class="section-title">Protocol Knowledge Quiz</h2>
-    <p class="section-sub">Test your understanding with interview-style questions.</p>
-  </div>
-  <div class="quiz-container" id="quiz-container"></div>
-</div>
-</section>
-
-<!-- SIMULATOR TEASER -->
-<section id="simulator">
-<div class="container">
-  <div class="section-head">
-    <div class="section-label">LIVE SIMULATION</div>
-    <h2 class="section-title">Run Code in Your Browser</h2>
-    <p class="section-sub">Write SystemVerilog, execute constraints, see real output instantly.</p>
-  </div>
-  <div class="sim-teaser">
-    <div class="st-header">
-      <div class="st-dots">
-        <div class="st-dot" style="background:#ff5f56"></div>
-        <div class="st-dot" style="background:#ffbd2e"></div>
-        <div class="st-dot" style="background:#27c93f"></div>
-      </div>
-      <button class="st-btn st-run" onclick="runDemo()">▶ RUN</button>
-      <span style="font-family:var(--mono);font-size:0.65rem;color:var(--text3);margin-left:8px;">apb_constraint_demo.sv</span>
+<!-- ══════ HERO ══════ -->
+<section id="home">
+  <div class="hero-left">
+    <div class="hero-eyebrow">DESIGN VERIFICATION ENGINEER</div>
+    <h1 class="hero-name">
+      <span class="line1">SHAIK KHAJA</span>
+      <span class="line2">MOHIDDEEN</span>
+    </h1>
+    <div class="hero-title-tag">THE DV HUB</div>
+    <p class="hero-desc">
+      Specializing in RTL verification, protocol compliance, and coverage-driven validation. From silicon bring-up to UVM testbench architecture — building the bridge between design and silicon.
+    </p>
+    <div class="hero-btns">
+      <a class="btn-primary" href="#projects">VIEW PROJECTS →</a>
+      <a class="btn-outline" href="#coding">CODING LAB ↗</a>
     </div>
-    <div class="st-body">
-      <div class="st-editor" id="sim-editor">
-<span class="cm">// APB Constraint Demo</span>
-<span class="kw">class</span> <span class="tp">apb_txn</span>;
-  <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] addr;
-  <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] data;
-  <span class="kw">rand bit</span>          wr;
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-n">5+</div><div class="hstat-l">PROTOCOLS</div></div>
+      <div class="hstat"><div class="hstat-n">10+</div><div class="hstat-l">PROJECTS</div></div>
+      <div class="hstat"><div class="hstat-n">UVM</div><div class="hstat-l">METHODOLOGY</div></div>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="radar-wrap">
+      <div class="radar-circle"></div>
+      <div class="radar-circle"></div>
+      <div class="radar-circle"></div>
+      <div class="radar-scan"></div>
+    </div>
+    <div class="radar-tags">
+      <div class="radar-tag">SV</div>
+      <div class="radar-tag">UVM</div>
+      <div class="radar-tag">AXI</div>
+      <div class="radar-tag">MIPI</div>
+      <div class="radar-tag">DV</div>
+    </div>
+  </div>
+</section>
 
-  <span class="kw">constraint</span> c_align {
-    addr[<span class="num">1</span>:<span class="num">0</span>] == <span class="num">2'b00</span>;
-    addr inside {[<span class="num">32'h4000_0000</span>:<span class="num">32'h4000_FFFF</span>]};
+<!-- ══════ ABOUT ══════ -->
+<section id="about">
+<div class="section-wrap container">
+  <div class="sec-label">ABOUT ME</div>
+  <h2 class="sec-title">Who I Am</h2>
+  <div class="divider"></div>
+  <div class="about-grid">
+    <div class="about-text reveal">
+      <p>I am <strong>Shaik Khaja Mohiddeen</strong>, a passionate Design Verification Engineer with deep expertise in SystemVerilog, UVM methodology, and protocol-level verification. My focus is on building robust, reusable testbench architectures that ensure silicon correctness from RTL to tape-out.</p>
+      <p>I work across the full DV spectrum — from writing constrained-random sequences and functional coverage models to implementing SVA assertions and closing coverage goals on complex SoC designs involving multiple bus protocols.</p>
+      <p>My domain expertise spans AMBA protocols (APB, AHB, AXI), MIPI DSI, QSPI flash interfaces, GDMA controllers, GPIO, PLL, and processor boot sequences — all verified using industry-standard UVM methodology.</p>
+      <div class="about-highlights">
+        <div class="ah-item"><div class="ah-icon">🎯</div><div class="ah-text"><strong>Protocol Expertise:</strong> APB, AHB, AXI4, I2C, SPI, UART, MIPI DSI, QSPI, GDMA</div></div>
+        <div class="ah-item"><div class="ah-icon">⚡</div><div class="ah-text"><strong>Methodology:</strong> UVM 1.2, Constrained Random, Functional Coverage, SVA</div></div>
+        <div class="ah-item"><div class="ah-icon">🔬</div><div class="ah-text"><strong>Tools:</strong> Synopsys VCS, Cadence Xcelium, Questa, EDA Playground</div></div>
+      </div>
+    </div>
+    <div class="about-details reveal">
+      <div class="detail-card"><div class="dc-label">ROLE</div><div class="dc-value">Design Verification Engineer</div><div class="dc-sub">RTL Verification · UVM Testbench · Protocol VIP</div></div>
+      <div class="detail-card"><div class="dc-label">DOMAIN</div><div class="dc-value">SoC Verification</div><div class="dc-sub">AMBA · MIPI · QSPI · GDMA · PLL · Boot</div></div>
+      <div class="detail-card"><div class="dc-label">LANGUAGE</div><div class="dc-value">SystemVerilog · UVM</div><div class="dc-sub">IEEE 1800-2017 · UVM 1.2</div></div>
+      <div class="detail-card"><div class="dc-label">PLATFORM</div><div class="dc-value">DV HUB</div><div class="dc-sub">Personal learning & project showcase portal</div></div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ══════ SKILLS ══════ -->
+<section id="skills">
+<div class="section-wrap container">
+  <div class="sec-label">EXPERTISE</div>
+  <h2 class="sec-title">Technical Skills</h2>
+  <div class="divider"></div>
+  <div class="skills-grid" id="skills-grid"></div>
+</div>
+</section>
+
+<!-- ══════ PROJECTS ══════ -->
+<section id="projects">
+<div class="section-wrap container">
+  <div class="sec-label">WORK</div>
+  <h2 class="sec-title">Projects</h2>
+  <div class="divider"></div>
+  <div class="projects-grid" id="projects-grid"></div>
+</div>
+</section>
+
+<!-- ══════ CODING LAB ══════ -->
+<section id="coding">
+<div class="section-wrap container">
+  <div class="sec-label">CODING LAB</div>
+  <h2 class="sec-title">Code & Technical Reference</h2>
+  <div class="divider"></div>
+
+  <div class="coding-tabs">
+    <button class="ctab active" onclick="switchTab(this,'tab-boot')">PROCESSOR BOOT</button>
+    <button class="ctab" onclick="switchTab(this,'tab-qspi')">QSPI UVM</button>
+    <button class="ctab" onclick="switchTab(this,'tab-pll')">PLL TEST CASES</button>
+    <button class="ctab" onclick="switchTab(this,'tab-gdma')">GDMA</button>
+    <button class="ctab" onclick="switchTab(this,'tab-apb')">APB UVM</button>
+    <button class="ctab" onclick="switchTab(this,'tab-gpio')">GPIO</button>
+  </div>
+
+  <!-- BOOT TAB -->
+  <div class="ctab-content active" id="tab-boot">
+    <div class="text-section">
+      <div class="ts-title">⚡ PROCESSOR BOOT FLOW — PRIMARY + SECONDARY BOOT</div>
+      <div class="ts-body">
+        <h3>BOOT ARCHITECTURE</h3>
+        <p>A complete 3-stage SoC boot flow: <strong>Primary Boot (ROM)</strong> → <strong>Secondary Bootloader (SBL)</strong> → <strong>Application</strong>. This is the industry-standard approach used in ARM-based SoCs.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">STAGE 1</div><div class="ic-v">Primary Boot</div><div class="ic-s">ROM → SRAM load</div></div>
+          <div class="info-card"><div class="ic-l">STAGE 2</div><div class="ic-v">Secondary Boot</div><div class="ic-s">SBL → DDR load</div></div>
+          <div class="info-card"><div class="ic-l">STAGE 3</div><div class="ic-v">Application</div><div class="ic-s">Main firmware runs</div></div>
+          <div class="info-card"><div class="ic-l">INTERFACE</div><div class="ic-v">QSPI Flash</div><div class="ic-s">Memory-mapped read</div></div>
+        </div>
+        <h3>PRIMARY BOOT FLOW</h3>
+        <div class="flow-box">
+          <span class="flow-arrow">→</span> Initialize Stack Pointer<br>
+          <span class="flow-arrow">→</span> Boot Mode Detection (QSPI / eMMC / UART)<br>
+          <span class="flow-arrow">→</span> PLL / Clock Init (minimal)<br>
+          <span class="flow-arrow">→</span> QSPI Init (indirect command mode)<br>
+          <span class="flow-arrow">→</span> Read SBL header from Flash<br>
+          <span class="flow-arrow">→</span> Validate CRC / Signature<br>
+          <span class="flow-arrow">→</span> Load SBL → SRAM<br>
+          <span class="flow-arrow">→</span> Jump to SBL entry point
+        </div>
+        <h3>SECONDARY BOOT FLOW</h3>
+        <div class="flow-box">
+          <span class="flow-arrow">→</span> Full PLL Init + DDR Init (PHY training, calibration)<br>
+          <span class="flow-arrow">→</span> UART + GDMA + Peripheral Init<br>
+          <span class="flow-arrow">→</span> Enable caches / MMU<br>
+          <span class="flow-arrow">→</span> QSPI switch to memory-mapped mode<br>
+          <span class="flow-arrow">→</span> Read Application image header<br>
+          <span class="flow-arrow">→</span> Validate Image (CRC + RSA/ECDSA signature)<br>
+          <span class="flow-arrow">→</span> GDMA transfer → DDR<br>
+          <span class="flow-arrow">→</span> Cache clean / invalidate<br>
+          <span class="flow-arrow">→</span> Jump to application entry (from header)
+        </div>
+        <h3>WHAT NEEDS REAL SILICON HANDLING</h3>
+        <div class="verdict pass"><span class="verdict-icon">✅</span><div>Memory map defined: QSPI_BASE=0x40000000, SRAM_BASE=0x20000000, DDR_BASE=0x80000000</div></div>
+        <div class="verdict pass"><span class="verdict-icon">✅</span><div>3-stage boot architecture correctly modeled with function pointer jumps</div></div>
+        <div class="verdict pass"><span class="verdict-icon">✅</span><div>CRC validation hooks, QSPI/SRAM/DDR flow separation</div></div>
+        <div class="verdict warn"><span class="verdict-icon">⚠️</span><div>Real ARM boot: CPU jumps to Reset Vector first, then boot.s startup assembly, then primary_boot()</div></div>
+        <div class="verdict warn"><span class="verdict-icon">⚠️</span><div>DDR init is complex — requires PHY training, timing configuration, and calibration before use</div></div>
+        <div class="verdict fail"><span class="verdict-icon">❌</span><div>No image header structure — industry bootloaders use: magic + size + load_addr + entry_point + crc</div></div>
+        <div class="verdict fail"><span class="verdict-icon">❌</span><div>No secure boot — real chips require RSA/ECC signature verification + SHA hash</div></div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">primary_boot.c</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">C / FIRMWARE</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// Memory Map</span>
+<span class="dir">#define</span> QSPI_BASE        <span class="num">0x40000000</span>
+<span class="dir">#define</span> SRAM_BASE        <span class="num">0x20000000</span>
+<span class="dir">#define</span> DDR_BASE         <span class="num">0x80000000</span>
+<span class="dir">#define</span> FLASH_BOOT_ADDR  <span class="num">0x00000000</span>
+<span class="dir">#define</span> FLASH_APP_ADDR   <span class="num">0x00100000</span>
+
+<span class="cm">// Image Header Structure (Industry Standard)</span>
+<span class="kw">typedef</span> <span class="kw">struct</span> {
+    <span class="tp">uint32_t</span> magic;        <span class="cm">// 0xDEADBEEF</span>
+    <span class="tp">uint32_t</span> size;
+    <span class="tp">uint32_t</span> load_addr;
+    <span class="tp">uint32_t</span> entry_point;
+    <span class="tp">uint32_t</span> crc;
+} image_header_t;
+
+<span class="cm">// PRIMARY BOOT (Boot ROM)</span>
+<span class="kw">void</span> <span class="fn">primary_boot</span>() {
+    <span class="fn">init_stack_pointer</span>();   <span class="cm">// MUST be first</span>
+
+    <span class="kw">int</span> mode = <span class="fn">read_boot_mode</span>();
+    <span class="kw">if</span>(mode != <span class="num">1</span>) <span class="fn">error_handler</span>();
+
+    <span class="fn">pll_init</span>();             <span class="cm">// Minimal clock</span>
+    <span class="fn">qspi_init</span>();            <span class="cm">// Indirect mode first</span>
+
+    <span class="cm">// Read SBL to SRAM</span>
+    <span class="tp">uint8_t</span> *sbl_dst = (<span class="tp">uint8_t</span> *)SRAM_BASE;
+    <span class="fn">qspi_read</span>(FLASH_BOOT_ADDR, sbl_dst, SBL_SIZE);
+
+    <span class="kw">if</span>(!<span class="fn">validate_crc</span>(sbl_dst, SBL_SIZE))
+        <span class="fn">error_handler</span>();
+
+    <span class="cm">// Jump to SBL</span>
+    <span class="kw">void</span> (*sbl_entry)() = (<span class="kw">void</span> (*)())SRAM_BASE;
+    <span class="fn">sbl_entry</span>();
+}
+
+<span class="cm">// SECONDARY BOOT (SBL)</span>
+<span class="kw">void</span> <span class="fn">secondary_boot</span>() {
+    <span class="fn">ddr_init</span>();             <span class="cm">// PHY training + calibration</span>
+    <span class="fn">uart_init</span>();
+    <span class="fn">gdma_init</span>();
+
+    <span class="cm">// Load application header</span>
+    image_header_t hdr;
+    <span class="fn">qspi_read</span>(FLASH_APP_ADDR, &hdr, <span class="kw">sizeof</span>(hdr));
+
+    <span class="kw">if</span>(hdr.magic != <span class="num">0xDEADBEEF</span>) <span class="fn">error_handler</span>();
+
+    <span class="cm">// GDMA transfer: Flash → DDR</span>
+    <span class="tp">uint8_t</span> *app_src = (<span class="tp">uint8_t</span> *)(QSPI_BASE + FLASH_APP_ADDR);
+    <span class="tp">uint8_t</span> *app_dst = (<span class="tp">uint8_t</span> *)(hdr.load_addr);
+
+    <span class="fn">gdma_config</span>(app_src, app_dst, hdr.size);
+    <span class="fn">gdma_start</span>();
+    <span class="fn">wait_for_completion</span>();
+
+    <span class="kw">if</span>(!<span class="fn">validate_crc</span>(app_dst, hdr.size)) <span class="fn">error_handler</span>();
+
+    <span class="cm">// Cache invalidate before jump</span>
+    <span class="fn">cache_invalidate_all</span>();
+
+    <span class="cm">// Jump to real entry point (from header)</span>
+    <span class="kw">void</span> (*app_entry)() = (<span class="kw">void</span> (*)())(hdr.entry_point);
+    <span class="fn">app_entry</span>();
+}</pre>
+    </div>
+  </div>
+
+  <!-- QSPI TAB -->
+  <div class="ctab-content" id="tab-qspi">
+    <div class="text-section">
+      <div class="ts-title">💾 QSPI SoC-Level UVM Verification Architecture</div>
+      <div class="ts-body">
+        <h3>SYSTEM ARCHITECTURE</h3>
+        <div class="flow-box">
+          CPU (AHB/AXI Master)<br>
+          <span class="flow-arrow">↓</span><br>
+          AHB/AXI → QSPI Controller → QSPI Interface → Flash Model<br>
+          <br>
+          <strong>UVM Components:</strong><br>
+          <span class="flow-arrow">→</span> AHB/AXI Agent: drives transactions to QSPI controller<br>
+          <span class="flow-arrow">→</span> QSPI Agent: monitors serial protocol (IO0–IO3, CS, CLK)<br>
+          <span class="flow-arrow">→</span> Scoreboard: compares flash data vs expected<br>
+          <span class="flow-arrow">→</span> RAL Model: config registers of QSPI controller
+        </div>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">CMD</div><div class="ic-v">0xEB</div><div class="ic-s">Quad I/O Fast Read</div></div>
+          <div class="info-card"><div class="ic-l">DATA MODE</div><div class="ic-v">x4 Quad</div><div class="ic-s">IO0–IO3 simultaneously</div></div>
+          <div class="info-card"><div class="ic-l">DUMMY</div><div class="ic-v">2–10</div><div class="ic-s">Clock cycles</div></div>
+          <div class="info-card"><div class="ic-l">SPEED</div><div class="ic-v">50–200 MHz</div><div class="ic-s">Effective throughput</div></div>
+        </div>
+        <div style="margin-top:16px;display:flex;flex-wrap:wrap;gap:6px;">
+          <span class="badge badge-green">✓ Page Program 0x02</span>
+          <span class="badge badge-green">✓ Quad Page Prog 0x32</span>
+          <span class="badge badge-green">✓ Fast Read 0x0B</span>
+          <span class="badge badge-green">✓ Quad IO Read 0xEB</span>
+          <span class="badge badge-orange">✓ Sector Erase 0xD8</span>
+          <span class="badge badge-cyan">✓ Write Enable 0x06</span>
+        </div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">qspi_uvm_tb.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / UVM</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// QSPI Interface</span>
+<span class="kw">interface</span> qspi_if(<span class="kw">input bit</span> clk);
+  <span class="kw">logic</span>       cs_n;
+  <span class="kw">logic</span>       sclk;
+  <span class="kw">logic</span> [<span class="num">3</span>:<span class="num">0</span>] io;   <span class="cm">// IO0–IO3</span>
+  <span class="kw">modport</span> drv (<span class="kw">output</span> cs_n, sclk, io);
+  <span class="kw">modport</span> mon (<span class="kw">input</span>  cs_n, sclk, io);
+<span class="kw">endinterface</span>
+
+<span class="cm">// Transaction</span>
+<span class="kw">class</span> <span class="tp">qspi_seq_item</span> <span class="kw">extends</span> <span class="tp">uvm_sequence_item</span>;
+  <span class="mc">`uvm_object_utils</span>(qspi_seq_item)
+
+  <span class="kw">rand bit</span> [<span class="num">7</span>:<span class="num">0</span>]  cmd;        <span class="cm">// READ/WRITE/ERASE</span>
+  <span class="kw">rand bit</span> [<span class="num">23</span>:<span class="num">0</span>] addr;
+  <span class="kw">rand bit</span> [<span class="num">7</span>:<span class="num">0</span>]  data[];
+  <span class="kw">rand int</span>        dummy_cycles;
+
+  <span class="kw">constraint</span> c_cmd {
+    cmd <span class="kw">inside</span> {<span class="num">8'h06</span>, <span class="num">8'h02</span>, <span class="num">8'h32</span>,
+                 <span class="num">8'h0B</span>, <span class="num">8'hEB</span>, <span class="num">8'hD8</span>};
   }
-  <span class="kw">constraint</span> c_wr {
-    wr dist { <span class="num">1</span>:=<span class="num">70</span>, <span class="num">0</span>:=<span class="num">30</span> };
+  <span class="kw">constraint</span> c_dummy {
+    dummy_cycles <span class="kw">inside</span> {[<span class="num">2</span>:<span class="num">10</span>]};
+  }
+  <span class="kw">constraint</span> c_data_len {
+    data.size() <span class="kw">inside</span> {[<span class="num">1</span>:<span class="num">256</span>]};
   }
 <span class="kw">endclass</span>
 
-<span class="kw">module</span> tb;
-  <span class="kw">initial begin</span>
-    apb_txn t = <span class="kw">new</span>();
-    <span class="kw">repeat</span>(<span class="num">4</span>) begin
-      t.randomize();
-      $display(<span class="str">"addr=%h wr=%0b"</span>,
-        t.addr, t.wr);
+<span class="cm">// Driver</span>
+<span class="kw">class</span> <span class="tp">qspi_driver</span> <span class="kw">extends</span> <span class="tp">uvm_driver</span> #(<span class="tp">qspi_seq_item</span>);
+  <span class="mc">`uvm_component_utils</span>(qspi_driver)
+  <span class="kw">virtual</span> qspi_if vif;
+
+  <span class="kw">task</span> <span class="fn">run_phase</span>(<span class="tp">uvm_phase</span> phase);
+    <span class="tp">qspi_seq_item</span> item;
+    <span class="fn">init_spi</span>();
+    <span class="kw">forever begin</span>
+      seq_item_port.<span class="fn">get_next_item</span>(item);
+      <span class="fn">drive_transaction</span>(item);
+      seq_item_port.<span class="fn">item_done</span>();
     <span class="kw">end</span>
-  <span class="kw">end</span>
-<span class="kw">endmodule</span>
-      </div>
-      <div class="st-output" id="sim-output">
-        <div class="so-line"><span class="so-tag info">[SYS]</span><span class="so-msg">Ready — click ▶ RUN</span></div>
-      </div>
+  <span class="kw">endtask</span>
+
+  <span class="kw">task</span> <span class="fn">drive_transaction</span>(<span class="tp">qspi_seq_item</span> item);
+    vif.cs_n <= <span class="num">0</span>;
+    <span class="fn">send_byte_x1</span>(item.cmd);           <span class="cm">// CMD: always x1</span>
+    <span class="fn">send_byte_x1</span>(item.addr[<span class="num">23</span>:<span class="num">16</span>]);   <span class="cm">// ADDR: x1</span>
+    <span class="fn">send_byte_x1</span>(item.addr[<span class="num">15</span>:<span class="num">8</span>]);
+    <span class="fn">send_byte_x1</span>(item.addr[<span class="num">7</span>:<span class="num">0</span>]);
+    <span class="kw">repeat</span>(item.dummy_cycles)          <span class="cm">// DUMMY</span>
+      <span class="fn">clk_tick</span>();
+    <span class="kw">foreach</span>(item.data[i])              <span class="cm">// DATA: x4</span>
+      <span class="fn">send_nibble_x4</span>(item.data[i]);
+    vif.cs_n <= <span class="num">1</span>;
+  <span class="kw">endtask</span>
+<span class="kw">endclass</span>
+
+<span class="cm">// Scoreboard</span>
+<span class="kw">class</span> <span class="tp">qspi_scoreboard</span> <span class="kw">extends</span> <span class="tp">uvm_scoreboard</span>;
+  <span class="mc">`uvm_component_utils</span>(qspi_scoreboard)
+  <span class="tp">uvm_analysis_imp</span> #(<span class="tp">qspi_seq_item</span>, <span class="tp">qspi_scoreboard</span>) ap;
+  <span class="kw">bit</span> [<span class="num">7</span>:<span class="num">0</span>] flash_model [<span class="kw">bit</span> [<span class="num">23</span>:<span class="num">0</span>]];  <span class="cm">// shadow memory</span>
+  <span class="kw">int</span> pass_cnt, fail_cnt;
+
+  <span class="kw">function void</span> <span class="fn">write</span>(<span class="tp">qspi_seq_item</span> item);
+    <span class="kw">if</span>(item.cmd == <span class="num">8'h02</span> || item.cmd == <span class="num">8'h32</span>) begin
+      <span class="cm">// Write: update shadow model</span>
+      <span class="kw">foreach</span>(item.data[i])
+        flash_model[item.addr + i] = item.data[i];
+    <span class="kw">end else if</span>(item.cmd == <span class="num">8'h0B</span> || item.cmd == <span class="num">8'hEB</span>) begin
+      <span class="cm">// Read: compare with shadow</span>
+      <span class="kw">foreach</span>(item.data[i]) begin
+        <span class="kw">if</span>(item.data[i] === flash_model[item.addr + i])
+          pass_cnt++;
+        <span class="kw">else begin</span>
+          fail_cnt++;
+          <span class="mc">`uvm_error</span>(<span class="str">"SB"</span>, $sformatf(<span class="str">"MISMATCH"</span>))
+        <span class="kw">end</span>
+      <span class="kw">end</span>
+    <span class="kw">end</span>
+  <span class="kw">endfunction</span>
+<span class="kw">endclass</span></pre>
     </div>
   </div>
-  <div style="text-align:center;margin-top:20px;">
-    <button class="btn-primary" onclick="window.open('dv_playground_v4.html','_blank')">Open Full IDE →</button>
+
+  <!-- PLL TAB -->
+  <div class="ctab-content" id="tab-pll">
+    <div class="text-section">
+      <div class="ts-title">🌀 PLL — Full Operation & C Test Cases</div>
+      <div class="ts-body">
+        <h3>WHAT IS A PLL?</h3>
+        <p>A Phase Locked Loop (PLL) is a control system used to generate a stable high-frequency clock from a reference clock. It is widely used in SoC clock generation, CPUs, GPUs, DDR controllers, and communication systems.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">FORMULA</div><div class="ic-v">Fout = Fref × M / (N × P)</div><div class="ic-s">Where M=multiplier, N=pre-div, P=post-div</div></div>
+          <div class="info-card"><div class="ic-l">EXAMPLE</div><div class="ic-v">1200 MHz</div><div class="ic-s">Fref=24, N=2, M=100 → VCO=1200MHz</div></div>
+          <div class="info-card"><div class="ic-l">VCO RANGE</div><div class="ic-v">800–3200 MHz</div><div class="ic-s">Typical SoC VCO operating window</div></div>
+          <div class="info-card"><div class="ic-l">LOCK TIME</div><div class="ic-v">50–500 µs</div><div class="ic-s">Time to achieve phase lock</div></div>
+        </div>
+        <h3>PLL BLOCKS</h3>
+        <p><strong>Phase Detector (PD)</strong> → <strong>Charge Pump</strong> → <strong>Loop Filter</strong> → <strong>VCO</strong> → <strong>Feedback Divider</strong> → back to PD</p>
+        <h3>INITIALIZATION SEQUENCE</h3>
+        <div class="flow-box">
+          <span class="flow-arrow">1.</span> Enable reference clock (24/25/26 MHz XTAL)<br>
+          <span class="flow-arrow">2.</span> Configure N/M/P dividers<br>
+          <span class="flow-arrow">3.</span> Enable PLL (PLL_CTRL bit 0)<br>
+          <span class="flow-arrow">4.</span> Wait for PLL_STATUS[LOCK] = 1<br>
+          <span class="flow-arrow">5.</span> Switch system clock mux to PLL output
+        </div>
+        <h3>PLL REGISTERS</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;">
+          <span class="badge badge-green">PLL_CTRL — Enable/Disable</span>
+          <span class="badge badge-green">PLL_DIV — M/N/P Dividers</span>
+          <span class="badge badge-cyan">PLL_STATUS — Lock Flag</span>
+          <span class="badge badge-orange">PLL_BYPASS — Bypass Mode</span>
+        </div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">pll_test_cases.c</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">C / FIRMWARE VALIDATION</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// PLL Register Definitions</span>
+<span class="dir">#define</span> PLL_CTRL    (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A000</span>)
+<span class="dir">#define</span> PLL_DIV     (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A004</span>)
+<span class="dir">#define</span> PLL_STATUS  (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A008</span>)
+<span class="dir">#define</span> PLL_BYPASS  (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A00C</span>)
+
+<span class="cm">// Test 1: PLL Enable</span>
+<span class="kw">void</span> <span class="fn">test_pll_enable</span>() {
+    PLL_CTRL |= (<span class="num">1</span> << <span class="num">0</span>);
+    <span class="kw">if</span>(PLL_CTRL & (<span class="num">1</span> << <span class="num">0</span>))
+        <span class="fn">printf</span>(<span class="str">"[PASS] PLL Enable\n"</span>);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Enable\n"</span>);
+}
+
+<span class="cm">// Test 2: PLL Lock Detection</span>
+<span class="kw">void</span> <span class="fn">test_pll_lock</span>() {
+    <span class="kw">int</span> timeout = <span class="num">10000</span>;
+    <span class="kw">while</span>(!(PLL_STATUS & (<span class="num">1</span> << <span class="num">0</span>)) && timeout--)
+        ;
+    <span class="kw">if</span>(timeout > <span class="num">0</span>)
+        <span class="fn">printf</span>(<span class="str">"[PASS] PLL LOCK achieved\n"</span>);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL LOCK timeout\n"</span>);
+}
+
+<span class="cm">// Test 3: Divider Configuration</span>
+<span class="kw">void</span> <span class="fn">test_pll_divider</span>() {
+    <span class="cm">// M=100, N=2, P=1 → Fout = 24*100/(2*1) = 1200 MHz</span>
+    PLL_DIV = (<span class="num">100</span> << <span class="num">16</span>) | (<span class="num">2</span> << <span class="num">8</span>) | (<span class="num">1</span> << <span class="num">0</span>);
+    <span class="kw">if</span>(PLL_DIV == ((<span class="num">100</span> << <span class="num">16</span>) | (<span class="num">2</span> << <span class="num">8</span>) | <span class="num">1</span>))
+        <span class="fn">printf</span>(<span class="str">"[PASS] Divider Config: Fout=1200MHz\n"</span>);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"[FAIL] Divider Config\n"</span>);
+}
+
+<span class="cm">// Test 4: Bypass Mode</span>
+<span class="kw">void</span> <span class="fn">test_pll_bypass</span>() {
+    PLL_BYPASS = <span class="num">1</span>;
+    <span class="kw">if</span>(PLL_BYPASS == <span class="num">1</span>)
+        <span class="fn">printf</span>(<span class="str">"[PASS] PLL Bypass: Fout=Fref=24MHz\n"</span>);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Bypass\n"</span>);
+}
+
+<span class="cm">// Test 5: Disable</span>
+<span class="kw">void</span> <span class="fn">test_pll_disable</span>() {
+    PLL_CTRL &= ~(<span class="num">1</span> << <span class="num">0</span>);
+    <span class="kw">if</span>(!(PLL_CTRL & (<span class="num">1</span> << <span class="num">0</span>)))
+        <span class="fn">printf</span>(<span class="str">"[PASS] PLL Disabled\n"</span>);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Disable\n"</span>);
+}
+
+<span class="cm">// Test 6: Lock Time Measurement</span>
+<span class="kw">void</span> <span class="fn">test_pll_lock_time</span>() {
+    <span class="tp">uint32_t</span> start = <span class="fn">get_timer_us</span>();
+    PLL_CTRL |= (<span class="num">1</span> << <span class="num">0</span>);
+    <span class="kw">while</span>(!(PLL_STATUS & (<span class="num">1</span> << <span class="num">0</span>)));
+    <span class="tp">uint32_t</span> lock_time = <span class="fn">get_timer_us</span>() - start;
+    <span class="fn">printf</span>(<span class="str">"PLL Lock Time: %u us\n"</span>, lock_time);
+    <span class="kw">if</span>(lock_time < <span class="num">500</span>)
+        <span class="fn">printf</span>(<span class="str">"[PASS] Lock time within spec\n"</span>);
+    <span class="kw">else</span>
+        <span class="fn">printf</span>(<span class="str">"[FAIL] Lock time exceeded\n"</span>);
+}
+
+<span class="cm">// Stress Test: 100 enable/disable cycles</span>
+<span class="kw">void</span> <span class="fn">test_pll_stress</span>() {
+    <span class="kw">for</span>(<span class="kw">int</span> i = <span class="num">0</span>; i < <span class="num">100</span>; i++) {
+        PLL_CTRL |= (<span class="num">1</span> << <span class="num">0</span>);
+        <span class="kw">while</span>(!(PLL_STATUS & (<span class="num">1</span> << <span class="num">0</span>)));
+        PLL_CTRL &= ~(<span class="num">1</span> << <span class="num">0</span>);
+    }
+    <span class="fn">printf</span>(<span class="str">"[PASS] Stress test: 100 cycles\n"</span>);
+}</pre>
+    </div>
+  </div>
+
+  <!-- GDMA TAB -->
+  <div class="ctab-content" id="tab-gdma">
+    <div class="text-section">
+      <div class="ts-title">🔄 GDMA — Generic DMA Controller</div>
+      <div class="ts-body">
+        <h3>GDMA OVERVIEW</h3>
+        <p>GDMA (Generic Direct Memory Access) is a hardware engine that transfers data between memory and peripherals without CPU intervention. It reduces processor bottleneck and enables high-speed data movement.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">CHANNELS</div><div class="ic-v">8–16</div><div class="ic-s">Independent DMA channels</div></div>
+          <div class="info-card"><div class="ic-l">MODES</div><div class="ic-v">M2M / M2P / P2M</div><div class="ic-s">Memory & peripheral transfers</div></div>
+          <div class="info-card"><div class="ic-l">BURST</div><div class="ic-v">1/4/8/16</div><div class="ic-s">Beats per transaction</div></div>
+          <div class="info-card"><div class="ic-l">IRQ</div><div class="ic-v">TC / TE / HT</div><div class="ic-s">Transfer complete / error / half</div></div>
+        </div>
+        <h3>TRANSFER MODES</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
+          <span class="badge badge-green">Memory → Memory</span>
+          <span class="badge badge-green">Memory → Peripheral (TX)</span>
+          <span class="badge badge-cyan">Peripheral → Memory (RX)</span>
+          <span class="badge badge-orange">Scatter-Gather (LLI)</span>
+        </div>
+        <h3>WORKING FLOW</h3>
+        <div class="flow-box">
+          <span class="flow-arrow">1.</span> CPU configures GDMA (src, dst, size, burst, channel)<br>
+          <span class="flow-arrow">2.</span> CPU enables GDMA channel<br>
+          <span class="flow-arrow">3.</span> GDMA reads source address via AHB/AXI<br>
+          <span class="flow-arrow">4.</span> GDMA writes to destination address<br>
+          <span class="flow-arrow">5.</span> Transfer complete → IRQ sent to CPU<br>
+          <span class="flow-arrow">6.</span> CPU reads TC status, clears interrupt
+        </div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">gdma_seq_item.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / UVM</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// GDMA Sequence Item</span>
+<span class="kw">typedef enum logic</span> [<span class="num">1</span>:<span class="num">0</span>] {
+  DMA_M2M=<span class="num">2'b00</span>, DMA_M2P=<span class="num">2'b01</span>, DMA_P2M=<span class="num">2'b10</span>
+} dma_dir_e;
+
+<span class="kw">class</span> <span class="tp">dma_seq_item</span> <span class="kw">extends</span> <span class="tp">uvm_sequence_item</span>;
+  <span class="mc">`uvm_object_utils_begin</span>(dma_seq_item)
+    <span class="mc">`uvm_field_int</span>(src_addr,   UVM_ALL_ON)
+    <span class="mc">`uvm_field_int</span>(dst_addr,   UVM_ALL_ON)
+    <span class="mc">`uvm_field_int</span>(length,     UVM_ALL_ON)
+    <span class="mc">`uvm_field_int</span>(burst_len,  UVM_ALL_ON)
+    <span class="mc">`uvm_field_int</span>(channel_id, UVM_ALL_ON)
+  <span class="mc">`uvm_object_utils_end</span>
+
+  <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] src_addr;
+  <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] dst_addr;
+  <span class="kw">rand logic</span> [<span class="num">15</span>:<span class="num">0</span>] length;
+  <span class="kw">rand</span> dma_dir_e    direction;
+  <span class="kw">rand logic</span> [<span class="num">3</span>:<span class="num">0</span>]  burst_len;
+  <span class="kw">rand int unsigned</span> channel_id;
+  <span class="kw">rand logic</span>        irq_en;
+
+  <span class="cm">// Address alignment</span>
+  <span class="kw">constraint</span> c_align {
+    src_addr[<span class="num">1</span>:<span class="num">0</span>] == <span class="num">2'b00</span>;
+    dst_addr[<span class="num">1</span>:<span class="num">0</span>] == <span class="num">2'b00</span>;
+  }
+  <span class="cm">// Valid burst sizes</span>
+  <span class="kw">constraint</span> c_burst {
+    burst_len <span class="kw">inside</span> {<span class="num">1</span>, <span class="num">4</span>, <span class="num">8</span>, <span class="num">16</span>};
+  }
+  <span class="cm">// Channel ID</span>
+  <span class="kw">constraint</span> c_channel {
+    channel_id <span class="kw">inside</span> {[<span class="num">0</span>:<span class="num">7</span>]};
+  }
+  <span class="cm">// No address overlap (M2M)</span>
+  <span class="kw">constraint</span> c_no_overlap {
+    (src_addr + (length << <span class="num">2</span>)) <= dst_addr ||
+    (dst_addr + (length << <span class="num">2</span>)) <= src_addr;
+  }
+  <span class="cm">// SRAM region</span>
+  <span class="kw">constraint</span> c_sram {
+    src_addr <span class="kw">inside</span> {[<span class="num">32'h2000_0000</span>:<span class="num">32'h200F_FFFF</span>]};
+    dst_addr <span class="kw">inside</span> {[<span class="num">32'h2010_0000</span>:<span class="num">32'h201F_FFFF</span>]};
+  }
+<span class="kw">endclass</span></pre>
+    </div>
+  </div>
+
+  <!-- APB TAB -->
+  <div class="ctab-content" id="tab-apb">
+    <div class="text-section">
+      <div class="ts-title">🔌 APB UVM Testbench — Complete Architecture</div>
+      <div class="ts-body">
+        <h3>APB PROTOCOL</h3>
+        <p>APB (Advanced Peripheral Bus) is an AMBA protocol for low-bandwidth peripheral access. 2-cycle non-pipelined transfer: SETUP phase + ACCESS phase.</p>
+        <div class="flow-box">
+          <strong>APB Phases:</strong><br>
+          <span class="flow-arrow">IDLE</span>   → PSEL=0, PENABLE=0<br>
+          <span class="flow-arrow">SETUP</span>  → PSEL=1, PENABLE=0, PADDR/PWRITE valid<br>
+          <span class="flow-arrow">ACCESS</span> → PSEL=1, PENABLE=1, wait PREADY<br>
+          <span class="flow-arrow">DONE</span>   → PREADY=1, transfer complete
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;">
+          <span class="badge badge-green">PCLK PSEL PENABLE</span>
+          <span class="badge badge-green">PADDR PWRITE PWDATA</span>
+          <span class="badge badge-cyan">PRDATA PREADY PSLVERR</span>
+          <span class="badge badge-orange">PPROT PSTRB</span>
+        </div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">apb_uvm_tb.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / UVM</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// APB Sequence Item</span>
+<span class="kw">class</span> <span class="tp">apb_seq_item</span> <span class="kw">extends</span> <span class="tp">uvm_sequence_item</span>;
+  <span class="mc">`uvm_object_utils_begin</span>(apb_seq_item)
+    <span class="mc">`uvm_field_int</span>(addr,  UVM_ALL_ON)
+    <span class="mc">`uvm_field_int</span>(data,  UVM_ALL_ON)
+    <span class="mc">`uvm_field_int</span>(wr,    UVM_ALL_ON)
+    <span class="mc">`uvm_field_int</span>(delay, UVM_ALL_ON)
+  <span class="mc">`uvm_object_utils_end</span>
+
+  <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] addr;
+  <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] data;
+  <span class="kw">rand logic</span>         wr;
+  <span class="kw">rand int unsigned</span>   delay;
+
+  <span class="kw">constraint</span> c_align { addr[<span class="num">1</span>:<span class="num">0</span>] == <span class="num">2'b00</span>; }
+  <span class="kw">constraint</span> c_delay { delay <span class="kw">inside</span> {[<span class="num">0</span>:<span class="num">5</span>]}; }
+<span class="kw">endclass</span>
+
+<span class="cm">// APB Driver</span>
+<span class="kw">class</span> <span class="tp">apb_driver</span> <span class="kw">extends</span> <span class="tp">uvm_driver</span> #(<span class="tp">apb_seq_item</span>);
+  <span class="mc">`uvm_component_utils</span>(apb_driver)
+  <span class="kw">virtual</span> apb_if vif;
+
+  <span class="kw">task</span> <span class="fn">drive_item</span>(<span class="tp">apb_seq_item</span> item);
+    <span class="cm">// SETUP phase</span>
+    @(posedge vif.pclk);
+    vif.paddr  <= item.addr;
+    vif.pwrite <= item.wr;
+    vif.pwdata <= item.wr ? item.data : <span class="num">'x</span>;
+    vif.psel   <= <span class="num">1</span>;
+    vif.penable <= <span class="num">0</span>;
+    <span class="cm">// ACCESS phase</span>
+    @(posedge vif.pclk);
+    vif.penable <= <span class="num">1</span>;
+    <span class="cm">// Wait PREADY</span>
+    <span class="kw">do</span> @(posedge vif.pclk);
+    <span class="kw">while</span>(!vif.pready);
+    vif.psel <= <span class="num">0</span>; vif.penable <= <span class="num">0</span>;
+  <span class="kw">endtask</span>
+<span class="kw">endclass</span>
+
+<span class="cm">// APB SVA Assertions</span>
+<span class="kw">property</span> apb_setup_phase;
+  @(posedge PCLK) <span class="kw">disable iff</span>(!PRESETn)
+  $rose(PSEL) |-> !PENABLE;
+<span class="kw">endproperty</span>
+a_setup: <span class="kw">assert property</span>(apb_setup_phase)
+  <span class="kw">else</span> $error(<span class="str">"APB: PENABLE high on PSEL assertion"</span>);
+
+<span class="kw">property</span> apb_addr_stable;
+  @(posedge PCLK) <span class="kw">disable iff</span>(!PRESETn)
+  (PSEL && PENABLE) |-> $stable(PADDR) && $stable(PWRITE);
+<span class="kw">endproperty</span>
+a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
+    </div>
+  </div>
+
+  <!-- GPIO TAB -->
+  <div class="ctab-content" id="tab-gpio">
+    <div class="text-section">
+      <div class="ts-title">📌 GPIO Interrupt Verification</div>
+      <div class="ts-body">
+        <h3>GPIO REGISTER MAP</h3>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">0x00</div><div class="ic-v">GPIO_DIR</div><div class="ic-s">1=output, 0=input per pin</div></div>
+          <div class="info-card"><div class="ic-l">0x04</div><div class="ic-v">GPIO_DATA_OUT</div><div class="ic-s">Output data register</div></div>
+          <div class="info-card"><div class="ic-l">0x08</div><div class="ic-v">GPIO_DATA_IN</div><div class="ic-s">Input data (read-only)</div></div>
+          <div class="info-card"><div class="ic-l">0x0C</div><div class="ic-v">GPIO_INT_EN</div><div class="ic-s">Interrupt enable per pin</div></div>
+          <div class="info-card"><div class="ic-l">0x10</div><div class="ic-v">GPIO_INT_TYPE</div><div class="ic-s">Edge/Level select</div></div>
+          <div class="info-card"><div class="ic-l">0x14</div><div class="ic-v">GPIO_INT_STATUS</div><div class="ic-s">W1C — interrupt flag</div></div>
+        </div>
+        <div class="verdict pass"><span class="verdict-icon">💡</span><div>W1C (Write-1-to-Clear): Writing a 1 to INT_STATUS clears the interrupt flag. Writing 0 has no effect.</div></div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">gpio_interrupt_seq.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / UVM</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="dir">`define</span> GPIO_DIR        <span class="num">8'h00</span>
+<span class="dir">`define</span> GPIO_DATA_OUT   <span class="num">8'h04</span>
+<span class="dir">`define</span> GPIO_INT_EN     <span class="num">8'h0C</span>
+<span class="dir">`define</span> GPIO_INT_TYPE   <span class="num">8'h10</span>
+<span class="dir">`define</span> GPIO_INT_STATUS <span class="num">8'h14</span>
+
+<span class="cm">// GPIO Rising Edge Interrupt Test</span>
+<span class="kw">class</span> <span class="tp">gpio_rise_int_seq</span> <span class="kw">extends</span> <span class="tp">uvm_sequence</span> #(<span class="tp">gpio_seq_item</span>);
+  <span class="mc">`uvm_object_utils</span>(gpio_rise_int_seq)
+  <span class="kw">rand int</span> pin_num;
+  <span class="kw">constraint</span> c_pin { pin_num <span class="kw">inside</span> {[<span class="num">0</span>:<span class="num">31</span>]}; }
+
+  <span class="kw">task</span> <span class="fn">body</span>();
+    <span class="tp">gpio_seq_item</span> item;
+
+    <span class="cm">// 1. Set direction as INPUT</span>
+    item = gpio_seq_item::<span class="fn">type_id::create</span>(<span class="str">"dir"</span>);
+    <span class="fn">start_item</span>(item);
+    void'(item.<span class="fn">randomize</span>() <span class="kw">with</span> {
+      is_write==<span class="num">1</span>; reg_addr==<span class="dir">`GPIO_DIR</span>;
+      reg_data[pin_num]==<span class="num">0</span>; <span class="cm">// input</span>
+    }); <span class="fn">finish_item</span>(item);
+    <span class="mc">`uvm_info</span>(<span class="str">"GPIO"</span>, <span class="str">"Pin set as INPUT"</span>, UVM_LOW)
+
+    <span class="cm">// 2. Set rising edge interrupt type</span>
+    item = gpio_seq_item::<span class="fn">type_id::create</span>(<span class="str">"type"</span>);
+    <span class="fn">start_item</span>(item);
+    void'(item.<span class="fn">randomize</span>() <span class="kw">with</span> {
+      is_write==<span class="num">1</span>; reg_addr==<span class="dir">`GPIO_INT_TYPE</span>;
+    }); <span class="fn">finish_item</span>(item);
+
+    <span class="cm">// 3. Enable interrupt on pin</span>
+    item = gpio_seq_item::<span class="fn">type_id::create</span>(<span class="str">"en"</span>);
+    <span class="fn">start_item</span>(item);
+    void'(item.<span class="fn">randomize</span>() <span class="kw">with</span> {
+      is_write==<span class="num">1</span>; reg_addr==<span class="dir">`GPIO_INT_EN</span>;
+      reg_data[pin_num]==<span class="num">1</span>;
+    }); <span class="fn">finish_item</span>(item);
+    <span class="mc">`uvm_info</span>(<span class="str">"GPIO"</span>,
+      $sformatf(<span class="str">"INT enabled on pin %0d"</span>, pin_num), UVM_LOW)
+
+    <span class="cm">// 4. Clear INT_STATUS (W1C)</span>
+    item = gpio_seq_item::<span class="fn">type_id::create</span>(<span class="str">"clr"</span>);
+    <span class="fn">start_item</span>(item);
+    void'(item.<span class="fn">randomize</span>() <span class="kw">with</span> {
+      is_write==<span class="num">1</span>; reg_addr==<span class="dir">`GPIO_INT_STATUS</span>;
+      reg_data[pin_num]==<span class="num">1</span>; <span class="cm">// W1C</span>
+    }); <span class="fn">finish_item</span>(item);
+    <span class="mc">`uvm_info</span>(<span class="str">"GPIO"</span>, <span class="str">"INT_STATUS cleared"</span>, UVM_LOW)
+  <span class="kw">endtask</span>
+<span class="kw">endclass</span></pre>
+    </div>
+  </div>
+
+</div><!-- /coding section -->
+</section>
+
+<!-- ══════ CONTACT ══════ -->
+<section id="contact">
+<div class="section-wrap container">
+  <div class="sec-label">GET IN TOUCH</div>
+  <h2 class="sec-title">Contact</h2>
+  <div class="divider"></div>
+  <div class="contact-grid">
+    <div class="contact-info reveal">
+      <div class="ci-item">
+        <div class="ci-icon">👤</div>
+        <div><div class="ci-label">NAME</div><div class="ci-value">Shaik Khaja Mohiddeen</div></div>
+      </div>
+      <div class="ci-item">
+        <div class="ci-icon">🎯</div>
+        <div><div class="ci-label">ROLE</div><div class="ci-value">Design Verification Engineer</div></div>
+      </div>
+      <div class="ci-item">
+        <div class="ci-icon">📍</div>
+        <div><div class="ci-label">LOCATION</div><div class="ci-value">Hyderabad, Telangana, India</div></div>
+      </div>
+      <div class="ci-item">
+        <div class="ci-icon">💻</div>
+        <div><div class="ci-label">PLATFORM</div><div class="ci-value">DV_HUB — Design Verification Hub</div></div>
+      </div>
+      <div class="ci-item">
+        <div class="ci-icon">🔬</div>
+        <div><div class="ci-label">SPECIALIZATION</div><div class="ci-value">UVM · SV · Protocol Verification</div></div>
+      </div>
+    </div>
+    <div class="reveal">
+      <div class="contact-form" id="contact-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">YOUR NAME</label>
+            <input class="form-input" id="f-name" type="text" placeholder="John Doe">
+          </div>
+          <div class="form-group">
+            <label class="form-label">EMAIL</label>
+            <input class="form-input" id="f-email" type="email" placeholder="john@company.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">SUBJECT</label>
+          <input class="form-input" id="f-subject" type="text" placeholder="UVM Project Collaboration">
+        </div>
+        <div class="form-group">
+          <label class="form-label">MESSAGE</label>
+          <textarea class="form-textarea" id="f-message" placeholder="Tell me about your project or opportunity..."></textarea>
+        </div>
+        <button class="form-submit" onclick="sendMessage()">SEND MESSAGE →</button>
+        <div id="form-status" style="font-family:var(--mono);font-size:0.68rem;color:var(--green);display:none;margin-top:8px;"></div>
+      </div>
+    </div>
   </div>
 </div>
 </section>
 
-<!-- FOOTER -->
+<!-- ══════ FOOTER ══════ -->
 <footer>
-  <div class="footer-grid">
-    <div class="footer-brand">
-      <div class="fb-logo">VLSI NEXUS</div>
-      <p class="fb-desc">The most comprehensive VLSI Design Verification learning platform. Built for engineers, by engineers. Covering every protocol from APB to PCIe.</p>
-    </div>
-    <div>
-      <div class="footer-col-title">PROTOCOLS</div>
-      <div class="footer-links">
-        <span class="footer-link">APB / AHB</span>
-        <span class="footer-link">AXI4 / AXI-Lite</span>
-        <span class="footer-link">UART / SPI / I2C</span>
-        <span class="footer-link">I3C / MIPI DSI</span>
-        <span class="footer-link">QSPI / GDMA</span>
-        <span class="footer-link">PLL / GPIO</span>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">LEARNING</div>
-      <div class="footer-links">
-        <span class="footer-link">UVM Methodology</span>
-        <span class="footer-link">SVA Assertions</span>
-        <span class="footer-link">Constrained Random</span>
-        <span class="footer-link">Functional Coverage</span>
-        <span class="footer-link">Formal Verification</span>
-        <span class="footer-link">Debug Techniques</span>
-      </div>
-    </div>
-    <div>
-      <div class="footer-col-title">RESOURCES</div>
-      <div class="footer-links">
-        <span class="footer-link">Code Repository</span>
-        <span class="footer-link">Slides & PPTs</span>
-        <span class="footer-link">Timing Diagrams</span>
-        <span class="footer-link">Interview Q&A</span>
-        <span class="footer-link">DV Playground IDE</span>
-        <span class="footer-link">Community Forum</span>
-      </div>
-    </div>
+  <div class="footer-logo">DV_HUB</div>
+  <div class="footer-copy">
+    © 2025–2026 <strong>Shaik Khaja Mohiddeen</strong>. All Rights Reserved.<br>
+    Design Verification Engineer · DV HUB · Built with SystemVerilog & Passion<br>
+    <span style="font-size:0.55rem;opacity:0.6;">UVM 1.2 · IEEE 1800-2017 · AMBA Protocols · MIPI · QSPI · GDMA</span>
   </div>
-  <div class="footer-bottom">
-    <div class="footer-copy">
-      © 2025–2026 <strong>VLSI Nexus</strong>. All Rights Reserved.<br>
-      Designed & Built by <strong>Khaja Mohiddeen</strong> · Advanced VLSI Verification Platform<br>
-      <span style="font-size:0.55rem;opacity:0.7;">IEEE 1800-2017 SystemVerilog · UVM 1.2 · All protocol references for educational purposes only.</span>
-    </div>
-    <div class="footer-tech">
-      <span class="ft-badge">IEEE 1800-2017</span>
-      <span class="ft-badge">UVM 1.2</span>
-      <span class="ft-badge">SystemVerilog</span>
-      <span class="ft-badge">HTML5</span>
-    </div>
+  <div class="footer-links">
+    <button class="footer-link" onclick="document.getElementById('home').scrollIntoView({behavior:'smooth'})">HOME</button>
+    <button class="footer-link" onclick="document.getElementById('coding').scrollIntoView({behavior:'smooth'})">CODING</button>
+    <button class="footer-link" onclick="document.getElementById('contact').scrollIntoView({behavior:'smooth'})">CONTACT</button>
   </div>
 </footer>
 
-<!-- PROTOCOL MODAL -->
-<div class="modal-overlay" id="proto-modal">
-  <div class="modal" id="modal-box">
-    <div class="modal-top-bar">
-      <div class="modal-dots"><div class="modal-dot"></div><div class="modal-dot"></div><div class="modal-dot"></div></div>
-      <div class="modal-title-bar" id="modal-title-bar">PROTOCOL REFERENCE</div>
+<!-- Project Modal -->
+<div class="modal-overlay" id="proj-modal">
+  <div class="modal">
+    <div class="modal-bar">
+      <div class="modal-dots"><div class="mdot"></div><div class="mdot"></div><div class="mdot"></div></div>
+      <div class="modal-filename" id="modal-fname">project.sv</div>
       <button class="modal-close" onclick="closeModal()">✕</button>
     </div>
-    <div class="modal-body">
-      <div class="modal-sidebar" id="modal-sidebar"></div>
-      <div class="modal-content" id="modal-content"></div>
-    </div>
+    <div class="modal-body" id="modal-body"></div>
   </div>
 </div>
 
 <script>
-// ═══════════════════════════════════════════════════
-// PARTICLES
-// ═══════════════════════════════════════════════════
-(function(){
-  const c = document.getElementById('particles');
-  for(let i=0;i<30;i++){
-    const p=document.createElement('div');
-    p.className='particle';
-    p.style.cssText=`
-      left:${Math.random()*100}%;
-      animation-duration:${8+Math.random()*16}s;
-      animation-delay:${Math.random()*8}s;
-      --drift:${(Math.random()-0.5)*200}px;
-      width:${Math.random()<0.3?2:1}px;
-      height:${Math.random()<0.3?2:1}px;
-      background:${Math.random()<0.5?'var(--cyan)':'var(--green)'};
-    `;
-    c.appendChild(p);
-  }
-})();
+// ═══════════════════════════════════════════
+// DATA
+// ═══════════════════════════════════════════
+const SKILLS = [
+  {name:'SystemVerilog',cat:'LANGUAGE',icon:'⬡',color:'#00ff88',tags:['OOP','Interfaces','Clocking','Randomization'],level:90},
+  {name:'UVM 1.2',cat:'METHODOLOGY',icon:'⚙',color:'#00e5ff',tags:['Sequences','Agents','Scoreboard','RAL'],level:85},
+  {name:'AMBA Protocols',cat:'BUS PROTOCOL',icon:'🔌',color:'#ff6600',tags:['APB','AHB','AXI4','AXI-Lite'],level:88},
+  {name:'MIPI DSI',cat:'DISPLAY PROTOCOL',icon:'🖥',color:'#00e5ff',tags:['D-PHY','HS Mode','LP Mode','ECC'],level:80},
+  {name:'QSPI Flash',cat:'MEMORY INTERFACE',icon:'💾',color:'#ffd500',tags:['x4 Quad','CMD/ADDR/DATA','Dummy Cycles'],level:82},
+  {name:'GDMA',cat:'DMA ENGINE',icon:'🔄',color:'#f59e0b',tags:['M2M','M2P','Linked-List','IRQ'],level:78},
+  {name:'PLL Verification',cat:'ANALOG/CLOCK',icon:'🌀',color:'#a78bfa',tags:['VCO','Lock','Dividers','Jitter'],level:75},
+  {name:'GPIO & Interrupts',cat:'PERIPHERAL',icon:'📌',color:'#ffc200',tags:['INT_EN','W1C','Edge/Level','IRQ'],level:84},
+  {name:'SVA Assertions',cat:'FORMAL VERIFY',icon:'✓',color:'#34d399',tags:['Properties','Sequences','Cover','Assume'],level:80},
+  {name:'Functional Coverage',cat:'COVERAGE',icon:'◉',color:'#fb7185',tags:['Covergroups','Cross','Bins','Goals'],level:82},
+  {name:'Processor Boot',cat:'FIRMWARE',icon:'🖥',color:'#60a5fa',tags:['POR','QSPI Boot','SBL','Secure Boot'],level:76},
+  {name:'Synopsys VCS',cat:'EDA TOOL',icon:'⚡',color:'#00ff88',tags:['Simulation','DVE','UVM Native','Debug'],level:83},
+];
 
-// ═══════════════════════════════════════════════════
-// PROTOCOL DATA
-// ═══════════════════════════════════════════════════
-const PROTOCOLS = [
-  {
-    id:'apb',name:'APB',full:'Advanced Peripheral Bus',
-    icon:'🔌',type:'BUS PROTOCOL',color:'#00c8ff',
-    desc:'AMBA APB — low-bandwidth, low-power peripheral bus. Simple 2-cycle non-pipelined transfers for slow peripherals.',
-    tags:['AMBA','LOW-POWER','NON-PIPELINED','PERIPHERAL'],
-    specs:{
-      'Standard':'AMBA 3 APB v2.0 / AMBA 5 APB',
-      'Transfer':' 2 cycles (SETUP + ACCESS)',
-      'Width':'8/16/32-bit data bus',
-      'Clock':'Single PCLK domain',
-      'Features':'PSLVERR, PPROT, PSTRB',
-      'Pipeline':'Non-pipelined',
-      'Designers':'ARM / Renesas / TI'
-    },
-    slides:[
-      {title:'APB Protocol Overview',color:'#00c8ff',bullets:['Simple 2-state FSM: IDLE → SETUP → ACCESS','Non-pipelined: one transfer at a time','Used for slow peripherals: UART, GPIO, SPI','Master initiates, slave responds with PREADY'],sub:'AMBA Advanced Peripheral Bus'},
-      {title:'APB Signal Description',color:'#00c8ff',bullets:['PCLK: Clock signal','PRESETN: Active-low reset','PADDR[31:0]: Address bus','PSEL: Peripheral select','PENABLE: Transfer enable','PWRITE: 1=Write 0=Read','PWDATA/PRDATA: Data buses','PREADY: Transfer complete'],sub:'Pin Reference'},
-      {title:'APB Transfer Phases',color:'#00c8ff',bullets:['IDLE: PSEL=0, PENABLE=0','SETUP: PSEL=1, PENABLE=0, addr/ctrl driven','ACCESS: PENABLE=1, wait if PREADY=0','Complete when PSEL=PENABLE=PREADY=1'],sub:'State Machine'},
-      {title:'APB Write Timing',color:'#00c8ff',bullets:['Cycle 1: PSEL↑, PENABLE=0, addr+data valid','Cycle 2+: PENABLE↑, wait for PREADY','Transfer done when PREADY=1','PSEL and PENABLE deasserted after'],sub:'Timing Diagram'},
-      {title:'APB Assertions (SVA)',color:'#00c8ff',bullets:['Setup: $rose(PSEL) |-> !PENABLE','Enable: (PSEL && !PENABLE) |=> PENABLE','Addr stable in ACCESS phase: $stable(PADDR)','No PSLVERR without PREADY=1'],sub:'Verification'},
-    ],
-    code:`// APB Sequence Item — UVM
-class apb_seq_item extends uvm_sequence_item;
-  \`uvm_object_utils(apb_seq_item)
-  rand logic [31:0] addr;
-  rand logic [31:0] data;
-  rand logic        wr;
-  rand int unsigned delay;
-
-  constraint c_align { addr[1:0] == 2'b00; }
-  constraint c_delay  { delay inside {[0:5]}; }
-endclass
-
-// APB SVA Assertions
-property apb_setup_phase;
-  @(posedge PCLK) disable iff(!PRESETn)
-  $rose(PSEL) |-> !PENABLE;
-endproperty
-assert property(apb_setup_phase);`,
-    waves:[
-      {label:'PCLK',  pattern:'clk'},
-      {label:'PSEL',  pattern:'010110'},
-      {label:'PENABLE',pattern:'001011'},
-      {label:'PWRITE',pattern:'000100'},
-      {label:'PREADY',pattern:'001011'},
-    ]
+const PROJECTS = [
+  {id:'PRJ-001',title:'APB UVM TESTBENCH',color:'#00ff88',
+   desc:'Complete UVM testbench for APB protocol. Includes driver, monitor, scoreboard, coverage, and SVA assertions.',
+   tags:['APB','UVM','Scoreboard','SVA','Coverage'],
+   content:`<h3>APB UVM TESTBENCH</h3><p>A complete, production-grade UVM testbench for AMBA APB protocol verification. Features a reusable agent architecture with driver, monitor, scoreboard, and functional coverage.</p><h3>ARCHITECTURE</h3><div class="flow-box">apb_test → apb_env → apb_agent → apb_driver / apb_monitor<br>apb_monitor → apb_scoreboard (analysis port)<br>apb_monitor → apb_coverage (functional coverage)</div><h3>KEY FEATURES</h3><ul><li>Constrained-random write/read sequences with address alignment</li><li>Shadow memory scoreboard — write-through, read-verify</li><li>SVA: setup phase, enable timing, addr stability, SLVERR</li><li>Functional coverage: addr bins, wr/rd cross, delay distribution</li><li>UVM factory overrides for error injection</li></ul>`
   },
-
-  {
-    id:'ahb',name:'AHB',full:'Advanced High-performance Bus',
-    icon:'⚡',type:'HIGH-SPEED BUS',color:'#00ff9d',
-    desc:'AMBA AHB — pipelined high-bandwidth bus for processors, memory and DMA. Supports bursts, split/retry, multiple masters.',
-    tags:['AMBA','PIPELINED','BURST','HIGH-BW'],
-    specs:{
-      'Standard':'AMBA 3 AHB-Lite / AHB2',
-      'Pipeline':'Fully pipelined',
-      'Burst':'SINGLE/INCR/WRAP 4/8/16',
-      'Transfer':'1 cycle address + data',
-      'Masters':'Multiple (with arbiter)',
-      'Width':'32/64/128-bit',
-      'Features':'HPROT, HMASTLOCK, HRESP'
-    },
-    slides:[
-      {title:'AHB Protocol Overview',color:'#00ff9d',bullets:['Pipelined: address and data phases overlap','Burst support: INCR4/8/16, WRAP4/8/16','Multiple masters via central arbiter','HRESP: OKAY/ERROR/RETRY/SPLIT'],sub:'AMBA Advanced High-performance Bus'},
-      {title:'AHB Burst Types',color:'#00ff9d',bullets:['SINGLE (000): Single transfer','INCR (001): Undefined incrementing burst','WRAP4/8/16: Wrapping around boundary','INCR4/8/16: Fixed-length incrementing','Natural alignment required for WRAP bursts'],sub:'HBURST Encoding'},
-      {title:'AHB Pipelining',color:'#00ff9d',bullets:['Address phase: HTRANS, HADDR, HSIZE driven','Data phase: HWDATA driven (write) 1 cycle later','HREADY: slave extends cycle','Pipeline: N+1 address while N data active'],sub:'Transfer Overlap'},
-      {title:'AHB Arbiter',color:'#00ff9d',bullets:['HBUSREQx: Master requests bus','HGRANTx: Arbiter grants to master','HMASTLOCK: Locked sequence','HMASTER: Current master ID','Retry/Split for slow responses'],sub:'Multiple Masters'},
-    ],
-    code:`// AHB Constraint Class
-typedef enum logic [2:0] {
-  SINGLE=3'b000, INCR4=3'b011,
-  WRAP4=3'b010,  INCR8=3'b101
-} ahb_burst_e;
-
-class ahb_seq_item;
-  rand logic [31:0] haddr;
-  rand ahb_burst_e  hburst;
-  rand logic [2:0]  hsize;
-
-  // WRAP4 must be naturally aligned
-  constraint c_wrap4 {
-    (hburst==WRAP4) -> haddr[3:0]==4'h0; }
-  constraint c_align {
-    haddr[hsize-1:0] == '0; }
-endclass`,
-    waves:[
-      {label:'HCLK',  pattern:'clk'},
-      {label:'HTRANS',pattern:'002200'},
-      {label:'HADDR', pattern:'xxxxAA'},
-      {label:'HWDATA',pattern:'xxxxDD'},
-      {label:'HREADY',pattern:'111111'},
-    ]
+  {id:'PRJ-002',title:'QSPI SoC UVM VIP',color:'#00e5ff',
+   desc:'SoC-level QSPI flash verification IP with AHB master agent, QSPI monitor, flash model, and scoreboard.',
+   tags:['QSPI','SoC','AHB','Flash Model','RAL'],
+   content:`<h3>QSPI SoC UVM VIP</h3><p>SoC-level UVM Verification IP for QSPI flash controller. Includes complete command set support, AHB register access via RAL model, and bit-accurate flash memory model.</p><h3>COMMANDS SUPPORTED</h3><p>Write Enable (0x06), Page Program (0x02), Quad Page Program (0x32), Fast Read (0x0B), Quad I/O Read (0xEB), Sector Erase (0xD8)</p><h3>SCOREBOARD</h3><p>Shadow memory model tracks all writes and verifies reads. Detects data corruption, address mismatches, and protocol violations.</p>`
   },
-
-  {
-    id:'axi4',name:'AXI4',full:'Advanced eXtensible Interface 4',
-    icon:'🚀',type:'HIGH-PERF BUS',color:'#ff6b00',
-    desc:'AMBA AXI4 — high-performance, high-frequency protocol. Separate read/write channels, out-of-order transactions, burst support.',
-    tags:['AMBA','OOO','BURST','5-CHANNEL','HIGH-FREQ'],
-    specs:{
-      'Standard':'AMBA 4 AXI4 / AXI4-Lite / AXI4-Stream',
-      'Channels':'5: AW/W/B/AR/R',
-      'Burst':'up to 256 beats (INCR)',
-      'Width':'1–1024 bit data',
-      'ID':'Out-of-order (AWID/ARID)',
-      '4KB Rule':'No crossing 4KB boundary',
-      'Handshake':'VALID/READY on all channels'
-    },
-    slides:[
-      {title:'AXI4 Architecture',color:'#ff6b00',bullets:['5 independent channels: AW,W,B,AR,R','VALID/READY handshake on each channel','Out-of-order completion via ID tags','4KB boundary: no burst may cross'],sub:'AMBA AXI4'},
-      {title:'AXI4 Write Path',color:'#ff6b00',bullets:['AW channel: address + control (AWID,AWADDR,AWLEN,AWSIZE,AWBURST)','W channel: data + strobe (WDATA,WSTRB,WLAST)','B channel: write response (BID,BRESP)','BRESP: OKAY/EXOKAY/SLVERR/DECERR'],sub:'Write Transaction'},
-      {title:'AXI4 Read Path',color:'#ff6b00',bullets:['AR channel: address + control (ARID,ARADDR,ARLEN)','R channel: data + response (RID,RDATA,RRESP,RLAST)','RLAST on last beat of burst','Multiple outstanding reads allowed'],sub:'Read Transaction'},
-      {title:'AXI4 Ordering Rules',color:'#ff6b00',bullets:['Same ID: must complete in order','Different ID: can complete out of order','Write before read to same addr: order preserved','Exclusive access via AWLOCK/ARLOCK'],sub:'Transaction Ordering'},
-    ],
-    code:`// AXI4 4KB Boundary Constraint
-class axi4_txn;
-  rand logic [7:0]  awlen;
-  rand logic [2:0]  awsize;
-  rand logic [31:0] awaddr;
-
-  // No 4KB crossing
-  constraint c_4kb {
-    (awaddr[11:0] + ((awlen+1) << awsize))
-    <= 12'hFFF;
-  }
-  // Address aligned to transfer size
-  constraint c_align {
-    awaddr[awsize-1:0] == '0; }
-endclass
-
-// SVA: AWVALID must stay asserted until AWREADY
-property axi_awvalid_stable;
-  @(posedge ACLK) disable iff(!ARESETn)
-  (AWVALID && !AWREADY) |=> AWVALID;
-endproperty`,
-    waves:[
-      {label:'ACLK',   pattern:'clk'},
-      {label:'AWVALID',pattern:'011110'},
-      {label:'AWREADY',pattern:'001011'},
-      {label:'WVALID', pattern:'000111'},
-      {label:'WLAST',  pattern:'000001'},
-      {label:'BVALID', pattern:'000001'},
-    ]
+  {id:'PRJ-003',title:'MIPI DSI VERIFICATION',color:'#a78bfa',
+   desc:'MIPI D-PHY based DSI protocol checker with ECC generation, packet format validation, and HS/LP mode coverage.',
+   tags:['MIPI','DSI','D-PHY','ECC','Packets'],
+   content:`<h3>MIPI DSI VERIFICATION</h3><p>Protocol verification for MIPI Display Serial Interface using D-PHY physical layer. Covers both High-Speed (HS) and Low-Power (LP) modes with complete packet format checking.</p><h3>PACKET TYPES</h3><ul><li>Short Packets: 4 bytes (DI + Data + ECC)</li><li>Long Packets: Header + Variable Payload + CRC</li><li>Virtual Channels: 0–3 multiplexed</li></ul><h3>ECC IMPLEMENTATION</h3><p>Hardware-accurate ECC generation using Hamming code over 3-byte header (DI + WC). Can detect 2-bit and correct 1-bit errors.</p>`
   },
-
-  {
-    id:'uart',name:'UART',full:'Universal Async Receiver Transmitter',
-    icon:'📡',type:'SERIAL PROTOCOL',color:'#ffd500',
-    desc:'UART — classic asynchronous serial communication. No clock line, uses baud rate for synchronization. Start/stop bit framing.',
-    tags:['ASYNC','SERIAL','FULL-DUPLEX','NO-CLOCK'],
-    specs:{
-      'Type':'Asynchronous serial',
-      'Lines':'TX, RX (2-wire)',
-      'Baud Rates':'9600 to 921600+',
-      'Data bits':'5/6/7/8/9',
-      'Parity':'None/Even/Odd/Mark/Space',
-      'Stop bits':'1, 1.5, 2',
-      'Flow ctrl':'RTS/CTS (hardware), XON/XOFF'
-    },
-    slides:[
-      {title:'UART Frame Format',color:'#ffd500',bullets:['Idle line: logic HIGH (1)','Start bit: logic LOW for 1 bit period','Data bits: LSB first, 5–9 bits','Optional parity: Even/Odd','Stop bit(s): logic HIGH 1/2 periods'],sub:'Serial Frame'},
-      {title:'Baud Rate Generation',color:'#ffd500',bullets:['Baud = bits per second (bps)','Bit period = 1/baud_rate','16x oversampling common in receivers','BRD = FCLK / (16 × baud_rate)','Error tolerance: ±1.5% typical'],sub:'Clock Setup'},
-      {title:'UART Verification',color:'#ffd500',bullets:['Inject framing errors (bad stop bit)','Inject parity errors','Test all baud rates','Break condition detection','FIFO overflow scenarios'],sub:'Test Strategy'},
-    ],
-    code:`// UART TX Sequence Item
-class uart_seq_item extends uvm_sequence_item;
-  rand byte  data;
-  rand bit   parity_en;
-  rand bit   parity_type; // 0=even 1=odd
-  rand int   baud_div;    // clock divider
-
-  constraint c_baud {
-    baud_div inside {16, 32, 52, 104}; // 115200..9600
-  }
-  function bit calc_parity(byte d);
-    return parity_type ? ~^d : ^d;
-  endfunction
-endclass
-
-// UART SVA: no glitch on TX during frame
-property uart_tx_stable;
-  @(posedge CLK)
-  (tx_active && !tx_done) |-> $stable(tx_out);
-endproperty`,
-    waves:[
-      {label:'TX',  pattern:'10DDDDDDP1'},
-      {label:'RX',  pattern:'1111111111'},
-    ]
+  {id:'PRJ-004',title:'PROCESSOR BOOT FLOW',color:'#f59e0b',
+   desc:'Complete SoC boot verification: Primary ROM → SBL → Application. QSPI load, DDR init, GDMA transfer, CRC validation.',
+   tags:['Boot','QSPI','GDMA','DDR','Firmware'],
+   content:`<h3>PROCESSOR BOOT FLOW VERIFICATION</h3><p>End-to-end SoC boot sequence verification covering all 3 stages: Boot ROM execution, Secondary Bootloader (SBL), and Application launch.</p><h3>VERIFICATION PLAN</h3><ul><li>Boot mode selection (QSPI / eMMC / UART recovery)</li><li>QSPI read correctness — memory-mapped vs indirect mode</li><li>SBL load integrity — CRC + signature verification</li><li>DDR initialization sequence</li><li>GDMA transfer verification — no overlap, correct size</li><li>Jump address correctness from image header</li></ul>`
   },
-
-  {
-    id:'i2c',name:'I2C',full:'Inter-Integrated Circuit',
-    icon:'🔗',type:'SERIAL BUS',color:'#7c3aed',
-    desc:'I2C — 2-wire multi-master serial bus. Open-drain SDA/SCL with 7/10-bit addressing. Speeds: Standard/Fast/Fast+/High/Ultra.',
-    tags:['2-WIRE','MULTI-MASTER','OPEN-DRAIN','7/10-BIT ADDR'],
-    specs:{
-      'Standard':'NXP I2C-bus spec v6',
-      'Wires':'SDA (data) + SCL (clock)',
-      'Modes':'Sm 100kHz / Fm 400kHz / Fm+ 1MHz / Hs 3.4MHz / UFm 5MHz',
-      'Addressing':'7-bit (128) or 10-bit (1024)',
-      'Features':'ACK/NACK, clock stretching, multi-master',
-      'Logic':'Open-drain with pull-ups',
-      'Arbitration':'SDA wire-AND based'
-    },
-    slides:[
-      {title:'I2C Protocol Basics',color:'#7c3aed',bullets:['SDA: bidirectional data line (open-drain)','SCL: clock line (open-drain, master drives)','START: SDA falls while SCL=1','STOP: SDA rises while SCL=1','ACK: receiver pulls SDA low on 9th clock'],sub:'2-Wire Serial'},
-      {title:'I2C Transaction Format',color:'#7c3aed',bullets:['START → [7-bit ADDR + R/W] → ACK → [DATA] → ACK → STOP','10-bit: START → 11110xx(R/W) → ACK → addr[7:0] → ACK','Repeated START for read-after-write','Clock stretching: slave holds SCL low'],sub:'Frame Structure'},
-      {title:'I2C Speeds',color:'#7c3aed',bullets:['Standard: 100 kHz — legacy devices','Fast: 400 kHz — most modern ICs','Fast-Plus: 1 MHz — lower pull-up needed','High-Speed: 3.4 MHz — special HS master','Ultra-Fast: 5 MHz — push-pull only'],sub:'Operating Modes'},
-    ],
-    code:`// I2C Sequence Item
-class i2c_seq_item extends uvm_sequence_item;
-  rand bit [6:0]  addr;
-  rand bit [7:0]  data[];
-  rand bit        rw;        // 0=write 1=read
-  rand bit        ack_fail;  // inject NACK
-
-  constraint c_data_len { data.size() inside {[1:32]}; }
-  constraint c_no_reserved {
-    addr != 7'h00;   // general call
-    addr[6:3] != 4'b1111; // 10-bit prefix
-  }
-  constraint c_ack {
-    ack_fail dist { 0:=95, 1:=5 };
-  }
-endclass`,
-    waves:[
-      {label:'SCL', pattern:'clk'},
-      {label:'SDA', pattern:'S0101010A0'},
-    ]
+  {id:'PRJ-005',title:'PLL VALIDATION SUITE',color:'#00ff9d',
+   desc:'Comprehensive PLL test suite: enable/disable, lock detection, divider config, bypass mode, stress and lock-time tests.',
+   tags:['PLL','C Tests','Validation','Clock','VCO'],
+   content:`<h3>PLL VALIDATION SUITE</h3><p>Post-silicon validation and firmware bring-up test suite for PLL blocks in SoC designs. Covers all operational modes and corner cases.</p><h3>TEST CASES</h3><ul><li>TC1: PLL Enable — verify CTRL register write</li><li>TC2: Lock Detection — timeout-based polling</li><li>TC3: Divider Config — M/N/P verification</li><li>TC4: Bypass Mode — Fout=Fref check</li><li>TC5: Disable — clean shutdown</li><li>TC6: Lock Time Measurement — µs accuracy</li><li>TC7: Stress Test — 100 enable/disable cycles</li></ul>`
   },
-
-  {
-    id:'i3c',name:'I3C',full:'Improved Inter-Integrated Circuit',
-    icon:'🔮',type:'NEXT-GEN SERIAL',color:'#ff0099',
-    desc:'I3C — next-gen 2-wire protocol. Backwards compatible with I2C, adds dynamic addressing, in-band interrupts, high-data-rate mode.',
-    tags:['MIPI','2-WIRE','DYNAMIC ADDR','IN-BAND IRQ','HDR'],
-    specs:{
-      'Standard':'MIPI I3C v1.1.1',
-      'Compat':'Backwards I2C compatible',
-      'SDR Rate':'12.5 MHz typical',
-      'HDR-DDR':'25 MHz effective',
-      'HDR-TSP/TSL':'Up to 100 Mbps',
-      'Features':'DAA, IBI, Hot-Join',
-      'Power':'Lower than I2C at same speed'
-    },
-    slides:[
-      {title:'I3C Key Features',color:'#ff0099',bullets:['Dynamic Address Assignment (DAA)','In-Band Interrupt (IBI) — no IRQ pin needed','Secondary Master support','Hot-Join: devices attach at runtime','HDR modes: DDR, TSP, TSL'],sub:'MIPI I3C v1.1'},
-      {title:'I3C DAA Process',color:'#ff0099',bullets:['Controller broadcasts ENTDAA CCC','Devices respond with 48-bit MIPI PID','Controller assigns 7-bit dynamic address','Process repeats until no more devices','Addresses are volatile (lost on reset)'],sub:'Dynamic Address Assignment'},
-      {title:'I3C vs I2C Comparison',color:'#ff0099',bullets:['I2C: static address, no IBI, max 5MHz','I3C: dynamic address, IBI, 12.5MHz SDR','I3C power: open-drain only when needed','Push-pull driving in I3C for speed','Both on same 2-wire bus'],sub:'Migration Guide'},
-    ],
-    code:`// I3C IBI Handler
-class i3c_ibi_seq extends uvm_sequence;
-  task body();
-    // Wait for in-band interrupt
-    @(ibi_pending);
-    // Read IBI mandatory byte
-    send_cmd(I3C_CMD_GETSTATUS, 7'h00);
-    // Read extended IBI data
-    read_data(ibi_addr, ibi_len);
-    // Send IBI ACK
-    send_ibi_ack();
-  endtask
-endclass
-
-// I3C CCC (Common Command Code) seq
-class i3c_ccc_seq extends uvm_sequence;
-  rand bit [7:0] ccc_cmd;
-  rand bit [6:0] target_addr;
-  // RSTDAA, ENTDAA, ENEC, DISEC etc
-  constraint c_broadcast {
-    ccc_cmd inside {8'h06,8'h07,8'h01};
-  }
-endclass`,
-    waves:[
-      {label:'SCL', pattern:'clk'},
-      {label:'SDA', pattern:'SCCCAAAD'},
-    ]
-  },
-
-  {
-    id:'spi',name:'SPI / QSPI',full:'Serial Peripheral Interface',
-    icon:'💾',type:'SERIAL BUS',color:'#00ffcc',
-    desc:'SPI — 4-wire full-duplex synchronous serial. QSPI extends to 4 I/O lines for quad-speed transfers. Used for flash memory, displays.',
-    tags:['4-WIRE','FULL-DUPLEX','QUAD','FLASH','NO-OVERHEAD'],
-    specs:{
-      'Type':'Synchronous serial master/slave',
-      'Lines':'SCK, MOSI, MISO, CS# (+ IO2/IO3 for QSPI)',
-      'QSPI Commands':'Fast Read 0Bh, Quad I/O EBh, PP 02h',
-      'Modes':'CPOL/CPHA: 0/0, 0/1, 1/0, 1/1',
-      'Speed':'QSPI: 50–200 MHz effective',
-      'Dummy Cycles':'2–10 (command dependent)',
-      'Flash Ops':'Read/Write/Erase/Status'
-    },
-    slides:[
-      {title:'QSPI Protocol Overview',color:'#00ffcc',bullets:['CMD: 1-bit (x1) — always standard SPI','ADDR: 3-byte 24-bit (x1 or x4)','DUMMY cycles: command-dependent','DATA: 4-bit (x4) quad mode — IO0..IO3','SDR/DDR variants for double data rate'],sub:'Quad SPI'},
-      {title:'QSPI Flash Commands',color:'#00ffcc',bullets:['0x06: Write Enable (WREN)','0x02: Page Program (x1 data)','0x32: Quad Page Program (x4 data)','0x0B: Fast Read (x1 + dummy)','0xEB: Quad I/O Fast Read','0xD8: Sector Erase (64KB)'],sub:'Command Set'},
-      {title:'QSPI Timing',color:'#00ffcc',bullets:['CMD phase: 8 clocks, IO0 only','ADDR phase: 24 clocks, IO0 (or IO0-3)','DUMMY: 2–10 dummy clocks (no data)','DATA: Nibble per clock in x4 mode','CS# must deassert between commands'],sub:'Phase Breakdown'},
-    ],
-    code:`// QSPI Driver
-typedef enum logic [7:0] {
-  WREN=8'h06, PAGE_PROG=8'h02,
-  QUAD_PROG=8'h32, FAST_READ=8'h0B,
-  QUAD_IO_READ=8'hEB, SECTOR_ERASE=8'hD8
-} qspi_cmd_e;
-
-task drive_qspi(qspi_seq_item item);
-  vif.csn <= 0;
-  send_byte_x1(item.cmd);       // CMD: x1
-  send_byte_x1(item.addr[23:16]);
-  send_byte_x1(item.addr[15:8]);
-  send_byte_x1(item.addr[7:0]);
-  repeat(item.dummy_cycles) clk_tick;
-  foreach(item.data[i])
-    if(item.quad_en)
-      send_nibble_x4(item.data[i]);
-    else
-      send_byte_x1(item.data[i]);
-  vif.csn <= 1;
-endtask`,
-    waves:[
-      {label:'SCK',  pattern:'clk'},
-      {label:'CS#',  pattern:'100001'},
-      {label:'IO0',  pattern:'CCCCAADD'},
-      {label:'IO1',  pattern:'00AAAADD'},
-      {label:'IO2',  pattern:'00AAAADD'},
-      {label:'IO3',  pattern:'00AAAADD'},
-    ]
-  },
-
-  {
-    id:'gpio',name:'GPIO',full:'General Purpose I/O',
-    icon:'📌',type:'DIGITAL I/O',color:'#ffc200',
-    desc:'GPIO — configurable digital I/O pins. Direction control, interrupt detection (edge/level), pull-up/down, drive strength.',
-    tags:['DIGITAL','INTERRUPT','CONFIGURABLE','INPUT/OUTPUT'],
-    specs:{
-      'Config':'Input/Output/Open-drain',
-      'Interrupts':'Rising/Falling/Both edge, Level H/L',
-      'Pull':'Internal pull-up/pull-down',
-      'Drive':'2/4/8/12 mA options',
-      'Debounce':'Hardware or software',
-      'Registers':'DIR/DATA/INT_EN/INT_TYPE/INT_STAT',
-      'W1C':'INT_STATUS cleared by write-1-to-clear'
-    },
-    slides:[
-      {title:'GPIO Register Map',color:'#ffc200',bullets:['0x00: GPIO_DIR — 1=output, 0=input per pin','0x04: GPIO_DATA_OUT — output data','0x08: GPIO_DATA_IN — input (read-only)','0x0C: GPIO_INT_EN — interrupt enable','0x10: GPIO_INT_TYPE — edge/level select','0x14: GPIO_INT_STATUS — W1C flags'],sub:'Memory-Mapped Registers'},
-      {title:'GPIO Interrupt Flow',color:'#ffc200',bullets:['1. Configure direction (GPIO_DIR)','2. Set INT_TYPE (rising/falling/level)','3. Enable interrupt (GPIO_INT_EN)','4. External stimulus triggers interrupt','5. GPIO_INT_STATUS bit set','6. CPU handles ISR, clears W1C','7. Ready for next interrupt'],sub:'Interrupt Handling'},
-      {title:'GPIO Verification',color:'#ffc200',bullets:['Test all 4 interrupt types','Verify W1C behavior of INT_STATUS','Test edge detection at glitchy inputs','Verify pull-up/down resistance','Test multiple simultaneous interrupts'],sub:'Test Strategy'},
-    ],
-    code:`// GPIO Interrupt Test Sequence
-\`define GPIO_DIR        8'h00
-\`define GPIO_INT_EN     8'h0C
-\`define GPIO_INT_TYPE   8'h10
-\`define GPIO_INT_STATUS 8'h14
-
-class gpio_rise_int_seq extends uvm_sequence;
-  rand int pin_num;
-  constraint c_pin { pin_num inside {[0:31]}; }
-
-  task body();
-    // 1. Set as input
-    write_reg(\`GPIO_DIR, 32'h0);
-    // 2. Rising edge interrupt type
-    write_reg(\`GPIO_INT_TYPE, 32'h1 << pin_num);
-    // 3. Enable interrupt on pin
-    write_reg(\`GPIO_INT_EN, 32'h1 << pin_num);
-    // 4. Apply stimulus
-    drive_gpio_pin(pin_num, 0); #10ns;
-    drive_gpio_pin(pin_num, 1); #10ns;
-    // 5. Check INT_STATUS
-    read_reg(\`GPIO_INT_STATUS);
-    // 6. Clear W1C
-    write_reg(\`GPIO_INT_STATUS, 32'h1 << pin_num);
-  endtask
-endclass`,
-    waves:[
-      {label:'GPIO_IN', pattern:'0001111'},
-      {label:'INT_EN',  pattern:'1111111'},
-      {label:'INT_STAT',pattern:'0001111'},
-      {label:'CLR_W1C', pattern:'0000100'},
-    ]
-  },
-
-  {
-    id:'pll',name:'PLL',full:'Phase-Locked Loop',
-    icon:'🌀',type:'CLOCK CIRCUIT',color:'#a78bfa',
-    desc:'PLL — generates high-frequency clocks from a reference. Fout = Fref × M / (N × P). VCO range, lock time, jitter are key specs.',
-    tags:['CLOCK','FREQUENCY','VCO','LOCK','JITTER'],
-    specs:{
-      'Formula':'Fout = Fref × M / (N × P)',
-      'VCO Range':'Typically 800–3200 MHz',
-      'Fref Sources':'24/25/26/38/40/52 MHz XTAL',
-      'Lock Time':'~50–500 µs typical',
-      'Jitter':'<1 ps RMS for high-quality PLLs',
-      'Div Ranges':'N:1-16, M:16-512, P:1-8',
-      'Features':'Lock detect, bypass, spread spectrum'
-    },
-    slides:[
-      {title:'PLL Architecture',color:'#a78bfa',bullets:['Phase Detector (PD): compares ref vs feedback','Charge Pump + Loop Filter: smooth the error','VCO: voltage-controlled oscillator (output)','Feedback Divider: M counter back to PD','Pre-divider N: divide ref before PD','Post-divider P: reduce VCO output'],sub:'Block Diagram'},
-      {title:'PLL Frequency Calculation',color:'#a78bfa',bullets:['VCO = Fref × M / N','Fout = VCO / P','VCO must stay within 800–3200 MHz range','Example: Fref=24, N=2, M=100, P=3','VCO = 24×100/2 = 1200 MHz ✓','Fout = 1200/3 = 400 MHz'],sub:'Frequency Planning'},
-      {title:'PLL Verification',color:'#a78bfa',bullets:['Verify all valid N/M/P combinations','Check VCO range constraints','Measure lock time after reset','Test spread spectrum mode','Verify bypass mode (Fout=Fref)','Test all reference frequencies'],sub:'Test Plan'},
-    ],
-    code:`// PLL Scoreboard
-class pll_scoreboard extends uvm_scoreboard;
-  function void write(pll_seq_item item);
-    real vco  = item.fref_mhz * item.mdiv
-                / item.ndiv;
-    real fout = vco / item.pdiv;
-
-    // VCO range check
-    if(vco < 800.0 || vco > 3200.0)
-      \`uvm_error("PLL","VCO out of range")
-
-    // Output frequency check
-    if(fout < item.fout_min || fout > item.fout_max)
-      \`uvm_error("PLL","Fout out of spec")
-
-    \`uvm_info("PLL",$sformatf(
-      "VCO=%.0fMHz Fout=%.2fMHz",
-      vco, fout), UVM_MEDIUM)
-  endfunction
-endclass`,
-    waves:[
-      {label:'FREF',  pattern:'clk'},
-      {label:'VCO',   pattern:'ffffffff'},
-      {label:'FOUT',  pattern:'ffffffff'},
-      {label:'LOCK',  pattern:'00001111'},
-    ]
-  },
-
-  {
-    id:'mipi_dsi',name:'MIPI DSI',full:'Display Serial Interface',
-    icon:'🖥️',type:'DISPLAY PROTOCOL',color:'#00e5ff',
-    desc:'MIPI DSI — high-speed differential serial protocol for mobile displays. D-PHY lanes, HS/LP modes, video & command mode.',
-    tags:['MIPI','D-PHY','DISPLAY','HS-MODE','DIFFERENTIAL'],
-    specs:{
-      'Standard':'MIPI DSI v1.3 / DSI-2',
-      'PHY':'D-PHY (differential pair per lane)',
-      'Lanes':'1–4 data lanes + 1 clock lane',
-      'HS Speed':'80 Mbps – 2.5 Gbps per lane',
-      'LP Speed':'10 Mbps (Low Power mode)',
-      'Packets':'Short (4B) and Long (variable)',
-      'ECC':'Hamming code on header (3B)'
-    },
-    slides:[
-      {title:'MIPI DSI Architecture',color:'#00e5ff',bullets:['Host (SoC) → Display Panel','Clock lane + 1–4 data lanes','High-Speed (HS) and Low-Power (LP) states','Escape mode for LP commands','HS: differential 80Mbps–2.5Gbps'],sub:'D-PHY Overview'},
-      {title:'DSI Packet Format',color:'#00e5ff',bullets:['Short Packet: DI(1B)+Data0+Data1+ECC(1B) = 4B','Long Packet: DI(1B)+WC(2B)+ECC(1B)+Payload+CRC(2B)','DI = {VC[1:0], DT[5:0]} — Virtual Channel + Data Type','ECC: Hamming code over 3-byte header','CRC: CRC-16 over payload'],sub:'Packet Structure'},
-      {title:'DSI Video Modes',color:'#00e5ff',bullets:['Video Mode: continuous pixel stream (sync events)','Command Mode: partial updates via MIPI DCS','HS Video: HBP+Active+HFP+HSA per line','Non-Burst Sync Pulse / Sync Events','Burst Mode: variable packet sizes'],sub:'Operating Modes'},
-      {title:'DSI ECC Calculation',color:'#00e5ff',bullets:['ECC bit P0 = D0^D1^D2^D4^D5^D7...','6 ECC bits (2 unused)','Can detect 2-bit and correct 1-bit errors','Required on all packet headers','Verified by receiver before processing'],sub:'Error Correction'},
-    ],
-    code:`// MIPI DSI Packet with ECC
-class dsi_packet extends uvm_sequence_item;
-  rand bit [1:0] vc;           // virtual channel
-  rand bit [5:0] dtype;        // data type
-  rand bit [15:0] word_count;
-  rand byte payload[];
-
-  constraint c_payload {
-    payload.size() == word_count; }
-
-  // ECC per D-PHY Annex A
-  function logic [7:0] gen_ecc(
-    logic [7:0] di, logic [15:0] wc);
-    logic [23:0] d = {wc, di};
-    logic [7:0] e;
-    e[0]=d[0]^d[1]^d[2]^d[4]^d[5]^d[7]
-        ^d[10]^d[11]^d[13]^d[16]^d[20];
-    // ... (remaining ECC bits)
-    return {2'b00, e[5:0]};
-  endfunction
-endclass`,
-    waves:[
-      {label:'CLK+',  pattern:'clk'},
-      {label:'D0+',   pattern:'SHHHHHHHHH'},
-      {label:'D1+',   pattern:'SHHHHHHHHH'},
-    ]
-  },
-
-  {
-    id:'gdma',name:'GDMA',full:'Generic DMA Controller',
-    icon:'🔄',type:'DMA ENGINE',color:'#f59e0b',
-    desc:'GDMA — multi-channel DMA for M2M/M2P/P2M transfers. Linked-list descriptors, scatter-gather, burst mode, IRQ on completion.',
-    tags:['DMA','M2M','M2P','BURST','LINKED-LIST','IRQ'],
-    specs:{
-      'Channels':'Typically 8–16 channels',
-      'Modes':'M2M, M2P, P2M, P2P',
-      'Burst':'1/4/8/16/32 beats',
-      'Width':'Byte/Halfword/Word/Dword',
-      'Descriptors':'Linked-list (LLI) support',
-      'Interrupts':'TC/TE/HT per channel',
-      'Features':'Scatter-gather, FIFO'
-    },
-    slides:[
-      {title:'DMA Transfer Modes',color:'#f59e0b',bullets:['M2M: Memory to Memory (no peripheral)','M2P: Memory to Peripheral (TX)','P2M: Peripheral to Memory (RX)','P2P: Peripheral to Peripheral','Channel priority: fixed or round-robin'],sub:'DMA Modes'},
-      {title:'DMA Descriptor (LLI)',color:'#f59e0b',bullets:['SRC_ADDR: source start address','DST_ADDR: destination start address','TRANSFER_SIZE: number of transfers','CTRL: burst/width/inc/irq settings','NEXT_LLI: pointer to next descriptor','NULL next_lli = end of chain'],sub:'Linked-List Item'},
-      {title:'DMA Verification',color:'#f59e0b',bullets:['Verify no address overlap in M2M','Check burst alignment constraints','Test all 8 channels simultaneously','Inject bus error during transfer','Verify TC/TE interrupt assertion','Test channel enable/disable mid-transfer'],sub:'Test Scenarios'},
-    ],
-    code:`// GDMA Sequence Item
-class dma_seq_item extends uvm_sequence_item;
-  rand logic [31:0] src_addr;
-  rand logic [31:0] dst_addr;
-  rand logic [15:0] length;
-  rand logic [3:0]  burst_len;
-  rand int unsigned channel_id;
-
-  // No address overlap
-  constraint c_no_overlap {
-    (src_addr+(length<<2)) <= dst_addr ||
-    (dst_addr+(length<<2)) <= src_addr;
-  }
-  // SRAM region
-  constraint c_sram {
-    src_addr inside {[32'h2000_0000:32'h200F_FFFF]};
-    dst_addr inside {[32'h2010_0000:32'h201F_FFFF]};
-  }
-  constraint c_burst {
-    burst_len inside {1, 4, 8, 16};
-  }
-  constraint c_channel {
-    channel_id inside {[0:7]};
-  }
-endclass`,
-    waves:[
-      {label:'CH_REQ', pattern:'010101'},
-      {label:'CH_GNT', pattern:'001010'},
-      {label:'AHB_M',  pattern:'000AAAA'},
-      {label:'TC_IRQ', pattern:'000001'},
-    ]
-  },
-
-  {
-    id:'pboot',name:'Processor Boot',full:'Processor Boot Sequence',
-    icon:'🖥',type:'SYSTEM BOOT',color:'#34d399',
-    desc:'Boot ROM → SRAM load → Clock/PLL init → Peripheral init → Jump to main firmware. Verification of complete power-on reset sequence.',
-    tags:['BOOT','ROM','POR','CLOCK-INIT','SECURE-BOOT'],
-    specs:{
-      'Stages':'POR → BootROM → SRAM → Init → App',
-      'BootROM':'Read-only, manufacturer locked',
-      'Clocks':'RC oscillator → PLL locked',
-      'Security':'Hash check, authenticated boot',
-      'Timeout':'Watchdog resets if boot stalls',
-      'Interfaces':'QSPI/eMMC/UART recovery',
-      'Debug':'JTAG enabled post-boot'
-    },
-    slides:[
-      {title:'Boot Sequence Overview',color:'#34d399',bullets:['1. Power-On Reset (POR) deasserted','2. CPU starts from BootROM address','3. Clock: RC osc → PLL → system clock','4. Security: hash check of boot image','5. Load firmware from QSPI to SRAM','6. Verify signature (secure boot)','7. Jump to application entry point'],sub:'Power-On Flow'},
-      {title:'Clock Init During Boot',color:'#34d399',bullets:['RC oscillator: 8–12 MHz, no crystal needed','PLL: configure N/M/P for target speed','Wait PLL_LOCK signal to assert','Switch clock mux: RC → PLL','Peripheral clocks enabled after system clk','Watchdog must be fed during long PLL lock'],sub:'Clock Initialization'},
-      {title:'Secure Boot Verification',color:'#34d399',bullets:['Read OTP for public key hash','Load boot image from external flash','Compute SHA-256 of boot image','Verify RSA/ECDSA signature','Reject and halt if signature invalid','Anti-rollback: version number in OTP'],sub:'Security Flow'},
-    ],
-    code:`// Processor Boot UVM Sequence
-class proc_boot_seq extends uvm_sequence;
-  task body();
-    // 1. Assert POR
-    apply_por(1);
-    #100ns;
-    apply_por(0);
-
-    // 2. Wait BootROM execution
-    wait_signal(boot_rom_done, 500us);
-
-    // 3. Verify PLL lock
-    wait_signal(pll_lock, 100us);
-    \`uvm_info("BOOT","PLL locked",UVM_LOW)
-
-    // 4. Check firmware load
-    verify_sram_contents(expected_fw_hash);
-
-    // 5. Check secure boot pass
-    check_reg(BOOT_STATUS, 32'h1);
-
-    // 6. Monitor jump-to-app
-    wait_signal(cpu_running, 10us);
-    \`uvm_info("BOOT","CPU running!",UVM_NONE)
-  endtask
-endclass`,
-    waves:[
-      {label:'POR_N',   pattern:'001111'},
-      {label:'OSC_OK',  pattern:'000011'},
-      {label:'PLL_LOCK',pattern:'000001'},
-      {label:'SYS_CLK', pattern:'000ffffffff'},
-      {label:'CPU_RUN', pattern:'000001'},
-    ]
-  },
-
-  {
-    id:'mipi_csi',name:'MIPI CSI-2',full:'Camera Serial Interface',
-    icon:'📷',type:'CAMERA PROTOCOL',color:'#fb7185',
-    desc:'MIPI CSI-2 — camera to ISP interface using D-PHY or C-PHY. Lane aggregation, virtual channels, RAW8/10/12 pixel formats.',
-    tags:['MIPI','CAMERA','D-PHY','C-PHY','ISP'],
-    specs:{
-      'Standard':'MIPI CSI-2 v3.0',
-      'PHY':'D-PHY or C-PHY',
-      'Lanes':'1–8 data lanes',
-      'Speed':'D-PHY: up to 4.5 Gbps/lane',
-      'VCs':'4 virtual channels (0–3)',
-      'Formats':'RAW6/8/10/12/14, RGB, YUV',
-      'Data Types':'Frame Start/End, Line S/E'
-    },
-    slides:[
-      {title:'CSI-2 Architecture',color:'#fb7185',bullets:['Transmitter: camera sensor','Receiver: ISP (Image Signal Processor)','D-PHY: 1 clock lane + 1–8 data lanes','C-PHY: 1–4 trios (no separate clock)','4 virtual channels for multi-cam'],sub:'System Overview'},
-      {title:'CSI-2 Packet Types',color:'#fb7185',bullets:['Short Packet: VC+DT+16-bit data+ECC','Long Packet: VC+DT+WC+ECC+Payload+CRC','Frame Start (0x00), Frame End (0x01)','Line Start (0x02), Line End (0x03)','Generic Long = 0x10, RAW8 = 0x2A'],sub:'Packet Format'},
-    ],
-    code:`// CSI-2 Frame Sequence
-class csi2_frame_seq extends uvm_sequence;
-  rand int frame_width;
-  rand int frame_height;
-  rand bit [1:0] vc;       // virtual channel
-
-  constraint c_res {
-    frame_width inside {640,1280,1920,3840};
-    frame_height inside {480,720,1080,2160};
-  }
-  task body();
-    send_frame_start(vc);
-    for(int y=0; y<frame_height; y++) begin
-      send_line_start(vc, y);
-      send_line_data(vc, y, frame_width);
-      send_line_end(vc, y);
-    end
-    send_frame_end(vc);
-  endtask
-endclass`,
-    waves:[{label:'CLK+',pattern:'clk'},{label:'D0+',pattern:'HHHHHHHHHHH'}]
-  },
-
-  {
-    id:'pcie',name:'PCIe',full:'PCI Express',
-    icon:'⚡',type:'HIGH-SPEED SERIAL',color:'#f97316',
-    desc:'PCIe — point-to-point high-speed serial interconnect. Lanes (x1/x4/x8/x16), TLP/DLLP/PLP layers, LTSSM state machine.',
-    tags:['SERIAL','POINT-TO-POINT','GEN5','TLP','LTSSM'],
-    specs:{
-      'Gen5 Speed':'32 GT/s (63 GB/s x16)',
-      'Layers':'Physical / Data Link / Transaction',
-      'Packets':'TLP / DLLP / Ordered Sets',
-      'Config':'Type 0 (EP) / Type 1 (Bridge)',
-      'Flow Ctrl':'Credit-based (FC)','LTSSM':'16 states: Detect→Polling→Config→L0',
-      'Features':'Equalization, ASPM, ACS'
-    },
-    slides:[
-      {title:'PCIe Layered Architecture',color:'#f97316',bullets:['Physical: SerDes, 128b/130b encoding (Gen3+)','Data Link: ACK/NAK, sequence numbers, LCRC','Transaction: TLP routing, ordering rules','Software: Config space, BAR mapping'],sub:'Protocol Stack'},
-      {title:'LTSSM States',color:'#f97316',bullets:['Detect: check receiver presence','Polling: TS1/TS2 ordered sets','Configuration: lane number/width negotiation','L0: operational link state','Recovery: re-equalization after errors','L1/L2: power management states'],sub:'Link Training'},
-    ],
-    code:`// PCIe TLP Sequence Item
-typedef enum bit [7:0] {
-  MRd32=8'h00, MRd64=8'h20,
-  MWr32=8'h40, MWr64=8'h60,
-  CplD =8'h4A, Cpl  =8'h0A
-} tlp_type_e;
-
-class pcie_tlp extends uvm_sequence_item;
-  rand tlp_type_e  tlp_type;
-  rand bit [9:0]   length;    // DWORDs
-  rand bit [15:0]  requester_id;
-  rand bit [31:0]  address;
-  rand bit [7:0]   tag;
-
-  constraint c_addr_align {
-    address[1:0] == 2'b00; }
-  constraint c_length {
-    length inside {[1:1024]}; }
-endclass`,
-    waves:[{label:'TX',pattern:'HHHHHHHH'},{label:'RX',pattern:'HHHHHHHH'}]
-  },
-
-  {
-    id:'usb',name:'USB 3.x',full:'Universal Serial Bus',
-    icon:'🔌',type:'HOST/DEVICE BUS',color:'#60a5fa',
-    desc:'USB 3.2 SuperSpeed — 10 Gbps dual-lane, Gen 2x2. Hub topology, enumeration, transfer types: Control/Bulk/Interrupt/Isochronous.',
-    tags:['HOST','DEVICE','SUPERSPEED','ENUMERATION','HUB'],
-    specs:{
-      'USB 2.0':'480 Mbps HS, 12 Mbps FS, 1.5 Mbps LS',
-      'USB 3.2 Gen1':'5 Gbps (SuperSpeed)','USB 3.2 Gen2':'10 Gbps (SuperSpeed+)','USB 3.2 Gen2x2':'20 Gbps (2 lanes)',
-      'USB 4':'40 Gbps (Thunderbolt tunneling)',
-      'Transfers':'Control/Bulk/Interrupt/Isochronous',
-      'Topology':'Tiered star (hub-based)'
-    },
-    slides:[
-      {title:'USB Enumeration',color:'#60a5fa',bullets:['Device connect: D+ pull-up detected','Host issues reset (SE0 for >10ms)','Device resets to default address 0','GET_DESCRIPTOR: device descriptor','SET_ADDRESS: assign non-zero address','GET_CONFIGURATION → SET_CONFIGURATION'],sub:'Plug & Play'},
-      {title:'USB Transfer Types',color:'#60a5fa',bullets:['Control: setup+data+status (config)','Bulk: best-effort, large data (storage)','Interrupt: periodic polling (HID)','Isochronous: guaranteed BW (audio/video)'],sub:'Transfer Modes'},
-    ],
-    code:`// USB Control Transfer Seq
-class usb_ctrl_seq extends uvm_sequence;
-  rand bit [7:0]  bmRequestType;
-  rand bit [7:0]  bRequest;
-  rand bit [15:0] wValue, wIndex, wLength;
-  rand byte       data[];
-
-  task body();
-    // SETUP stage
-    send_token(SETUP, ep0_addr);
-    send_data0(setup_packet());
-    recv_ack();
-    // DATA stage (if wLength > 0)
-    if(wLength > 0) begin
-      send_token(IN, ep0_addr);
-      recv_data1(data);
-      send_ack();
-    end
-    // STATUS stage
-    send_token(OUT, ep0_addr);
-    send_data1('{});  // zero length
-    recv_ack();
-  endtask
-endclass`,
-    waves:[{label:'D+',pattern:'HHLLHHLL'},{label:'D-',pattern:'LLHHLLHH'}]
-  },
-
-  {
-    id:'can',name:'CAN / CAN-FD',full:'Controller Area Network',
-    icon:'🚗',type:'AUTOMOTIVE BUS',color:'#a3e635',
-    desc:'CAN — differential 2-wire automotive/industrial bus. Multi-master, CSMA/CD+AMP arbitration. CAN-FD extends to 8 Mbps data rate.',
-    tags:['AUTOMOTIVE','DIFFERENTIAL','MULTI-MASTER','ARBITRATION'],
-    specs:{
-      'CAN Classic':'1 Mbps max','CAN-FD':'8 Mbps data phase','Frame':'SOF+ID(11/29)+DLC+Data+CRC+ACK+EOF',
-      'Arbitration':'Non-destructive CSMA/CD+AMP',
-      'Error':'Active/Passive/Bus-off states',
-      'IDs':'Standard (11-bit) or Extended (29-bit)',
-      'DLC':'0–8 bytes (CAN) / 0–64 (CAN-FD)'
-    },
-    slides:[
-      {title:'CAN Arbitration',color:'#a3e635',bullets:['All nodes transmit simultaneously','Dominant (0) wins over recessive (1)','Node that loses stops transmitting','Highest priority ID always wins','No collisions — lossless arbitration'],sub:'CSMA/CD+AMP'},
-      {title:'CAN Error Handling',color:'#a3e635',bullets:['Bit Error: TX≠RX during frame','Stuff Error: 6 consecutive same bits','CRC Error: checksum mismatch','Form Error: fixed field violation','Error Active → Passive → Bus-Off'],sub:'Fault Confinement'},
-    ],
-    code:`// CAN Sequence Item
-class can_frame extends uvm_sequence_item;
-  rand bit        extended_id;
-  rand bit [10:0] std_id;
-  rand bit [28:0] ext_id;
-  rand bit [3:0]  dlc;
-  rand byte       data[];
-  rand bit        remote_frame;
-
-  constraint c_dlc {
-    dlc inside {[0:8]};
-    data.size() == dlc;
-    !remote_frame || dlc==0;
-  }
-  constraint c_id_dist {
-    std_id dist {
-      11'h7FF:=5,   // low priority
-      11'h000:=95   // high priority
-    };
-  }
-endclass`,
-    waves:[{label:'CANH',pattern:'HHLHLHHH'},{label:'CANL',pattern:'LLHLLHLL'}]
-  },
-
-  {
-    id:'ethernet',name:'Ethernet',full:'IEEE 802.3 Ethernet',
-    icon:'🌐',type:'NETWORKING',color:'#38bdf8',
-    desc:'Ethernet MAC/PHY — GMII/RGMII/SGMII interfaces, frame format, 10M/100M/1G/10G. MDIO for PHY management.',
-    tags:['MAC','PHY','GMII','RGMII','1G/10G'],
-    specs:{
-      '1GbE':'1 Gbps — GMII/RGMII/SGMII','10GbE':'10 Gbps — XGMII/SFI',
-      'Frame':'Preamble(7B)+SFD+DA+SA+Type+Payload+FCS',
-      'FCS':'CRC-32 over DA+SA+Type+Payload',
-      'IFG':'12 bytes minimum inter-frame gap',
-      'MTU':'1500 bytes (Jumbo: 9000 bytes)',
-      'MDIO':'Management interface to PHY'
-    },
-    slides:[
-      {title:'Ethernet Frame Format',color:'#38bdf8',bullets:['Preamble: 7 bytes 0xAA (sync)','SFD: 0xAB start frame delimiter','DA: 6-byte destination MAC','SA: 6-byte source MAC','EtherType/Length: 2 bytes','Payload: 46–1500 bytes (VLAN: +4B)','FCS: 4-byte CRC-32'],sub:'IEEE 802.3 Frame'},
-      {title:'RGMII Interface',color:'#38bdf8',bullets:['4-bit data path (vs 8-bit GMII)','TXD[3:0]/TXCTL on rising edge','RXD[3:0]/RXCTL on both edges (DDR)','GTX_CLK: MAC supplies 125MHz','Delay tuning: 1.5–2.0 ns required'],sub:'Reduced GMII'},
-    ],
-    code:`// Ethernet MAC Frame Sequence
-class eth_frame extends uvm_sequence_item;
-  rand bit [47:0] dst_mac;
-  rand bit [47:0] src_mac;
-  rand bit [15:0] etype;
-  rand byte       payload[];
-  bit  [31:0]     fcs;
-
-  constraint c_payload_len {
-    payload.size() inside {[46:1500]};
-  }
-  constraint c_not_broadcast_only {
-    dst_mac != 48'hFFFFFFFFFFFF;
-  }
-  function void post_randomize();
-    fcs = crc32({dst_mac,src_mac,etype,payload});
-  endfunction
-endclass`,
-    waves:[{label:'GTX_CLK',pattern:'clk'},{label:'TXD',pattern:'PPSSDDDDDDF'}]
+  {id:'PRJ-006',title:'GDMA UVM TESTBENCH',color:'#fb7185',
+   desc:'Multi-channel GDMA verification with M2M/M2P/P2M modes, linked-list descriptors, burst testing, and IRQ validation.',
+   tags:['GDMA','DMA','Multi-channel','IRQ','Burst'],
+   content:`<h3>GDMA UVM TESTBENCH</h3><p>Comprehensive GDMA controller verification covering all transfer modes, channel configurations, and error scenarios.</p><h3>TEST SCENARIOS</h3><ul><li>M2M: Verify no address overlap constraint</li><li>M2P: Peripheral TX with handshake</li><li>P2M: Peripheral RX with FIFO</li><li>Burst: All burst sizes 1/4/8/16</li><li>Linked-List: Chain of descriptors</li><li>IRQ: TC/TE/HT interrupt assertion</li><li>Error: Bus error injection mid-transfer</li></ul>`
   },
 ];
 
-// ═══════════════════════════════════════════════════
-// BUILD PROTOCOL GRID
-// ═══════════════════════════════════════════════════
-function buildProtoGrid() {
-  const grid = document.getElementById('proto-grid');
-  grid.innerHTML = PROTOCOLS.map(p=>`
-    <div class="proto-card" style="--card-color:${p.color}" onclick="openProto('${p.id}')">
-      <div class="pc-header">
-        <div class="pc-icon" style="background:${p.color}18;border-color:${p.color}25;">${p.icon}</div>
-        <div>
-          <div class="pc-title">${p.name}</div>
-          <div class="pc-type" style="color:${p.color}">${p.type}</div>
-        </div>
+// ═══════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════
+function buildSkills() {
+  document.getElementById('skills-grid').innerHTML = SKILLS.map(s=>`
+    <div class="skill-card reveal" style="--card-accent:${s.color}">
+      <div class="sk-header">
+        <div class="sk-icon">${s.icon}</div>
+        <div><div class="sk-name">${s.name}</div><div class="sk-category">${s.cat}</div></div>
       </div>
-      <div class="pc-desc">${p.desc}</div>
-      <div class="pc-tags">${p.tags.map(t=>`<span class="pc-tag">${t}</span>`).join('')}</div>
-      <div class="pc-arrow" style="">→ OPEN REFERENCE</div>
-    </div>
-  `).join('');
+      <div class="sk-tags">${s.tags.map(t=>`<span class="sk-tag">${t}</span>`).join('')}</div>
+      <div class="sk-level">
+        <div class="sk-level-label"><span>PROFICIENCY</span><span style="color:${s.color}">${s.level}%</span></div>
+        <div class="sk-bar"><div class="sk-fill" style="width:0%;background:linear-gradient(90deg,${s.color},#00ff9d)" data-width="${s.level}%"></div></div>
+      </div>
+    </div>`).join('');
 }
 
-// ═══════════════════════════════════════════════════
-// OPEN PROTOCOL MODAL
-// ═══════════════════════════════════════════════════
-function openProto(id) {
-  const p = PROTOCOLS.find(x=>x.id===id);
-  if(!p) return;
-
-  document.getElementById('modal-title-bar').innerHTML = `<span style="color:${p.color}">${p.icon}</span> ${p.name} — ${p.full}`;
-
-  // Sidebar
-  const navItems = ['Overview','Specifications','Timing','Code','Slides','Assertions'];
-  document.getElementById('modal-sidebar').innerHTML = `
-    <div class="ms-section">
-      <div class="ms-label">SECTIONS</div>
-      ${navItems.map((n,i)=>`
-        <div class="ms-item ${i===0?'active':''}" onclick="switchSection(this,'sec-${i}')">
-          <span class="ms-dot"></span>${n}
-        </div>`).join('')}
-    </div>`;
-
-  // Content
-  const specs = Object.entries(p.specs).map(([k,v])=>`<tr><td style="color:var(--text3)">${k}</td><td>${v}</td></tr>`).join('');
-
-  // Generate timing diagram SVG
-  const wavesSVG = (p.waves||[]).map((w,i)=>{
-    const y = 20;
-    const W=440, H=24;
-    let path='';
-    const pts=w.pattern.split('');
-    const sw=W/Math.max(pts.length,8);
-    let cx=0;
-    if(w.pattern==='clk'){
-      for(let k=0;k<16;k++){const x=k*sw/2;path+=k===0?`M${x},${H} `:``;if(k%2===0){path+=`L${x},${H} L${x},${y} L${x+sw/4},${y} L${x+sw/4},${H} `;}}}
-    else{
-      pts.forEach((c,j)=>{
-        const x=j*sw;
-        if(c==='1'||c==='H'||c==='h'){path+=j===0?`M0,${y} `:``;path+=`L${x},${y} L${x+sw},${y} `;}
-        else if(c==='0'||c==='L'||c==='l'){path+=j===0?`M0,${H} `:``;path+=`L${x},${H} L${x+sw},${H} `;}
-        else{path+=j===0?`M0,${(y+H)/2} `:``;path+=`L${x+sw},${(y+H)/2} `;}
-      });
-    }
-    return `<div class="td-row"><span class="td-label">${w.label}</span><div class="td-wave"><svg viewBox="0 0 ${W} ${H+8}" preserveAspectRatio="none"><path d="${path}" fill="none" stroke="${p.color}" stroke-width="1.5" opacity="0.9"/></svg></div></div>`;
-  }).join('');
-
-  // Build slides HTML
-  const slidesHTML = `
-    <div class="slide-viewer">
-      <div class="slide-controls">
-        ${(p.slides||[]).map((s,i)=>`<button class="slide-btn ${i===0?'active':''}" onclick="gotoSlide(${i},this,'slide-${id}')">${i+1}</button>`).join('')}
-        <span class="slide-counter" id="sctr-${id}">1 / ${p.slides?.length||0}</span>
+function buildProjects() {
+  document.getElementById('projects-grid').innerHTML = PROJECTS.map(p=>`
+    <div class="proj-card reveal" style="--proj-color:${p.color}" onclick="openProject('${p.id}')">
+      <div class="proj-top">
+        <div class="proj-id">${p.id}</div>
+        <div class="proj-title">${p.title}</div>
+        <div class="proj-desc">${p.desc}</div>
       </div>
-      <div class="slide-container" id="slide-${id}">
-        ${(p.slides||[]).map((s,i)=>`
-          <div class="slide ${i===0?'active':''}" id="slide-${id}-${i}" style="background:linear-gradient(135deg,#060c18 0%,#0a1020 100%);">
-            <div style="margin-bottom:auto;">
-              <div style="font-family:var(--mono);font-size:0.58rem;letter-spacing:3px;color:${p.color};margin-bottom:12px;">${p.name} · SLIDE ${i+1}</div>
-              <div style="font-family:var(--display);font-size:1.2rem;font-weight:800;color:#fff;margin-bottom:6px;line-height:1.2;">${s.title}</div>
-              <div style="font-family:var(--ui);font-size:0.7rem;color:var(--text3);margin-bottom:20px;">${s.sub}</div>
-              <div style="display:flex;flex-direction:column;gap:10px;">
-                ${s.bullets.map(b=>`<div style="display:flex;gap:10px;align-items:flex-start;"><span style="color:${p.color};flex-shrink:0;margin-top:3px;">▸</span><span style="font-family:var(--ui);font-size:0.82rem;color:var(--text);line-height:1.5;">${b}</span></div>`).join('')}
-              </div>
-            </div>
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:16px;border-top:1px solid rgba(255,255,255,0.06);">
-              <div style="font-family:var(--display);font-size:0.5rem;letter-spacing:3px;background:linear-gradient(135deg,var(--cyan),var(--green));-webkit-background-clip:text;-webkit-text-fill-color:transparent;">VLSI NEXUS</div>
-              <div style="font-family:var(--mono);font-size:0.55rem;color:var(--text3);">${i+1} / ${p.slides.length}</div>
-            </div>
-          </div>`).join('')}
+      <div class="proj-body">
+        <div class="proj-tags">${p.tags.map(t=>`<span class="proj-tag">${t}</span>`).join('')}</div>
+        <button class="proj-link" onclick="openProject('${p.id}')">→ VIEW DETAILS</button>
       </div>
-    </div>`;
-
-  document.getElementById('modal-content').innerHTML = `
-    <div class="content-section active" id="sec-0">
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:4px;">
-        <div style="font-size:2rem">${p.icon}</div>
-        <div>
-          <div class="content-h1">${p.full}</div>
-          <span class="content-badge cb-cyan">${p.type}</span>
-        </div>
-      </div>
-      <p class="content-p">${p.desc}</p>
-      <div class="info-grid">
-        ${Object.entries(p.specs).slice(0,4).map(([k,v])=>`<div class="info-card"><div class="ic-label">${k}</div><div class="ic-value" style="font-size:0.85rem;color:${p.color}">${v}</div></div>`).join('')}
-      </div>
-      <div class="note-box nb-info"><span class="nb-icon">ℹ</span> ${p.name} is widely used in ${p.type.toLowerCase()} designs. Understanding its timing and verification methodology is essential for any DV engineer.</div>
-    </div>
-
-    <div class="content-section" id="sec-1">
-      <div class="content-h1">Specifications</div>
-      <table class="spec-table">
-        <tr><th>Parameter</th><th>Value / Description</th></tr>
-        ${specs}
-      </table>
-      <div class="note-box nb-tip"><span class="nb-icon">💡</span> These specs define verification requirements. Each parameter should be covered in your test plan.</div>
-    </div>
-
-    <div class="content-section" id="sec-2">
-      <div class="content-h1">Timing Diagram</div>
-      <div class="timing-diagram">
-        <div class="td-title">// ${p.name} SIGNAL WAVEFORM</div>
-        ${wavesSVG||'<div style="color:var(--text3);font-family:var(--mono);font-size:0.7rem;">Waveform not available for this protocol.</div>'}
-      </div>
-      <div class="note-box nb-warn"><span class="nb-icon">⚠</span> Timing diagrams are simplified. Always refer to the official spec for exact setup/hold times and cycle counts.</div>
-    </div>
-
-    <div class="content-section" id="sec-3">
-      <div class="content-h1">Code Examples</div>
-      <span class="content-badge cb-green">SystemVerilog / UVM</span>
-      <div class="code-block" data-lang="SV">${escHTML(p.code||'// No code available')
-        .replace(/\b(class|extends|endclass|module|endmodule|function|endfunction|task|endtask|constraint|rand|randc|foreach|begin|end|if|else|repeat|while|forever|initial|always|return|fork|join|new|this|super|void|bit|logic|int|byte|real|string|typedef|enum|struct|parameter|local|virtual|pure|static)\b/g,'<span class="kw">$1</span>')
-        .replace(/`[a-zA-Z_]\w*/g,'<span class="mc">$&</span>')
-        .replace(/(\/\/[^\n]*)/g,'<span class="cm">$1</span>')
-        .replace(/"([^"]*)"/g,'<span class="str">"$1"</span>')
-        .replace(/\b(\d+(?:'\s*[bBhHoOdD]\s*[0-9a-fA-FxXzZ_]+)?)\b/g,'<span class="num">$1</span>')
-      }</div>
-    </div>
-
-    <div class="content-section" id="sec-4">
-      <div class="content-h1">Presentation Slides</div>
-      <span class="content-badge cb-cyan">INTERACTIVE PPT</span>
-      ${slidesHTML}
-    </div>
-
-    <div class="content-section" id="sec-5">
-      <div class="content-h1">Assertions & SVA</div>
-      <p class="content-p">Key SVA properties for ${p.name} protocol verification. These should be included in any comprehensive testbench.</p>
-      <div class="code-block" data-lang="SVA">// ${p.name} Protocol Checker — SVA
-module ${p.id}_checker(
-  input logic clk, rst_n,
-  /* ${p.name} signals */
-);
-
-// ── Property Definitions ──
-// 1. Valid handshake: VALID held until READY
-property valid_held_until_ready(valid, ready);
-  @(posedge clk) disable iff(!rst_n)
-  (valid && !ready) |=> valid;
-endproperty
-
-// 2. No X on data during valid transfer
-property no_x_during_transfer(valid, ready, data);
-  @(posedge clk) disable iff(!rst_n)
-  (valid && ready) |-> !$isunknown(data);
-endproperty
-
-// 3. Reset behavior
-property clean_reset;
-  @(posedge clk)
-  $fell(rst_n) |=> /* all outputs low */ 1;
-endproperty
-
-// ── Assertion Instantiation ──
-${p.name}_valid_stable:
-  assert property(valid_held_until_ready(
-    /* signals */))
-  else $error("${p.name}: VALID deasserted before READY");
-
-${p.name}_no_x:
-  assert property(no_x_during_transfer(
-    /* signals */))
-  else $error("${p.name}: X on data bus during transfer");
-
-// ── Cover Points ──
-${p.name}_write_transfer:
-  cover property(@(posedge clk) /* write handshake */);
-
-${p.name}_read_transfer:
-  cover property(@(posedge clk) /* read handshake */);
-
-endmodule</div>
-    </div>
-  `;
-
-  document.getElementById('proto-modal').classList.add('open');
-  document.body.style.overflow = 'hidden';
+    </div>`).join('');
 }
 
-function escHTML(s){ return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
-
-function switchSection(el, secId) {
-  document.querySelectorAll('#modal-sidebar .ms-item').forEach(i=>i.classList.remove('active'));
-  el.classList.add('active');
-  document.querySelectorAll('#modal-content .content-section').forEach(s=>s.classList.remove('active'));
-  document.getElementById(secId).classList.add('active');
-}
-
-function gotoSlide(idx, btn, containerId) {
-  const container = document.getElementById(containerId);
-  container.querySelectorAll('.slide').forEach(s=>s.classList.remove('active'));
-  container.querySelector(`[id="${containerId}-${idx}"]`).classList.add('active');
-  btn.closest('.slide-controls').querySelectorAll('.slide-btn').forEach(b=>b.classList.remove('active'));
+// ═══════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════
+function switchTab(btn, id) {
+  document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.ctab-content').forEach(c=>c.classList.remove('active'));
   btn.classList.add('active');
-  const total = container.querySelectorAll('.slide').length;
-  document.getElementById(`sctr-${containerId.replace('slide-','')}`).textContent = `${idx+1} / ${total}`;
+  document.getElementById(id).classList.add('active');
+}
+
+// ═══════════════════════════════════════════
+// MODAL
+// ═══════════════════════════════════════════
+function openProject(id) {
+  const p = PROJECTS.find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById('modal-fname').textContent = p.title.toLowerCase().replace(/ /g,'_')+'.sv';
+  document.getElementById('modal-body').innerHTML = `
+    <div class="text-section" style="border:none;padding:0;">
+      <div class="ts-title" style="color:${p.color}">${p.title}</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;">
+        ${p.tags.map(t=>`<span class="badge badge-green">${t}</span>`).join('')}
+      </div>
+      <div class="ts-body">${p.content}</div>
+    </div>`;
+  document.getElementById('proj-modal').classList.add('open');
+  document.body.style.overflow='hidden';
 }
 
 function closeModal() {
-  document.getElementById('proto-modal').classList.remove('open');
-  document.body.style.overflow = '';
+  document.getElementById('proj-modal').classList.remove('open');
+  document.body.style.overflow='';
 }
-document.getElementById('proto-modal').addEventListener('click',e=>{if(e.target===document.getElementById('proto-modal'))closeModal();});
+document.getElementById('proj-modal').addEventListener('click',e=>{
+  if(e.target===document.getElementById('proj-modal')) closeModal();
+});
 
-// ═══════════════════════════════════════════════════
-// LEARNING PATHS
-// ═══════════════════════════════════════════════════
-const PATHS = [
-  {title:'SV Foundations',level:'beginner',color:'#00ff9d',progress:0,
-   desc:'Start with SystemVerilog fundamentals — data types, OOP, interfaces, and basic testbench structure.',
-   modules:['Data Types & Packed Arrays','OOP: Classes & Inheritance','Interfaces & Modports','Clocking Blocks','Basic Testbench Structure'],
-  },
-  {title:'Constrained Random Verification',level:'intermediate',color:'#00c8ff',progress:0,
-   desc:'Master rand/randc, constraints, distributions, arrays, and functional coverage.',
-   modules:['rand/randc Variables','Constraint Blocks & Modes','solve..before & soft','Functional Coverage','Coverage-Driven Verification'],
-  },
-  {title:'UVM Methodology',level:'intermediate',color:'#f59e0b',progress:0,
-   desc:'Complete UVM: agents, environments, sequences, scoreboards, factory, and RAL model.',
-   modules:['UVM Base Classes','Sequence / Sequencer / Driver','Monitor & Scoreboard','Agent & Environment','Register Abstraction Layer'],
-  },
-  {title:'Protocol Verification',level:'advanced',color:'#ff6b00',progress:0,
-   desc:'Protocol-specific VIPs for APB, AHB, AXI4, UART, I2C, SPI — build production-grade testbenches.',
-   modules:['APB/AHB VIP','AXI4 Protocol Checker','UART/I2C/SPI Agents','Mixed-Protocol Environment','Coverage Closure'],
-  },
-  {title:'SVA & Formal Verification',level:'advanced',color:'#a78bfa',progress:0,
-   desc:'Write concurrent assertions, sequences, properties. Use formal tools for proven correctness.',
-   modules:['Immediate vs Concurrent','Sequences & Properties','cover/assume/assert','Formal Connectivity','FPV vs Simulation'],
-  },
-  {title:'Advanced DV Techniques',level:'expert',color:'#ff0099',progress:0,
-   desc:'Power-aware sim, emulation, UVM-SystemC co-simulation, ML-aided verification.',
-   modules:['UPF Power Domains','Emulation Flow','UVM-SystemC','Regression Automation','ML in Verification'],
-  },
-];
-
-function buildPaths() {
-  document.getElementById('paths-grid').innerHTML = PATHS.map(p=>`
-    <div class="path-card" style="--path-color:${p.color}">
-      <div class="path-level pl-${p.level}">${p.level.toUpperCase()}</div>
-      <div class="path-title">${p.title}</div>
-      <div class="path-desc">${p.desc}</div>
-      <div class="path-modules">
-        ${p.modules.map(m=>`<div class="path-module"><span class="pm-dot" style="background:${p.color}50;border:1px solid ${p.color}"></span>${m}</div>`).join('')}
-      </div>
-      <div class="path-progress">
-        <div class="pp-label"><span>Progress</span><span>0%</span></div>
-        <div class="pp-track"><div class="pp-fill" style="width:0%;background:${p.color}"></div></div>
-      </div>
-    </div>`).join('');
-}
-
-// ═══════════════════════════════════════════════════
-// TOOLS
-// ═══════════════════════════════════════════════════
-const TOOLS = [
-  {icon:'⚡',title:'Synopsys VCS',desc:'Industry-standard SystemVerilog/UVM simulator. Native SV support, advanced debug, DVE waveform viewer.',color:'#00c8ff',bg:'rgba(0,200,255,0.08)',tag:'tt-premium',tagLabel:'INDUSTRY'},
-  {icon:'🔮',title:'Cadence Xcelium',desc:'Cadence multi-language simulator. xrun wrapper, VHDL/SV/AMS mix, SimVision debug.',color:'#00ff9d',bg:'rgba(0,255,157,0.08)',tag:'tt-premium',tagLabel:'INDUSTRY'},
-  {icon:'🎯',title:'Questa / ModelSim',desc:'Siemens EDA Questa SIM. Advanced assertions, power-aware simulation, mixed-language.',color:'#f59e0b',bg:'rgba(245,158,11,0.08)',tag:'tt-premium',tagLabel:'INDUSTRY'},
-  {icon:'🌐',title:'EDA Playground',desc:'Free cloud-based SystemVerilog simulator. Multiple simulators: VCS, Questa, Xcelium, Icarus. No install.',color:'#a78bfa',bg:'rgba(167,139,250,0.08)',tag:'tt-free',tagLabel:'FREE'},
-  {icon:'🔬',title:'Icarus Verilog',desc:'Open-source Verilog/SystemVerilog compiler and simulator. Great for learning and small projects.',color:'#34d399',bg:'rgba(52,211,153,0.08)',tag:'tt-open',tagLabel:'OPEN SOURCE'},
-  {icon:'📊',title:'GTKWave',desc:'Free waveform viewer. Opens VCD/FST/GHW files from any simulator. Essential for debug.',color:'#fb7185',bg:'rgba(251,113,133,0.08)',tag:'tt-open',tagLabel:'OPEN SOURCE'},
-  {icon:'🏗️',title:'Synopsys SpyGlass',desc:'RTL lint and CDC/RDC analysis. Detects CDC crossings, resets, and coding violations.',color:'#ffd500',bg:'rgba(255,213,0,0.08)',tag:'tt-premium',tagLabel:'INDUSTRY'},
-  {icon:'✅',title:'JasperGold',desc:'Cadence formal verification tool. FPV, connectivity, datapath analysis. App-based flow.',color:'#60a5fa',bg:'rgba(96,165,250,0.08)',tag:'tt-premium',tagLabel:'FORMAL'},
-];
-
-function buildTools() {
-  document.getElementById('tools-grid').innerHTML = TOOLS.map(t=>`
-    <div class="tool-card">
-      <div class="tc-icon" style="background:${t.bg};border:1px solid ${t.color}25;">${t.icon}</div>
-      <div class="tc-title">${t.title}</div>
-      <div class="tc-desc">${t.desc}</div>
-      <span class="tc-tag ${t.tag}">${t.tagLabel}</span>
-    </div>`).join('');
-}
-
-// ═══════════════════════════════════════════════════
-// QUIZ
-// ═══════════════════════════════════════════════════
-const QUESTIONS = [
-  {q:'In APB protocol, what is the correct sequence of signal states during an ACCESS phase?',opts:['PSEL=0, PENABLE=1, PREADY=X','PSEL=1, PENABLE=1, waiting for PREADY','PSEL=1, PENABLE=0, PADDR valid','PSEL=0, PENABLE=0, idle state'],ans:1,exp:'ACCESS phase: PSEL=1, PENABLE=1. The slave responds with PREADY. Transfer completes when PREADY=1.'},
-  {q:'What constraint ensures an AXI4 burst does NOT cross a 4KB boundary?',opts:['AWLEN inside {[0:255]}','(AWADDR[11:0] + ((AWLEN+1)<<AWSIZE)) <= 12\'hFFF','AWADDR[1:0] == 2\'b00','AWBURST == 2\'b01'],ans:1,exp:'AXI4 spec: no burst may cross a 4KB boundary. The total bytes transferred from the starting address must not exceed 4KB.'},
-  {q:'In I2C protocol, how is a NACK (negative acknowledge) indicated?',opts:['SDA driven low during 9th clock','SDA remains HIGH during 9th clock','SCL pulled low by slave','SDA=1 and SCL=0 simultaneously'],ans:1,exp:'ACK=SDA pulled LOW by receiver. NACK=SDA released HIGH (or not driven). Master detects NACK and typically stops transaction.'},
-  {q:'What does the UVM factory allow you to do in a testbench?',opts:['Override class types without modifying source code','Create faster simulations','Generate random vectors automatically','Connect virtual interfaces'],ans:0,exp:'UVM factory allows type overrides. You can replace apb_driver with apb_error_driver throughout the TB without touching environment code.'},
-  {q:'Which constraint guarantees exactly N bits are set in a rand variable?',opts:['x inside {[N:N]}','$countones(x) == N','$onehot(x) && x > 0','x[N] == 1'],ans:1,exp:'$countones(x) returns the number of 1-bits in x. Constraining this == N gives exactly N set bits.'},
-  {q:'In MIPI DSI, what does ECC protect?',opts:['Full packet payload (all bytes)','Only the data bytes','The 3-byte packet header (DI + WC)','The CRC at end of packet'],ans:2,exp:'ECC (Hamming code) covers only the 3-byte header: DI(1B) + WC(2B). The payload is protected by CRC-16 separately.'},
-  {q:'What is the purpose of the `soft` keyword in SystemVerilog constraints?',opts:['Makes constraint optional — can be overridden by randomize() with {}','Reduces constraint solver priority','Disables constraint checking','Makes variable softer (floating point)'],ans:0,exp:'soft constraints are overridable. A randomize() with {} inline constraint can override a soft constraint without causing a conflict.'},
-  {q:'In UVM, when should phase.raise_objection() be called?',opts:['In build_phase() before creating components','In run_phase() before starting test activity','In connect_phase() for TLM connections','In report_phase() after all checks'],ans:1,exp:'raise_objection() in run_phase() prevents simulation from ending. drop_objection() when done. Missing raise causes immediate simulation end.'},
-];
-
-let qIdx=0, qScore=0, qAnswered=false;
-
-function buildQuiz() {
-  renderQuestion();
-}
-
-function renderQuestion() {
-  const c = document.getElementById('quiz-container');
-  const q = QUESTIONS[qIdx];
-  c.innerHTML = `
-    <div class="quiz-header">
-      <div class="quiz-prog">
-        ${QUESTIONS.map((_,i)=>`<div class="qp-dot ${i<qIdx?'done':i===qIdx?'current':''}"></div>`).join('')}
-      </div>
-      <div class="quiz-score">Score: ${qScore}/${qIdx}</div>
-    </div>
-    <div class="quiz-q">Q${qIdx+1}. ${q.q}</div>
-    <div class="quiz-opts">
-      ${q.opts.map((o,i)=>`
-        <div class="quiz-opt" onclick="answerQ(${i})" id="opt-${i}">
-          <div class="opt-letter">${['A','B','C','D'][i]}</div>
-          ${o}
-        </div>`).join('')}
-    </div>
-    <button class="quiz-next" id="quiz-next" onclick="nextQ()">Next Question →</button>
-  `;
-  qAnswered = false;
-}
-
-function answerQ(i) {
-  if(qAnswered) return;
-  qAnswered = true;
-  const q = QUESTIONS[qIdx];
-  document.querySelectorAll('.quiz-opt').forEach((el,j)=>{
-    if(j===q.ans) el.classList.add('correct');
-    else if(j===i && i!==q.ans) el.classList.add('wrong');
+// ═══════════════════════════════════════════
+// COPY CODE
+// ═══════════════════════════════════════════
+function copyCode(btn) {
+  const pre = btn.closest('.code-header').nextElementSibling;
+  const text = pre.textContent;
+  navigator.clipboard.writeText(text).then(()=>{
+    btn.textContent = 'COPIED!';
+    btn.style.color = 'var(--green)';
+    setTimeout(()=>{btn.textContent='COPY';btn.style.color='';},2000);
   });
-  if(i===q.ans) qScore++;
-  document.getElementById('quiz-next').classList.add('show');
-
-  // Show explanation
-  const exp = document.createElement('div');
-  exp.className = `note-box ${i===q.ans?'nb-tip':'nb-warn'}`;
-  exp.innerHTML = `<span class="nb-icon">${i===q.ans?'✓':'✗'}</span><span>${q.exp}</span>`;
-  document.querySelector('.quiz-opts').after(exp);
 }
 
-function nextQ() {
-  qIdx = (qIdx+1)%QUESTIONS.length;
-  if(qIdx===0) qScore=0;
-  renderQuestion();
-}
-
-// ═══════════════════════════════════════════════════
-// DEMO SIMULATION
-// ═══════════════════════════════════════════════════
-let demoRunning = false;
-async function runDemo() {
-  if(demoRunning) return;
-  demoRunning = true;
-  const out = document.getElementById('sim-output');
-  out.innerHTML = '';
-
-  const lines = [
-    {t:'info',src:'SYS', m:'VCS 2025.06 — Compilation started'},
-    {t:'info',src:'ELAB',m:'Elaboration: module tb, class apb_txn'},
-    {t:'info',src:'RAND',m:'Constraint solver: CVC engine activated'},
-    {t:'info',src:'RAND',m:'Constraints: c_align (addr[1:0]==0), c_wr (dist)'},
-    {t:'info',src:'$display',m:`addr=40001000 wr=1`},
-    {t:'info',src:'$display',m:`addr=4000200c wr=1`},
-    {t:'info',src:'$display',m:`addr=40003ff8 wr=0`},
-    {t:'info',src:'$display',m:`addr=40000014 wr=1`},
-    {t:'pass',src:'SIM', m:'Simulation PASSED — 0 errors, 0 warnings'},
-  ];
-
-  const addLine = (l) => {
-    const row = document.createElement('div');
-    row.className='so-line';
-    row.innerHTML=`<span class="so-tag ${l.t}">[${l.src}]</span><span class="so-msg">${l.m}</span>`;
-    out.appendChild(row);
-    out.scrollTop=out.scrollHeight;
-  };
-
-  for(const l of lines) {
-    await new Promise(r=>setTimeout(r,200+Math.random()*200));
-    addLine(l);
+// ═══════════════════════════════════════════
+// CONTACT FORM
+// ═══════════════════════════════════════════
+function sendMessage() {
+  const name = document.getElementById('f-name').value.trim();
+  const email = document.getElementById('f-email').value.trim();
+  const subject = document.getElementById('f-subject').value.trim();
+  const message = document.getElementById('f-message').value.trim();
+  const status = document.getElementById('form-status');
+  if(!name||!email||!message){
+    status.textContent='→ Please fill in all required fields.';
+    status.style.color='var(--red)';status.style.display='block';return;
   }
-  demoRunning = false;
+  status.textContent='→ Message sent! I\'ll get back to you soon.';
+  status.style.color='var(--green)';status.style.display='block';
+  document.getElementById('f-name').value='';
+  document.getElementById('f-email').value='';
+  document.getElementById('f-subject').value='';
+  document.getElementById('f-message').value='';
 }
 
-// ═══════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════
-function scrollTo(id) {
-  document.getElementById(id).scrollIntoView({behavior:'smooth'});
+// ═══════════════════════════════════════════
+// NAV
+// ═══════════════════════════════════════════
+function navClick(el) {
+  document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('nav-links').classList.remove('open');
+}
+function toggleNav() {
+  document.getElementById('nav-links').classList.toggle('open');
 }
 
-// Highlight active nav on scroll
-const sections = ['protocols','learning','tools','practice','simulator'];
+// ═══════════════════════════════════════════
+// SCROLL REVEAL + SKILL BARS
+// ═══════════════════════════════════════════
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
+      e.target.classList.add('visible');
+      // Animate skill bars
+      e.target.querySelectorAll('.sk-fill').forEach(bar=>{
+        bar.style.width = bar.dataset.width;
+      });
+      observer.unobserve(e.target);
+    }
+  });
+},{threshold:0.12});
+
+function observeAll(){
+  document.querySelectorAll('.reveal,.skill-card').forEach(el=>observer.observe(el));
+}
+
+// ═══════════════════════════════════════════
+// ACTIVE NAV ON SCROLL
+// ═══════════════════════════════════════════
+const sections = ['home','about','skills','projects','coding','contact'];
+const secObserver = new IntersectionObserver(entries=>{
+  entries.forEach(e=>{
+    if(e.isIntersecting){
       document.querySelectorAll('.nav-link').forEach(l=>{
-        l.classList.toggle('active',l.getAttribute('onclick')?.includes(e.target.id));
+        l.classList.toggle('active',l.getAttribute('href')==='#'+e.target.id);
       });
     }
   });
-},{threshold:0.4});
-sections.forEach(s=>{const el=document.getElementById(s);if(el)observer.observe(el);});
+},{threshold:0.3});
+sections.forEach(id=>{const el=document.getElementById(id);if(el)secObserver.observe(el);});
 
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 // INIT
-// ═══════════════════════════════════════════════════
+// ═══════════════════════════════════════════
 window.addEventListener('load',()=>{
-  buildProtoGrid();
-  buildPaths();
-  buildTools();
-  buildQuiz();
+  buildSkills();
+  buildProjects();
+  setTimeout(observeAll,100);
 });
 </script>
 </body>
