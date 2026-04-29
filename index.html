@@ -46,8 +46,6 @@ body{
   overflow-x:hidden;
   cursor:crosshair;
 }
-
-/* Grid bg */
 body::before{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background-image:
@@ -55,22 +53,15 @@ body::before{
     linear-gradient(90deg,rgba(0,255,136,0.018) 1px,transparent 1px);
   background-size:50px 50px;
 }
-/* Glow orbs */
 body::after{
   content:'';position:fixed;inset:0;pointer-events:none;z-index:0;
   background:
     radial-gradient(ellipse 60% 40% at 15% 30%,rgba(0,255,136,0.04) 0%,transparent 60%),
     radial-gradient(ellipse 40% 60% at 85% 70%,rgba(255,102,0,0.03) 0%,transparent 60%);
 }
-
-/* Scrollbar */
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:var(--void);}
 ::-webkit-scrollbar-thumb{background:var(--green2);border-radius:2px;}
-
-/* ═══════════════════════════════════════════
-   NAV
-═══════════════════════════════════════════ */
 nav{
   position:fixed;top:0;left:0;right:0;z-index:1000;
   height:60px;
@@ -106,13 +97,7 @@ nav{
   border-radius:2px;
 }
 .nav-cta:hover{background:var(--green);color:var(--void);box-shadow:var(--glow);}
-
-/* Mobile nav toggle */
 .nav-toggle{display:none;background:none;border:none;color:var(--green);font-size:1.2rem;cursor:pointer;}
-
-/* ═══════════════════════════════════════════
-   HERO
-═══════════════════════════════════════════ */
 #home{
   min-height:100vh;
   display:grid;
@@ -171,8 +156,6 @@ nav{
   display:inline-flex;align-items:center;gap:8px;
 }
 .btn-outline:hover{background:var(--orange);color:var(--void);box-shadow:var(--glow-o);}
-
-/* Hero radar/circle graphic */
 .hero-visual{
   display:flex;align-items:center;justify-content:center;
   position:relative;
@@ -190,8 +173,6 @@ nav{
 .radar-circle:nth-child(2){width:260px;height:260px;animation-delay:0.5s;border-color:rgba(0,255,136,0.18);}
 .radar-circle:nth-child(3){width:160px;height:160px;animation-delay:1s;border-color:rgba(0,255,136,0.25);}
 @keyframes radar-pulse{0%,100%{opacity:0.5;}50%{opacity:1;}}
-
-/* Rotating scan line */
 .radar-scan{
   position:absolute;top:50%;left:50%;
   width:50%;height:1px;
@@ -200,7 +181,6 @@ nav{
   animation:scan-rotate 4s linear infinite;
 }
 @keyframes scan-rotate{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
-
 .radar-tags{
   position:absolute;
   top:50%;right:-20px;transform:translateY(-50%);
@@ -218,7 +198,6 @@ nav{
 .radar-tag:nth-child(4){animation-delay:1.2s;}
 .radar-tag:nth-child(5){animation-delay:1.6s;}
 @keyframes tag-blink{0%,100%{opacity:0.7;}50%{opacity:1;color:var(--green3);}}
-
 .hero-stats{
   display:flex;gap:32px;margin-top:40px;
   padding-top:24px;border-top:1px solid var(--border);
@@ -229,10 +208,6 @@ nav{
   color:var(--green);line-height:1;
 }
 .hstat-l{font-family:var(--mono);font-size:0.58rem;letter-spacing:2px;color:var(--text2);margin-top:4px;}
-
-/* ═══════════════════════════════════════════
-   SECTIONS COMMON
-═══════════════════════════════════════════ */
 section{position:relative;z-index:1;}
 .container{max-width:1200px;margin:0 auto;padding:0 40px;}
 .section-wrap{padding:90px 40px;}
@@ -257,10 +232,6 @@ section{position:relative;z-index:1;}
   background:linear-gradient(90deg,var(--green),transparent);
   margin:16px 0 48px;
 }
-
-/* ═══════════════════════════════════════════
-   ABOUT
-═══════════════════════════════════════════ */
 #about{background:var(--deep);}
 .about-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
 .about-text p{
@@ -280,7 +251,6 @@ section{position:relative;z-index:1;}
 .ah-icon{font-size:1.1rem;flex-shrink:0;}
 .ah-text{font-family:var(--ui);font-size:0.88rem;color:var(--text);}
 .ah-text strong{color:var(--white);}
-
 .about-details{display:flex;flex-direction:column;gap:16px;}
 .detail-card{
   background:var(--card);border:1px solid var(--border);
@@ -291,10 +261,6 @@ section{position:relative;z-index:1;}
 .dc-label{font-family:var(--mono);font-size:0.6rem;letter-spacing:2px;color:var(--green);margin-bottom:8px;}
 .dc-value{font-family:var(--ui);font-size:0.9rem;color:var(--white);font-weight:600;}
 .dc-sub{font-family:var(--ui);font-size:0.78rem;color:var(--text2);margin-top:4px;}
-
-/* ═══════════════════════════════════════════
-   SKILLS
-═══════════════════════════════════════════ */
 #skills{background:var(--void);}
 .skills-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:20px;}
 .skill-card{
@@ -339,10 +305,6 @@ section{position:relative;z-index:1;}
   background:linear-gradient(90deg,var(--card-accent,var(--green)),var(--green3));
   transition:width 1.5s cubic-bezier(.4,0,.2,1);
 }
-
-/* ═══════════════════════════════════════════
-   PROJECTS
-═══════════════════════════════════════════ */
 #projects{background:var(--deep);}
 .projects-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:24px;}
 .proj-card{
@@ -379,10 +341,6 @@ section{position:relative;z-index:1;}
   cursor:pointer;border:none;background:none;padding:0;
 }
 .proj-link:hover{opacity:0.7;}
-
-/* ═══════════════════════════════════════════
-   CODING — Full content panels
-═══════════════════════════════════════════ */
 #coding{background:var(--void);}
 .coding-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:32px;overflow-x:auto;}
 .ctab{
@@ -397,8 +355,6 @@ section{position:relative;z-index:1;}
 .ctab-content{display:none;}
 .ctab-content.active{display:block;animation:fade-in 0.3s ease;}
 @keyframes fade-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-
-/* Code block */
 .code-section{margin-bottom:32px;}
 .code-header{
   display:flex;align-items:center;justify-content:space-between;
@@ -430,13 +386,10 @@ pre{
 }
 pre::-webkit-scrollbar{height:4px;}
 pre::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
-/* Syntax */
 .kw{color:#c678dd;}.fn{color:#61afef;}.str{color:#98c379;}
 .cm{color:#4a5568;font-style:italic;}.num{color:#d19a66;}
 .tp{color:#e5c07b;}.mc{color:#e06c75;}.dir{color:#ff8c42;}
 .op{color:#56b6c2;}
-
-/* Text content */
 .text-section{
   background:var(--card);border:1px solid var(--border);
   border-radius:6px;padding:32px;margin-bottom:24px;
@@ -487,10 +440,6 @@ pre::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
 .verdict.warn{background:rgba(255,213,0,0.06);border:1px solid rgba(255,213,0,0.2);color:var(--text);}
 .verdict.fail{background:rgba(255,45,85,0.06);border:1px solid rgba(255,45,85,0.2);color:var(--text);}
 .verdict-icon{flex-shrink:0;font-size:1rem;}
-
-/* ═══════════════════════════════════════════
-   CONTACT
-═══════════════════════════════════════════ */
 #contact{background:var(--deep);}
 .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:60px;align-items:start;}
 .contact-info{display:flex;flex-direction:column;gap:16px;}
@@ -535,10 +484,6 @@ pre::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
   align-self:flex-start;
 }
 .form-submit:hover{background:transparent;color:var(--green);box-shadow:var(--glow);}
-
-/* ═══════════════════════════════════════════
-   PROJECT MODAL
-═══════════════════════════════════════════ */
 .modal-overlay{
   position:fixed;inset:0;
   background:rgba(5,12,10,0.96);
@@ -573,10 +518,6 @@ pre::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
 .modal-body{padding:32px;max-height:80vh;overflow-y:auto;}
 .modal-body::-webkit-scrollbar{width:4px;}
 .modal-body::-webkit-scrollbar-thumb{background:rgba(0,255,136,0.2);}
-
-/* ═══════════════════════════════════════════
-   FOOTER
-═══════════════════════════════════════════ */
 footer{
   position:relative;z-index:1;
   background:var(--void);
@@ -591,16 +532,8 @@ footer{
 .footer-links{display:flex;gap:20px;}
 .footer-link{font-family:var(--mono);font-size:0.62rem;letter-spacing:1px;color:var(--text3);cursor:pointer;transition:color 0.2s;border:none;background:none;}
 .footer-link:hover{color:var(--green);}
-
-/* ═══════════════════════════════════════════
-   SCROLL ANIMATIONS
-═══════════════════════════════════════════ */
 .reveal{opacity:0;transform:translateY(24px);transition:all 0.6s ease;}
 .reveal.visible{opacity:1;transform:translateY(0);}
-
-/* ═══════════════════════════════════════════
-   RESPONSIVE
-═══════════════════════════════════════════ */
 @media(max-width:1100px){
   #home{grid-template-columns:1fr;padding:100px 40px 60px;text-align:center;}
   .hero-visual{display:none;}
@@ -617,13 +550,10 @@ footer{
   .form-row{grid-template-columns:1fr;}
   footer{flex-direction:column;text-align:center;}
 }
-
-/* Scanline effect */
 .scanline{
   position:fixed;inset:0;pointer-events:none;z-index:9999;
   background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(0,0,0,0.03) 3px,rgba(0,0,0,0.03) 4px);
 }
-/* Noise overlay */
 .noise{
   position:fixed;inset:0;pointer-events:none;z-index:9998;opacity:0.025;
   background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
@@ -635,7 +565,6 @@ footer{
 <div class="scanline"></div>
 <div class="noise"></div>
 
-<!-- ══════ NAV ══════ -->
 <nav>
   <a class="nav-logo" href="#home">DV_HUB</a>
   <div class="nav-links" id="nav-links">
@@ -650,7 +579,6 @@ footer{
   <button class="nav-toggle" onclick="toggleNav()">☰</button>
 </nav>
 
-<!-- ══════ HERO ══════ -->
 <section id="home">
   <div class="hero-left">
     <div class="hero-eyebrow">DESIGN VERIFICATION ENGINEER</div>
@@ -689,7 +617,6 @@ footer{
   </div>
 </section>
 
-<!-- ══════ ABOUT ══════ -->
 <section id="about">
 <div class="section-wrap container">
   <div class="sec-label">ABOUT ME</div>
@@ -716,7 +643,6 @@ footer{
 </div>
 </section>
 
-<!-- ══════ SKILLS ══════ -->
 <section id="skills">
 <div class="section-wrap container">
   <div class="sec-label">EXPERTISE</div>
@@ -726,7 +652,6 @@ footer{
 </div>
 </section>
 
-<!-- ══════ PROJECTS ══════ -->
 <section id="projects">
 <div class="section-wrap container">
   <div class="sec-label">WORK</div>
@@ -750,6 +675,10 @@ footer{
     <button class="ctab" onclick="switchTab(this,'tab-gdma')">GDMA</button>
     <button class="ctab" onclick="switchTab(this,'tab-apb')">APB UVM</button>
     <button class="ctab" onclick="switchTab(this,'tab-gpio')">GPIO</button>
+    <button class="ctab" onclick="switchTab(this,'tab-uvm-sync')">UVM SYNC</button>
+    <button class="ctab" onclick="switchTab(this,'tab-clk-glitch')">CLK GLITCH</button>
+    <button class="ctab" onclick="switchTab(this,'tab-ahb')">AHB SPLIT</button>
+    <button class="ctab" onclick="switchTab(this,'tab-coverage')">COVERAGE</button>
   </div>
 
   <!-- BOOT TAB -->
@@ -788,10 +717,8 @@ footer{
           <span class="flow-arrow">→</span> Cache clean / invalidate<br>
           <span class="flow-arrow">→</span> Jump to application entry (from header)
         </div>
-        <h3>WHAT NEEDS REAL SILICON HANDLING</h3>
         <div class="verdict pass"><span class="verdict-icon">✅</span><div>Memory map defined: QSPI_BASE=0x40000000, SRAM_BASE=0x20000000, DDR_BASE=0x80000000</div></div>
         <div class="verdict pass"><span class="verdict-icon">✅</span><div>3-stage boot architecture correctly modeled with function pointer jumps</div></div>
-        <div class="verdict pass"><span class="verdict-icon">✅</span><div>CRC validation hooks, QSPI/SRAM/DDR flow separation</div></div>
         <div class="verdict warn"><span class="verdict-icon">⚠️</span><div>Real ARM boot: CPU jumps to Reset Vector first, then boot.s startup assembly, then primary_boot()</div></div>
         <div class="verdict warn"><span class="verdict-icon">⚠️</span><div>DDR init is complex — requires PHY training, timing configuration, and calibration before use</div></div>
         <div class="verdict fail"><span class="verdict-icon">❌</span><div>No image header structure — industry bootloaders use: magic + size + load_addr + entry_point + crc</div></div>
@@ -812,6 +739,8 @@ footer{
 <span class="dir">#define</span> DDR_BASE         <span class="num">0x80000000</span>
 <span class="dir">#define</span> FLASH_BOOT_ADDR  <span class="num">0x00000000</span>
 <span class="dir">#define</span> FLASH_APP_ADDR   <span class="num">0x00100000</span>
+<span class="dir">#define</span> SBL_SIZE         <span class="num">0x00010000</span>
+<span class="dir">#define</span> APP_SIZE         <span class="num">0x00020000</span>
 
 <span class="cm">// Image Header Structure (Industry Standard)</span>
 <span class="kw">typedef</span> <span class="kw">struct</span> {
@@ -825,21 +754,13 @@ footer{
 <span class="cm">// PRIMARY BOOT (Boot ROM)</span>
 <span class="kw">void</span> <span class="fn">primary_boot</span>() {
     <span class="fn">init_stack_pointer</span>();   <span class="cm">// MUST be first</span>
-
     <span class="kw">int</span> mode = <span class="fn">read_boot_mode</span>();
     <span class="kw">if</span>(mode != <span class="num">1</span>) <span class="fn">error_handler</span>();
-
-    <span class="fn">pll_init</span>();             <span class="cm">// Minimal clock</span>
-    <span class="fn">qspi_init</span>();            <span class="cm">// Indirect mode first</span>
-
-    <span class="cm">// Read SBL to SRAM</span>
+    <span class="fn">pll_init</span>();
+    <span class="fn">qspi_init</span>();
     <span class="tp">uint8_t</span> *sbl_dst = (<span class="tp">uint8_t</span> *)SRAM_BASE;
     <span class="fn">qspi_read</span>(FLASH_BOOT_ADDR, sbl_dst, SBL_SIZE);
-
-    <span class="kw">if</span>(!<span class="fn">validate_crc</span>(sbl_dst, SBL_SIZE))
-        <span class="fn">error_handler</span>();
-
-    <span class="cm">// Jump to SBL</span>
+    <span class="kw">if</span>(!<span class="fn">validate_crc</span>(sbl_dst, SBL_SIZE)) <span class="fn">error_handler</span>();
     <span class="kw">void</span> (*sbl_entry)() = (<span class="kw">void</span> (*)())SRAM_BASE;
     <span class="fn">sbl_entry</span>();
 }
@@ -849,29 +770,28 @@ footer{
     <span class="fn">ddr_init</span>();             <span class="cm">// PHY training + calibration</span>
     <span class="fn">uart_init</span>();
     <span class="fn">gdma_init</span>();
-
-    <span class="cm">// Load application header</span>
     image_header_t hdr;
     <span class="fn">qspi_read</span>(FLASH_APP_ADDR, &hdr, <span class="kw">sizeof</span>(hdr));
-
     <span class="kw">if</span>(hdr.magic != <span class="num">0xDEADBEEF</span>) <span class="fn">error_handler</span>();
-
-    <span class="cm">// GDMA transfer: Flash → DDR</span>
     <span class="tp">uint8_t</span> *app_src = (<span class="tp">uint8_t</span> *)(QSPI_BASE + FLASH_APP_ADDR);
     <span class="tp">uint8_t</span> *app_dst = (<span class="tp">uint8_t</span> *)(hdr.load_addr);
-
     <span class="fn">gdma_config</span>(app_src, app_dst, hdr.size);
     <span class="fn">gdma_start</span>();
     <span class="fn">wait_for_completion</span>();
-
     <span class="kw">if</span>(!<span class="fn">validate_crc</span>(app_dst, hdr.size)) <span class="fn">error_handler</span>();
-
-    <span class="cm">// Cache invalidate before jump</span>
     <span class="fn">cache_invalidate_all</span>();
-
-    <span class="cm">// Jump to real entry point (from header)</span>
     <span class="kw">void</span> (*app_entry)() = (<span class="kw">void</span> (*)())(hdr.entry_point);
     <span class="fn">app_entry</span>();
+}
+
+<span class="cm">// APPLICATION (Final Stage)</span>
+<span class="kw">void</span> <span class="fn">application_main</span>() {
+    <span class="kw">while</span>(<span class="num">1</span>) { <span class="cm">/* Main program */</span> }
+}
+
+<span class="kw">int</span> <span class="fn">main</span>() {
+    <span class="fn">primary_boot</span>();  <span class="cm">// Reset vector entry point</span>
+    <span class="kw">return</span> <span class="num">0</span>;
 }</pre>
     </div>
   </div>
@@ -917,86 +837,40 @@ footer{
           <button class="code-copy" onclick="copyCode(this)">COPY</button>
         </div>
       </div>
-<pre data-code><span class="cm">// QSPI Interface</span>
-<span class="kw">interface</span> qspi_if(<span class="kw">input bit</span> clk);
+<pre data-code><span class="kw">interface</span> qspi_if(<span class="kw">input bit</span> clk);
   <span class="kw">logic</span>       cs_n;
   <span class="kw">logic</span>       sclk;
-  <span class="kw">logic</span> [<span class="num">3</span>:<span class="num">0</span>] io;   <span class="cm">// IO0–IO3</span>
+  <span class="kw">logic</span> [<span class="num">3</span>:<span class="num">0</span>] io;
   <span class="kw">modport</span> drv (<span class="kw">output</span> cs_n, sclk, io);
   <span class="kw">modport</span> mon (<span class="kw">input</span>  cs_n, sclk, io);
 <span class="kw">endinterface</span>
 
-<span class="cm">// Transaction</span>
 <span class="kw">class</span> <span class="tp">qspi_seq_item</span> <span class="kw">extends</span> <span class="tp">uvm_sequence_item</span>;
   <span class="mc">`uvm_object_utils</span>(qspi_seq_item)
-
-  <span class="kw">rand bit</span> [<span class="num">7</span>:<span class="num">0</span>]  cmd;        <span class="cm">// READ/WRITE/ERASE</span>
+  <span class="kw">rand bit</span> [<span class="num">7</span>:<span class="num">0</span>]  cmd;
   <span class="kw">rand bit</span> [<span class="num">23</span>:<span class="num">0</span>] addr;
   <span class="kw">rand bit</span> [<span class="num">7</span>:<span class="num">0</span>]  data[];
   <span class="kw">rand int</span>        dummy_cycles;
-
   <span class="kw">constraint</span> c_cmd {
-    cmd <span class="kw">inside</span> {<span class="num">8'h06</span>, <span class="num">8'h02</span>, <span class="num">8'h32</span>,
-                 <span class="num">8'h0B</span>, <span class="num">8'hEB</span>, <span class="num">8'hD8</span>};
+    cmd <span class="kw">inside</span> {<span class="num">8'h06</span>, <span class="num">8'h02</span>, <span class="num">8'h32</span>, <span class="num">8'h0B</span>, <span class="num">8'hEB</span>, <span class="num">8'hD8</span>};
   }
-  <span class="kw">constraint</span> c_dummy {
-    dummy_cycles <span class="kw">inside</span> {[<span class="num">2</span>:<span class="num">10</span>]};
-  }
-  <span class="kw">constraint</span> c_data_len {
-    data.size() <span class="kw">inside</span> {[<span class="num">1</span>:<span class="num">256</span>]};
-  }
+  <span class="kw">constraint</span> c_dummy { dummy_cycles <span class="kw">inside</span> {[<span class="num">2</span>:<span class="num">10</span>]}; }
+  <span class="kw">constraint</span> c_data_len { data.size() <span class="kw">inside</span> {[<span class="num">1</span>:<span class="num">256</span>]}; }
 <span class="kw">endclass</span>
 
-<span class="cm">// Driver</span>
-<span class="kw">class</span> <span class="tp">qspi_driver</span> <span class="kw">extends</span> <span class="tp">uvm_driver</span> #(<span class="tp">qspi_seq_item</span>);
-  <span class="mc">`uvm_component_utils</span>(qspi_driver)
-  <span class="kw">virtual</span> qspi_if vif;
-
-  <span class="kw">task</span> <span class="fn">run_phase</span>(<span class="tp">uvm_phase</span> phase);
-    <span class="tp">qspi_seq_item</span> item;
-    <span class="fn">init_spi</span>();
-    <span class="kw">forever begin</span>
-      seq_item_port.<span class="fn">get_next_item</span>(item);
-      <span class="fn">drive_transaction</span>(item);
-      seq_item_port.<span class="fn">item_done</span>();
-    <span class="kw">end</span>
-  <span class="kw">endtask</span>
-
-  <span class="kw">task</span> <span class="fn">drive_transaction</span>(<span class="tp">qspi_seq_item</span> item);
-    vif.cs_n <= <span class="num">0</span>;
-    <span class="fn">send_byte_x1</span>(item.cmd);           <span class="cm">// CMD: always x1</span>
-    <span class="fn">send_byte_x1</span>(item.addr[<span class="num">23</span>:<span class="num">16</span>]);   <span class="cm">// ADDR: x1</span>
-    <span class="fn">send_byte_x1</span>(item.addr[<span class="num">15</span>:<span class="num">8</span>]);
-    <span class="fn">send_byte_x1</span>(item.addr[<span class="num">7</span>:<span class="num">0</span>]);
-    <span class="kw">repeat</span>(item.dummy_cycles)          <span class="cm">// DUMMY</span>
-      <span class="fn">clk_tick</span>();
-    <span class="kw">foreach</span>(item.data[i])              <span class="cm">// DATA: x4</span>
-      <span class="fn">send_nibble_x4</span>(item.data[i]);
-    vif.cs_n <= <span class="num">1</span>;
-  <span class="kw">endtask</span>
-<span class="kw">endclass</span>
-
-<span class="cm">// Scoreboard</span>
 <span class="kw">class</span> <span class="tp">qspi_scoreboard</span> <span class="kw">extends</span> <span class="tp">uvm_scoreboard</span>;
   <span class="mc">`uvm_component_utils</span>(qspi_scoreboard)
   <span class="tp">uvm_analysis_imp</span> #(<span class="tp">qspi_seq_item</span>, <span class="tp">qspi_scoreboard</span>) ap;
-  <span class="kw">bit</span> [<span class="num">7</span>:<span class="num">0</span>] flash_model [<span class="kw">bit</span> [<span class="num">23</span>:<span class="num">0</span>]];  <span class="cm">// shadow memory</span>
+  <span class="kw">bit</span> [<span class="num">7</span>:<span class="num">0</span>] flash_model [<span class="kw">bit</span> [<span class="num">23</span>:<span class="num">0</span>]];
   <span class="kw">int</span> pass_cnt, fail_cnt;
-
   <span class="kw">function void</span> <span class="fn">write</span>(<span class="tp">qspi_seq_item</span> item);
     <span class="kw">if</span>(item.cmd == <span class="num">8'h02</span> || item.cmd == <span class="num">8'h32</span>) begin
-      <span class="cm">// Write: update shadow model</span>
       <span class="kw">foreach</span>(item.data[i])
         flash_model[item.addr + i] = item.data[i];
     <span class="kw">end else if</span>(item.cmd == <span class="num">8'h0B</span> || item.cmd == <span class="num">8'hEB</span>) begin
-      <span class="cm">// Read: compare with shadow</span>
       <span class="kw">foreach</span>(item.data[i]) begin
-        <span class="kw">if</span>(item.data[i] === flash_model[item.addr + i])
-          pass_cnt++;
-        <span class="kw">else begin</span>
-          fail_cnt++;
-          <span class="mc">`uvm_error</span>(<span class="str">"SB"</span>, $sformatf(<span class="str">"MISMATCH"</span>))
-        <span class="kw">end</span>
+        <span class="kw">if</span>(item.data[i] === flash_model[item.addr + i]) pass_cnt++;
+        <span class="kw">else begin</span> fail_cnt++; <span class="mc">`uvm_error</span>(<span class="str">"SB"</span>, $sformatf(<span class="str">"MISMATCH"</span>)) <span class="kw">end</span>
       <span class="kw">end</span>
     <span class="kw">end</span>
   <span class="kw">endfunction</span>
@@ -1027,12 +901,19 @@ footer{
           <span class="flow-arrow">4.</span> Wait for PLL_STATUS[LOCK] = 1<br>
           <span class="flow-arrow">5.</span> Switch system clock mux to PLL output
         </div>
-        <h3>PLL REGISTERS</h3>
         <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;">
           <span class="badge badge-green">PLL_CTRL — Enable/Disable</span>
           <span class="badge badge-green">PLL_DIV — M/N/P Dividers</span>
           <span class="badge badge-cyan">PLL_STATUS — Lock Flag</span>
           <span class="badge badge-orange">PLL_BYPASS — Bypass Mode</span>
+        </div>
+        <h3>PLL FAILURE CASES (FROM REAL SoC VALIDATION)</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
+          <span class="badge badge-orange">PLL not locking</span>
+          <span class="badge badge-orange">Incorrect divider config</span>
+          <span class="badge badge-orange">Clock instability</span>
+          <span class="badge badge-orange">Power supply noise</span>
+          <span class="badge badge-orange">Loop filter issues</span>
         </div>
       </div>
     </div>
@@ -1044,35 +925,28 @@ footer{
           <button class="code-copy" onclick="copyCode(this)">COPY</button>
         </div>
       </div>
-<pre data-code><span class="cm">// PLL Register Definitions</span>
-<span class="dir">#define</span> PLL_CTRL    (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A000</span>)
+<pre data-code><span class="dir">#define</span> PLL_CTRL    (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A000</span>)
 <span class="dir">#define</span> PLL_DIV     (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A004</span>)
 <span class="dir">#define</span> PLL_STATUS  (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A008</span>)
 <span class="dir">#define</span> PLL_BYPASS  (*(<span class="kw">volatile</span> <span class="tp">uint32_t</span>*)<span class="num">0x4000A00C</span>)
 
-<span class="cm">// Test 1: PLL Enable</span>
+<span class="cm">// TC1: PLL Enable</span>
 <span class="kw">void</span> <span class="fn">test_pll_enable</span>() {
     PLL_CTRL |= (<span class="num">1</span> << <span class="num">0</span>);
-    <span class="kw">if</span>(PLL_CTRL & (<span class="num">1</span> << <span class="num">0</span>))
-        <span class="fn">printf</span>(<span class="str">"[PASS] PLL Enable\n"</span>);
-    <span class="kw">else</span>
-        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Enable\n"</span>);
+    <span class="kw">if</span>(PLL_CTRL & (<span class="num">1</span> << <span class="num">0</span>)) <span class="fn">printf</span>(<span class="str">"[PASS] PLL Enable\n"</span>);
+    <span class="kw">else</span>                     <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Enable\n"</span>);
 }
 
-<span class="cm">// Test 2: PLL Lock Detection</span>
+<span class="cm">// TC2: PLL Lock Detection</span>
 <span class="kw">void</span> <span class="fn">test_pll_lock</span>() {
     <span class="kw">int</span> timeout = <span class="num">10000</span>;
-    <span class="kw">while</span>(!(PLL_STATUS & (<span class="num">1</span> << <span class="num">0</span>)) && timeout--)
-        ;
-    <span class="kw">if</span>(timeout > <span class="num">0</span>)
-        <span class="fn">printf</span>(<span class="str">"[PASS] PLL LOCK achieved\n"</span>);
-    <span class="kw">else</span>
-        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL LOCK timeout\n"</span>);
+    <span class="kw">while</span>(!(PLL_STATUS & (<span class="num">1</span> << <span class="num">0</span>)) && timeout--);
+    <span class="kw">if</span>(timeout > <span class="num">0</span>) <span class="fn">printf</span>(<span class="str">"[PASS] PLL LOCK achieved\n"</span>);
+    <span class="kw">else</span>             <span class="fn">printf</span>(<span class="str">"[FAIL] PLL LOCK timeout\n"</span>);
 }
 
-<span class="cm">// Test 3: Divider Configuration</span>
+<span class="cm">// TC3: Divider Configuration (M=100, N=2, P=1 → Fout=1200MHz)</span>
 <span class="kw">void</span> <span class="fn">test_pll_divider</span>() {
-    <span class="cm">// M=100, N=2, P=1 → Fout = 24*100/(2*1) = 1200 MHz</span>
     PLL_DIV = (<span class="num">100</span> << <span class="num">16</span>) | (<span class="num">2</span> << <span class="num">8</span>) | (<span class="num">1</span> << <span class="num">0</span>);
     <span class="kw">if</span>(PLL_DIV == ((<span class="num">100</span> << <span class="num">16</span>) | (<span class="num">2</span> << <span class="num">8</span>) | <span class="num">1</span>))
         <span class="fn">printf</span>(<span class="str">"[PASS] Divider Config: Fout=1200MHz\n"</span>);
@@ -1080,45 +954,39 @@ footer{
         <span class="fn">printf</span>(<span class="str">"[FAIL] Divider Config\n"</span>);
 }
 
-<span class="cm">// Test 4: Bypass Mode</span>
+<span class="cm">// TC4: Bypass Mode (Fout = Fref = 24MHz)</span>
 <span class="kw">void</span> <span class="fn">test_pll_bypass</span>() {
     PLL_BYPASS = <span class="num">1</span>;
-    <span class="kw">if</span>(PLL_BYPASS == <span class="num">1</span>)
-        <span class="fn">printf</span>(<span class="str">"[PASS] PLL Bypass: Fout=Fref=24MHz\n"</span>);
-    <span class="kw">else</span>
-        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Bypass\n"</span>);
+    <span class="kw">if</span>(PLL_BYPASS == <span class="num">1</span>) <span class="fn">printf</span>(<span class="str">"[PASS] PLL Bypass: Fout=Fref=24MHz\n"</span>);
+    <span class="kw">else</span>                 <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Bypass\n"</span>);
 }
 
-<span class="cm">// Test 5: Disable</span>
+<span class="cm">// TC5: Disable</span>
 <span class="kw">void</span> <span class="fn">test_pll_disable</span>() {
     PLL_CTRL &= ~(<span class="num">1</span> << <span class="num">0</span>);
-    <span class="kw">if</span>(!(PLL_CTRL & (<span class="num">1</span> << <span class="num">0</span>)))
-        <span class="fn">printf</span>(<span class="str">"[PASS] PLL Disabled\n"</span>);
-    <span class="kw">else</span>
-        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Disable\n"</span>);
+    <span class="kw">if</span>(!(PLL_CTRL & (<span class="num">1</span> << <span class="num">0</span>))) <span class="fn">printf</span>(<span class="str">"[PASS] PLL Disabled\n"</span>);
+    <span class="kw">else</span>                        <span class="fn">printf</span>(<span class="str">"[FAIL] PLL Disable\n"</span>);
 }
 
-<span class="cm">// Test 6: Lock Time Measurement</span>
+<span class="cm">// TC6: Lock Time Measurement</span>
 <span class="kw">void</span> <span class="fn">test_pll_lock_time</span>() {
     <span class="tp">uint32_t</span> start = <span class="fn">get_timer_us</span>();
     PLL_CTRL |= (<span class="num">1</span> << <span class="num">0</span>);
     <span class="kw">while</span>(!(PLL_STATUS & (<span class="num">1</span> << <span class="num">0</span>)));
     <span class="tp">uint32_t</span> lock_time = <span class="fn">get_timer_us</span>() - start;
     <span class="fn">printf</span>(<span class="str">"PLL Lock Time: %u us\n"</span>, lock_time);
-    <span class="kw">if</span>(lock_time < <span class="num">500</span>)
-        <span class="fn">printf</span>(<span class="str">"[PASS] Lock time within spec\n"</span>);
-    <span class="kw">else</span>
-        <span class="fn">printf</span>(<span class="str">"[FAIL] Lock time exceeded\n"</span>);
+    <span class="kw">if</span>(lock_time < <span class="num">500</span>) <span class="fn">printf</span>(<span class="str">"[PASS] Lock time within spec\n"</span>);
+    <span class="kw">else</span>                 <span class="fn">printf</span>(<span class="str">"[FAIL] Lock time exceeded\n"</span>);
 }
 
-<span class="cm">// Stress Test: 100 enable/disable cycles</span>
+<span class="cm">// TC7: Stress Test — 100 enable/disable cycles</span>
 <span class="kw">void</span> <span class="fn">test_pll_stress</span>() {
     <span class="kw">for</span>(<span class="kw">int</span> i = <span class="num">0</span>; i < <span class="num">100</span>; i++) {
         PLL_CTRL |= (<span class="num">1</span> << <span class="num">0</span>);
         <span class="kw">while</span>(!(PLL_STATUS & (<span class="num">1</span> << <span class="num">0</span>)));
         PLL_CTRL &= ~(<span class="num">1</span> << <span class="num">0</span>);
     }
-    <span class="fn">printf</span>(<span class="str">"[PASS] Stress test: 100 cycles\n"</span>);
+    <span class="fn">printf</span>(<span class="str">"[PASS] Stress: 100 enable/disable cycles\n"</span>);
 }</pre>
     </div>
   </div>
@@ -1129,19 +997,12 @@ footer{
       <div class="ts-title">🔄 GDMA — Generic DMA Controller</div>
       <div class="ts-body">
         <h3>GDMA OVERVIEW</h3>
-        <p>GDMA (Generic Direct Memory Access) is a hardware engine that transfers data between memory and peripherals without CPU intervention. It reduces processor bottleneck and enables high-speed data movement.</p>
+        <p>GDMA (Generic Direct Memory Access) is a hardware engine that transfers data between memory and peripherals without CPU intervention. It reduces processor bottleneck and enables high-speed data movement in SoC designs.</p>
         <div class="info-grid">
           <div class="info-card"><div class="ic-l">CHANNELS</div><div class="ic-v">8–16</div><div class="ic-s">Independent DMA channels</div></div>
           <div class="info-card"><div class="ic-l">MODES</div><div class="ic-v">M2M / M2P / P2M</div><div class="ic-s">Memory & peripheral transfers</div></div>
           <div class="info-card"><div class="ic-l">BURST</div><div class="ic-v">1/4/8/16</div><div class="ic-s">Beats per transaction</div></div>
           <div class="info-card"><div class="ic-l">IRQ</div><div class="ic-v">TC / TE / HT</div><div class="ic-s">Transfer complete / error / half</div></div>
-        </div>
-        <h3>TRANSFER MODES</h3>
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
-          <span class="badge badge-green">Memory → Memory</span>
-          <span class="badge badge-green">Memory → Peripheral (TX)</span>
-          <span class="badge badge-cyan">Peripheral → Memory (RX)</span>
-          <span class="badge badge-orange">Scatter-Gather (LLI)</span>
         </div>
         <h3>WORKING FLOW</h3>
         <div class="flow-box">
@@ -1151,6 +1012,12 @@ footer{
           <span class="flow-arrow">4.</span> GDMA writes to destination address<br>
           <span class="flow-arrow">5.</span> Transfer complete → IRQ sent to CPU<br>
           <span class="flow-arrow">6.</span> CPU reads TC status, clears interrupt
+        </div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:8px 0;">
+          <span class="badge badge-green">Memory → Memory</span>
+          <span class="badge badge-green">Memory → Peripheral (TX)</span>
+          <span class="badge badge-cyan">Peripheral → Memory (RX)</span>
+          <span class="badge badge-orange">Scatter-Gather (LLI)</span>
         </div>
       </div>
     </div>
@@ -1162,8 +1029,7 @@ footer{
           <button class="code-copy" onclick="copyCode(this)">COPY</button>
         </div>
       </div>
-<pre data-code><span class="cm">// GDMA Sequence Item</span>
-<span class="kw">typedef enum logic</span> [<span class="num">1</span>:<span class="num">0</span>] {
+<pre data-code><span class="kw">typedef enum logic</span> [<span class="num">1</span>:<span class="num">0</span>] {
   DMA_M2M=<span class="num">2'b00</span>, DMA_M2P=<span class="num">2'b01</span>, DMA_P2M=<span class="num">2'b10</span>
 } dma_dir_e;
 
@@ -1184,25 +1050,16 @@ footer{
   <span class="kw">rand int unsigned</span> channel_id;
   <span class="kw">rand logic</span>        irq_en;
 
-  <span class="cm">// Address alignment</span>
   <span class="kw">constraint</span> c_align {
     src_addr[<span class="num">1</span>:<span class="num">0</span>] == <span class="num">2'b00</span>;
     dst_addr[<span class="num">1</span>:<span class="num">0</span>] == <span class="num">2'b00</span>;
   }
-  <span class="cm">// Valid burst sizes</span>
-  <span class="kw">constraint</span> c_burst {
-    burst_len <span class="kw">inside</span> {<span class="num">1</span>, <span class="num">4</span>, <span class="num">8</span>, <span class="num">16</span>};
-  }
-  <span class="cm">// Channel ID</span>
-  <span class="kw">constraint</span> c_channel {
-    channel_id <span class="kw">inside</span> {[<span class="num">0</span>:<span class="num">7</span>]};
-  }
-  <span class="cm">// No address overlap (M2M)</span>
+  <span class="kw">constraint</span> c_burst  { burst_len <span class="kw">inside</span> {<span class="num">1</span>, <span class="num">4</span>, <span class="num">8</span>, <span class="num">16</span>}; }
+  <span class="kw">constraint</span> c_channel { channel_id <span class="kw">inside</span> {[<span class="num">0</span>:<span class="num">7</span>]}; }
   <span class="kw">constraint</span> c_no_overlap {
     (src_addr + (length << <span class="num">2</span>)) <= dst_addr ||
     (dst_addr + (length << <span class="num">2</span>)) <= src_addr;
   }
-  <span class="cm">// SRAM region</span>
   <span class="kw">constraint</span> c_sram {
     src_addr <span class="kw">inside</span> {[<span class="num">32'h2000_0000</span>:<span class="num">32'h200F_FFFF</span>]};
     dst_addr <span class="kw">inside</span> {[<span class="num">32'h2010_0000</span>:<span class="num">32'h201F_FFFF</span>]};
@@ -1241,57 +1098,49 @@ footer{
           <button class="code-copy" onclick="copyCode(this)">COPY</button>
         </div>
       </div>
-<pre data-code><span class="cm">// APB Sequence Item</span>
-<span class="kw">class</span> <span class="tp">apb_seq_item</span> <span class="kw">extends</span> <span class="tp">uvm_sequence_item</span>;
+<pre data-code><span class="kw">class</span> <span class="tp">apb_seq_item</span> <span class="kw">extends</span> <span class="tp">uvm_sequence_item</span>;
   <span class="mc">`uvm_object_utils_begin</span>(apb_seq_item)
     <span class="mc">`uvm_field_int</span>(addr,  UVM_ALL_ON)
     <span class="mc">`uvm_field_int</span>(data,  UVM_ALL_ON)
     <span class="mc">`uvm_field_int</span>(wr,    UVM_ALL_ON)
     <span class="mc">`uvm_field_int</span>(delay, UVM_ALL_ON)
   <span class="mc">`uvm_object_utils_end</span>
-
   <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] addr;
   <span class="kw">rand logic</span> [<span class="num">31</span>:<span class="num">0</span>] data;
   <span class="kw">rand logic</span>         wr;
   <span class="kw">rand int unsigned</span>   delay;
-
   <span class="kw">constraint</span> c_align { addr[<span class="num">1</span>:<span class="num">0</span>] == <span class="num">2'b00</span>; }
   <span class="kw">constraint</span> c_delay { delay <span class="kw">inside</span> {[<span class="num">0</span>:<span class="num">5</span>]}; }
 <span class="kw">endclass</span>
 
-<span class="cm">// APB Driver</span>
 <span class="kw">class</span> <span class="tp">apb_driver</span> <span class="kw">extends</span> <span class="tp">uvm_driver</span> #(<span class="tp">apb_seq_item</span>);
   <span class="mc">`uvm_component_utils</span>(apb_driver)
   <span class="kw">virtual</span> apb_if vif;
-
   <span class="kw">task</span> <span class="fn">drive_item</span>(<span class="tp">apb_seq_item</span> item);
-    <span class="cm">// SETUP phase</span>
-    @(posedge vif.pclk);
+    @(<span class="kw">posedge</span> vif.pclk);
     vif.paddr  <= item.addr;
     vif.pwrite <= item.wr;
     vif.pwdata <= item.wr ? item.data : <span class="num">'x</span>;
     vif.psel   <= <span class="num">1</span>;
     vif.penable <= <span class="num">0</span>;
-    <span class="cm">// ACCESS phase</span>
-    @(posedge vif.pclk);
+    @(<span class="kw">posedge</span> vif.pclk);
     vif.penable <= <span class="num">1</span>;
-    <span class="cm">// Wait PREADY</span>
-    <span class="kw">do</span> @(posedge vif.pclk);
+    <span class="kw">do</span> @(<span class="kw">posedge</span> vif.pclk);
     <span class="kw">while</span>(!vif.pready);
     vif.psel <= <span class="num">0</span>; vif.penable <= <span class="num">0</span>;
   <span class="kw">endtask</span>
 <span class="kw">endclass</span>
 
-<span class="cm">// APB SVA Assertions</span>
+<span class="cm">// SVA Assertions</span>
 <span class="kw">property</span> apb_setup_phase;
-  @(posedge PCLK) <span class="kw">disable iff</span>(!PRESETn)
+  @(<span class="kw">posedge</span> PCLK) <span class="kw">disable iff</span>(!PRESETn)
   $rose(PSEL) |-> !PENABLE;
 <span class="kw">endproperty</span>
 a_setup: <span class="kw">assert property</span>(apb_setup_phase)
   <span class="kw">else</span> $error(<span class="str">"APB: PENABLE high on PSEL assertion"</span>);
 
 <span class="kw">property</span> apb_addr_stable;
-  @(posedge PCLK) <span class="kw">disable iff</span>(!PRESETn)
+  @(<span class="kw">posedge</span> PCLK) <span class="kw">disable iff</span>(!PRESETn)
   (PSEL && PENABLE) |-> $stable(PADDR) && $stable(PWRITE);
 <span class="kw">endproperty</span>
 a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
@@ -1329,7 +1178,6 @@ a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
 <span class="dir">`define</span> GPIO_INT_TYPE   <span class="num">8'h10</span>
 <span class="dir">`define</span> GPIO_INT_STATUS <span class="num">8'h14</span>
 
-<span class="cm">// GPIO Rising Edge Interrupt Test</span>
 <span class="kw">class</span> <span class="tp">gpio_rise_int_seq</span> <span class="kw">extends</span> <span class="tp">uvm_sequence</span> #(<span class="tp">gpio_seq_item</span>);
   <span class="mc">`uvm_object_utils</span>(gpio_rise_int_seq)
   <span class="kw">rand int</span> pin_num;
@@ -1337,15 +1185,13 @@ a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
 
   <span class="kw">task</span> <span class="fn">body</span>();
     <span class="tp">gpio_seq_item</span> item;
-
     <span class="cm">// 1. Set direction as INPUT</span>
     item = gpio_seq_item::<span class="fn">type_id::create</span>(<span class="str">"dir"</span>);
     <span class="fn">start_item</span>(item);
     void'(item.<span class="fn">randomize</span>() <span class="kw">with</span> {
       is_write==<span class="num">1</span>; reg_addr==<span class="dir">`GPIO_DIR</span>;
-      reg_data[pin_num]==<span class="num">0</span>; <span class="cm">// input</span>
+      reg_data[pin_num]==<span class="num">0</span>;
     }); <span class="fn">finish_item</span>(item);
-    <span class="mc">`uvm_info</span>(<span class="str">"GPIO"</span>, <span class="str">"Pin set as INPUT"</span>, UVM_LOW)
 
     <span class="cm">// 2. Set rising edge interrupt type</span>
     item = gpio_seq_item::<span class="fn">type_id::create</span>(<span class="str">"type"</span>);
@@ -1361,19 +1207,495 @@ a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
       is_write==<span class="num">1</span>; reg_addr==<span class="dir">`GPIO_INT_EN</span>;
       reg_data[pin_num]==<span class="num">1</span>;
     }); <span class="fn">finish_item</span>(item);
-    <span class="mc">`uvm_info</span>(<span class="str">"GPIO"</span>,
-      $sformatf(<span class="str">"INT enabled on pin %0d"</span>, pin_num), UVM_LOW)
 
     <span class="cm">// 4. Clear INT_STATUS (W1C)</span>
     item = gpio_seq_item::<span class="fn">type_id::create</span>(<span class="str">"clr"</span>);
     <span class="fn">start_item</span>(item);
     void'(item.<span class="fn">randomize</span>() <span class="kw">with</span> {
       is_write==<span class="num">1</span>; reg_addr==<span class="dir">`GPIO_INT_STATUS</span>;
-      reg_data[pin_num]==<span class="num">1</span>; <span class="cm">// W1C</span>
+      reg_data[pin_num]==<span class="num">1</span>;
     }); <span class="fn">finish_item</span>(item);
-    <span class="mc">`uvm_info</span>(<span class="str">"GPIO"</span>, <span class="str">"INT_STATUS cleared"</span>, UVM_LOW)
   <span class="kw">endtask</span>
 <span class="kw">endclass</span></pre>
+    </div>
+  </div>
+
+  <!-- ══════ NEW TABS FROM CHAT FILES ══════ -->
+
+  <!-- UVM SYNC TAB -->
+  <div class="ctab-content" id="tab-uvm-sync">
+    <div class="text-section">
+      <div class="ts-title">🔔 UVM SYNCHRONIZATION — Barrier &amp; Event</div>
+      <div class="ts-body">
+        <h3>uvm_barrier — MANY-TO-MANY SYNC</h3>
+        <p>A <strong>uvm_barrier</strong> blocks multiple processes until a specified count of participants reach a common synchronization point, after which all are released together. Think of it as a checkpoint gate — nobody passes until everyone arrives.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">SYNC TYPE</div><div class="ic-v">Many-to-Many</div><div class="ic-s">Count-based release</div></div>
+          <div class="info-card"><div class="ic-l">USE CASE</div><div class="ic-v">Group Sync</div><div class="ic-s">Multi-agent startup</div></div>
+          <div class="info-card"><div class="ic-l">KEY METHOD</div><div class="ic-v">wait_for()</div><div class="ic-s">Blocks until count met</div></div>
+          <div class="info-card"><div class="ic-l">RISK</div><div class="ic-v">Deadlock</div><div class="ic-s">Count mismatch hangs sim</div></div>
+        </div>
+        <h3>uvm_event — ONE-TO-MANY NOTIFICATION</h3>
+        <p>A <strong>uvm_event</strong> is a one-to-many communication mechanism where one process triggers an event and any number of processes waiting on it are released simultaneously. Like ringing a bell — one rings, many hear.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">SYNC TYPE</div><div class="ic-v">One-to-Many</div><div class="ic-s">Trigger-based notification</div></div>
+          <div class="info-card"><div class="ic-l">KEY METHODS</div><div class="ic-v">trigger() / wait_trigger()</div><div class="ic-s">Fire and wait pattern</div></div>
+          <div class="info-card"><div class="ic-l">SAFE WAIT</div><div class="ic-v">wait_ptrigger()</div><div class="ic-s">Works if already fired</div></div>
+          <div class="info-card"><div class="ic-l">USE CASE</div><div class="ic-v">IRQ / Notification</div><div class="ic-s">Monitor→Scoreboard sync</div></div>
+        </div>
+        <h3>BARRIER vs EVENT — KEY DIFFERENCE</h3>
+        <div class="flow-box">
+          <strong>uvm_barrier</strong><br>
+          <span class="flow-arrow">→</span> Multiple processes wait at a count-based gate<br>
+          <span class="flow-arrow">→</span> All released when COUNT threshold is met<br>
+          <span class="flow-arrow">→</span> Use for: Phase sync, multi-agent simultaneous start<br><br>
+          <strong>uvm_event</strong><br>
+          <span class="flow-arrow">→</span> One process triggers, many listeners respond<br>
+          <span class="flow-arrow">→</span> All waiters released by a single TRIGGER signal<br>
+          <span class="flow-arrow">→</span> Use for: IRQ notification, monitor→scoreboard handoff
+        </div>
+        <div class="verdict pass"><span class="verdict-icon">💡</span><div><strong>Pro Tip:</strong> Use <code>wait_ptrigger()</code> instead of <code>wait_trigger()</code> when the event may fire before the waiter arrives — avoids missed-trigger bugs that are very hard to debug.</div></div>
+        <div class="verdict warn"><span class="verdict-icon">⚠️</span><div><strong>Deadlock risk:</strong> If <code>b = new("barrier", 4)</code> but only 3 processes call <code>wait_for()</code>, simulation hangs forever. Always match count to actual process count.</div></div>
+        <div class="verdict pass"><span class="verdict-icon">🎯</span><div><strong>Interview Answer:</strong> "uvm_barrier synchronizes multiple processes by count; uvm_event triggers one-to-many notification. Use barrier for group sync, event for notifications like IRQ or monitor handoffs."</div></div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">uvm_barrier_example.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / UVM</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="mc">`include</span> <span class="str">"uvm_macros.svh"</span>
+<span class="kw">import</span> uvm_pkg::*;
+
+<span class="cm">// 3 parallel processes synchronize at a barrier</span>
+<span class="kw">class</span> <span class="tp">barrier_test</span> <span class="kw">extends</span> <span class="tp">uvm_test</span>;
+  <span class="mc">`uvm_component_utils</span>(barrier_test)
+  <span class="tp">uvm_barrier</span> b;
+
+  <span class="kw">function void</span> <span class="fn">build_phase</span>(<span class="tp">uvm_phase</span> phase);
+    <span class="kw">super</span>.<span class="fn">build_phase</span>(phase);
+    b = <span class="kw">new</span>(<span class="str">"barrier"</span>, <span class="num">3</span>);  <span class="cm">// ⚠ Must match process count!</span>
+  <span class="kw">endfunction</span>
+
+  <span class="kw">task</span> <span class="fn">run_phase</span>(<span class="tp">uvm_phase</span> phase);
+    phase.<span class="fn">raise_objection</span>(<span class="kw">this</span>);
+    <span class="kw">fork</span>
+      <span class="fn">process1</span>();  <span class="cm">// reaches at time 10</span>
+      <span class="fn">process2</span>();  <span class="cm">// reaches at time 20</span>
+      <span class="fn">process3</span>();  <span class="cm">// reaches at time 30 — slowest</span>
+    <span class="kw">join</span>           <span class="cm">// ALL cross together at time 30</span>
+    phase.<span class="fn">drop_objection</span>(<span class="kw">this</span>);
+  <span class="kw">endtask</span>
+
+  <span class="kw">task</span> <span class="fn">process1</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"P1"</span>, <span class="str">"Started"</span>, UVM_LOW)
+    #<span class="num">10</span>;
+    <span class="mc">`uvm_info</span>(<span class="str">"P1"</span>, <span class="str">"Reached barrier"</span>, UVM_LOW)
+    b.<span class="fn">wait_for</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"P1"</span>, <span class="str">"Crossed barrier"</span>, UVM_LOW)
+  <span class="kw">endtask</span>
+
+  <span class="kw">task</span> <span class="fn">process2</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"P2"</span>, <span class="str">"Started"</span>, UVM_LOW)
+    #<span class="num">20</span>;
+    <span class="mc">`uvm_info</span>(<span class="str">"P2"</span>, <span class="str">"Reached barrier"</span>, UVM_LOW)
+    b.<span class="fn">wait_for</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"P2"</span>, <span class="str">"Crossed barrier"</span>, UVM_LOW)
+  <span class="kw">endtask</span>
+
+  <span class="kw">task</span> <span class="fn">process3</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"P3"</span>, <span class="str">"Started"</span>, UVM_LOW)
+    #<span class="num">30</span>;  <span class="cm">// Slowest — all other processes wait for this</span>
+    <span class="mc">`uvm_info</span>(<span class="str">"P3"</span>, <span class="str">"Reached barrier"</span>, UVM_LOW)
+    b.<span class="fn">wait_for</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"P3"</span>, <span class="str">"Crossed barrier"</span>, UVM_LOW)
+  <span class="kw">endtask</span>
+<span class="kw">endclass</span>
+
+<span class="kw">module</span> top;
+  <span class="kw">initial</span> <span class="fn">run_test</span>(<span class="str">"barrier_test"</span>);
+<span class="kw">endmodule</span></pre>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">uvm_event_example.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / UVM</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// uvm_event: One producer triggers, many consumers react</span>
+<span class="kw">class</span> <span class="tp">event_test</span> <span class="kw">extends</span> <span class="tp">uvm_test</span>;
+  <span class="mc">`uvm_component_utils</span>(event_test)
+  <span class="tp">uvm_event</span> ev;
+
+  <span class="kw">function void</span> <span class="fn">build_phase</span>(<span class="tp">uvm_phase</span> phase);
+    <span class="kw">super</span>.<span class="fn">build_phase</span>(phase);
+    ev = <span class="kw">new</span>(<span class="str">"ev"</span>);
+  <span class="kw">endfunction</span>
+
+  <span class="kw">task</span> <span class="fn">run_phase</span>(<span class="tp">uvm_phase</span> phase);
+    phase.<span class="fn">raise_objection</span>(<span class="kw">this</span>);
+    <span class="kw">fork</span>
+      <span class="fn">producer</span>();
+      <span class="fn">consumer1</span>();
+      <span class="fn">consumer2</span>();
+    <span class="kw">join</span>
+    phase.<span class="fn">drop_objection</span>(<span class="kw">this</span>);
+  <span class="kw">endtask</span>
+
+  <span class="kw">task</span> <span class="fn">producer</span>();
+    #<span class="num">20</span>;
+    <span class="mc">`uvm_info</span>(<span class="str">"PROD"</span>, <span class="str">"Triggering event"</span>, UVM_LOW)
+    ev.<span class="fn">trigger</span>();  <span class="cm">// Single trigger unblocks ALL waiters</span>
+  <span class="kw">endtask</span>
+
+  <span class="kw">task</span> <span class="fn">consumer1</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"CONS1"</span>, <span class="str">"Waiting..."</span>, UVM_LOW)
+    ev.<span class="fn">wait_trigger</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"CONS1"</span>, <span class="str">"Event received!"</span>, UVM_LOW)
+  <span class="kw">endtask</span>
+
+  <span class="kw">task</span> <span class="fn">consumer2</span>();
+    <span class="mc">`uvm_info</span>(<span class="str">"CONS2"</span>, <span class="str">"Waiting..."</span>, UVM_LOW)
+    ev.<span class="fn">wait_ptrigger</span>();  <span class="cm">// Safe: works even if already triggered</span>
+    <span class="mc">`uvm_info</span>(<span class="str">"CONS2"</span>, <span class="str">"Event received!"</span>, UVM_LOW)
+  <span class="kw">endtask</span>
+<span class="kw">endclass</span>
+
+<span class="kw">module</span> top;
+  <span class="kw">initial</span> <span class="fn">run_test</span>(<span class="str">"event_test"</span>);
+<span class="kw">endmodule</span>
+
+<span class="cm">// Key uvm_event API:
+// ev.trigger()         → fires the event
+// ev.wait_trigger()    → blocks until triggered (may miss if early)
+// ev.wait_ptrigger()   → safe: works even if triggered before wait
+// ev.is_on()           → returns 1 if event has been triggered
+// ev.reset()           → clears event state for reuse</span></pre>
+    </div>
+  </div>
+
+  <!-- CLK GLITCH TAB -->
+  <div class="ctab-content" id="tab-clk-glitch">
+    <div class="text-section">
+      <div class="ts-title">⚡ CLOCK GLITCH DETECTION — Runtime Assertions</div>
+      <div class="ts-body">
+        <h3>WHAT IS A CLOCK GLITCH?</h3>
+        <p>A clock glitch is an unexpected short pulse, extra edge, or duty-cycle distortion in a clock signal. Glitches cause flip-flop metastability, incorrect data capture, and hard-to-debug functional failures.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">TYPE 1</div><div class="ic-v">Narrow Pulse</div><div class="ic-s">HIGH/LOW period too short</div></div>
+          <div class="info-card"><div class="ic-l">TYPE 2</div><div class="ic-v">Extra Edge</div><div class="ic-s">Unexpected transition</div></div>
+          <div class="info-card"><div class="ic-l">TYPE 3</div><div class="ic-v">Period Drift</div><div class="ic-s">Unstable clock period</div></div>
+          <div class="info-card"><div class="ic-l">TYPE 4</div><div class="ic-v">Duty Cycle Error</div><div class="ic-s">Not 50% as expected</div></div>
+        </div>
+        <h3>WHEN DO GLITCHES OCCUR?</h3>
+        <div class="flow-box">
+          <span class="flow-arrow">→</span> During clock gating enable/disable transitions<br>
+          <span class="flow-arrow">→</span> Reset release at asynchronous time boundary<br>
+          <span class="flow-arrow">→</span> PLL switchover (clock mux change)<br>
+          <span class="flow-arrow">→</span> Clock domain crossing (CDC) paths<br>
+          <span class="flow-arrow">→</span> Power-on / power-down sequences
+        </div>
+        <h3>GLITCH DETECTION CHECKLIST</h3>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;">
+          <span class="badge badge-green">✓ Min Pulse Width</span>
+          <span class="badge badge-green">✓ Period Stability</span>
+          <span class="badge badge-green">✓ No Extra Edges</span>
+          <span class="badge badge-cyan">✓ Duty Cycle 50%</span>
+          <span class="badge badge-orange">✓ Clock Gating Safety</span>
+          <span class="badge badge-orange">✓ Reset Transition</span>
+          <span class="badge badge-green">✓ CDC Glitch Check</span>
+          <span class="badge badge-cyan">✓ Random Stress</span>
+        </div>
+        <div class="verdict warn"><span class="verdict-icon">⚠️</span><div><strong>Debug Tip:</strong> A "HIGH time violation" assertion typically indicates glitch, duty-cycle issue, or clock gating problem. Add <code>$display("CLK transition at %0t", $time)</code> and inspect waveform in DVE/Verdi.</div></div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">clk_glitch_assertions.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / SVA</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="dir">`define</span> MIN_PULSE_WIDTH  <span class="num">4</span>   <span class="cm">// ns — adjust to your clock spec</span>
+<span class="dir">`define</span> CLK_PERIOD       <span class="num">10</span>  <span class="cm">// ns — expected clock period</span>
+<span class="dir">`define</span> JITTER_DELTA     <span class="num">1</span>   <span class="cm">// ns — allowed jitter tolerance</span>
+<span class="dir">`define</span> MIN_HIGH_TIME    <span class="num">4</span>   <span class="cm">// ns — minimum HIGH duration</span>
+
+<span class="cm">// ─── TC1: Minimum Pulse Width Check ──────────────</span>
+<span class="kw">time</span> prev_edge;
+
+<span class="kw">always</span> @(<span class="kw">posedge</span> clk <span class="kw">or negedge</span> clk) <span class="kw">begin</span>
+  <span class="kw">if</span> (prev_edge != <span class="num">0</span>) <span class="kw">begin</span>
+    <span class="kw">assert</span> (($time - prev_edge) >= <span class="dir">`MIN_PULSE_WIDTH</span>)
+      <span class="kw">else</span> $error(<span class="str">"GLITCH: Pulse width %0t ns at %0t"</span>,
+                  ($time - prev_edge), $time);
+  <span class="kw">end</span>
+  prev_edge = $time;
+<span class="kw">end</span>
+
+<span class="cm">// ─── TC2: Clock Period Stability Check ───────────</span>
+<span class="kw">time</span> last_posedge;
+
+<span class="kw">always</span> @(<span class="kw">posedge</span> clk) <span class="kw">begin</span>
+  <span class="kw">if</span> (last_posedge != <span class="num">0</span>) <span class="kw">begin</span>
+    <span class="kw">assert</span> (($time - last_posedge) <span class="kw">inside</span>
+            {[(<span class="dir">`CLK_PERIOD</span>-<span class="dir">`JITTER_DELTA</span>):
+              (<span class="dir">`CLK_PERIOD</span>+<span class="dir">`JITTER_DELTA</span>)]})
+      <span class="kw">else</span> $error(<span class="str">"PERIOD GLITCH: %0t ns at %0t"</span>,
+                  ($time - last_posedge), $time);
+  <span class="kw">end</span>
+  last_posedge = $time;
+<span class="kw">end</span>
+
+<span class="cm">// ─── TC3: No Extra Edge Detection ────────────────</span>
+<span class="kw">bit</span> expected_clk;
+<span class="kw">always</span> @(<span class="kw">posedge</span> ref_clk) expected_clk <= ~expected_clk;
+
+<span class="kw">always</span> @(clk) <span class="kw">begin</span>
+  <span class="kw">assert</span> (clk === expected_clk)
+    <span class="kw">else</span> $error(<span class="str">"EXTRA EDGE: Unexpected transition at %0t"</span>, $time);
+<span class="kw">end</span>
+
+<span class="cm">// ─── TC4: Duty Cycle Check (50% expected) ────────</span>
+<span class="kw">time</span> rise_time, fall_time;
+<span class="kw">always</span> @(<span class="kw">posedge</span> clk) rise_time = $time;
+
+<span class="kw">always</span> @(<span class="kw">negedge</span> clk) <span class="kw">begin</span>
+  fall_time = $time;
+  <span class="kw">assert</span> ((fall_time - rise_time) >= <span class="dir">`MIN_HIGH_TIME</span>)
+    <span class="kw">else</span> $error(<span class="str">"DUTY CYCLE: HIGH=%0t ns at %0t"</span>,
+                (fall_time - rise_time), $time);
+<span class="kw">end</span>
+
+<span class="cm">// ─── TC5: Clock Gating Glitch (SVA Property) ─────</span>
+<span class="kw">property</span> no_glitch_on_gating;
+  @(<span class="kw">posedge</span> clk) <span class="kw">disable iff</span> (!reset)
+  $stable(gated_clk) || $rose(gated_clk) || $fell(gated_clk);
+<span class="kw">endproperty</span>
+a_no_gating_glitch: <span class="kw">assert property</span>(no_glitch_on_gating)
+  <span class="kw">else</span> $error(<span class="str">"GATING GLITCH detected on gated_clk"</span>);
+
+<span class="cm">// ─── TC6: Random Stress Test ─────────────────────</span>
+<span class="kw">task</span> <span class="fn">run_clk_stress_test</span>();
+  <span class="kw">repeat</span>(<span class="num">1000</span>) <span class="kw">begin</span>
+    clk_enable = $urandom_range(<span class="num">0</span>, <span class="num">1</span>);
+    @(<span class="kw">posedge</span> clk);
+  <span class="kw">end</span>
+  $display(<span class="str">"[PASS] Stress: 1000 random enable cycles"</span>);
+<span class="kw">endtask</span></pre>
+    </div>
+  </div>
+
+  <!-- AHB SPLIT TAB -->
+  <div class="ctab-content" id="tab-ahb">
+    <div class="text-section">
+      <div class="ts-title">🔌 AHB — SPLIT vs RETRY vs HSPLIT</div>
+      <div class="ts-body">
+        <h3>WHY SPLIT EXISTS IN AHB</h3>
+        <p>In AMBA AHB, when a slave needs a long time to prepare data (slow memory, busy peripheral), it must release the bus so other masters can use it. This is the purpose of <strong>SPLIT</strong> — true bus sharing for long-latency transactions.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">SPLIT</div><div class="ic-v">Response Type</div><div class="ic-s">Slave: "come back later" — bus freed</div></div>
+          <div class="info-card"><div class="ic-l">RETRY</div><div class="ic-v">Response Type</div><div class="ic-s">Bus held, try again next cycle</div></div>
+          <div class="info-card"><div class="ic-l">HSPLIT</div><div class="ic-v">Control Signal</div><div class="ic-s">Slave: "master X can now retry"</div></div>
+          <div class="info-card"><div class="ic-l">HRESP</div><div class="ic-v">2-bit Signal</div><div class="ic-s">OKAY/ERROR/RETRY/SPLIT</div></div>
+        </div>
+        <h3>SPLIT RESPONSE — STEP-BY-STEP FLOW</h3>
+        <div class="flow-box">
+          <span class="flow-arrow">1.</span> Master sends transaction to Slave<br>
+          <span class="flow-arrow">2.</span> Slave is busy → responds HRESP = SPLIT<br>
+          <span class="flow-arrow">3.</span> Arbiter sees SPLIT → removes master from priority queue<br>
+          <span class="flow-arrow">4.</span> Bus is freed — other masters can now use it<br>
+          <span class="flow-arrow">5.</span> Slave becomes ready → asserts HSPLIT[master_id] bit<br>
+          <span class="flow-arrow">6.</span> Arbiter sees HSPLIT → re-grants bus to that specific master<br>
+          <span class="flow-arrow">7.</span> Master retries the original transaction → gets OKAY response
+        </div>
+        <h3>SPLIT vs RETRY — THE CRITICAL DIFFERENCE</h3>
+        <div class="flow-box">
+          <strong>RETRY:</strong><br>
+          <span class="flow-arrow">→</span> Slave says "try again immediately"<br>
+          <span class="flow-arrow">→</span> Master KEEPS the bus — bus is NOT released<br>
+          <span class="flow-arrow">→</span> Arbiter re-grants to same master next cycle<br>
+          <span class="flow-arrow">→</span> Use for: short delays only<br><br>
+          <strong>SPLIT:</strong><br>
+          <span class="flow-arrow">→</span> Slave says "come back later"<br>
+          <span class="flow-arrow">→</span> Master RELEASES the bus completely<br>
+          <span class="flow-arrow">→</span> Other masters can use bus while slave prepares data<br>
+          <span class="flow-arrow">→</span> Use for: long delays — true multi-master bus sharing
+        </div>
+        <h3>HSPLIT SIGNAL EXPLAINED</h3>
+        <p>HSPLIT is a multi-bit signal (one bit per master) sent from the slave to the arbiter. When bit N is asserted, it means <em>"Master N is now permitted to retry its transaction."</em> Without HSPLIT assertion, the arbiter will NOT re-grant the bus to that master.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin:12px 0;">
+          <span class="badge badge-green">SPLIT = response action by slave</span>
+          <span class="badge badge-cyan">HSPLIT = re-enable signal to arbiter</span>
+          <span class="badge badge-orange">RETRY = hold bus, immediate retry</span>
+        </div>
+        <div class="verdict pass"><span class="verdict-icon">🎯</span><div><strong>Interview Answer:</strong> "SPLIT and RETRY are both 2-cycle AHB responses for delayed transfers. SPLIT releases the bus and uses HSPLIT to re-grant specific masters later. RETRY holds the bus and forces the same master to try again immediately. HSPLIT is a separate signal — not the same as SPLIT."</div></div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">ahb_split_assertions.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / SVA</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// AHB Response Encoding (HRESP[1:0])</span>
+<span class="kw">typedef enum logic</span> [<span class="num">1</span>:<span class="num">0</span>] {
+  OKAY  = <span class="num">2'b00</span>,
+  ERROR = <span class="num">2'b01</span>,
+  RETRY = <span class="num">2'b10</span>,
+  SPLIT = <span class="num">2'b11</span>
+} hresp_e;
+
+<span class="cm">// AHB Interface (relevant signals)</span>
+<span class="kw">interface</span> ahb_if(<span class="kw">input bit</span> HCLK);
+  <span class="kw">logic</span> [<span class="num">31</span>:<span class="num">0</span>] HADDR;
+  <span class="kw">logic</span> [<span class="num">1</span>:<span class="num">0</span>]  HTRANS;   <span class="cm">// IDLE/BUSY/NONSEQ/SEQ</span>
+  <span class="kw">logic</span>         HWRITE;
+  <span class="kw">logic</span> [<span class="num">31</span>:<span class="num">0</span>] HWDATA, HRDATA;
+  <span class="kw">logic</span> [<span class="num">1</span>:<span class="num">0</span>]  HRESP;    <span class="cm">// OKAY/ERROR/RETRY/SPLIT</span>
+  <span class="kw">logic</span>         HREADY;
+  <span class="kw">logic</span> [<span class="num">15</span>:<span class="num">0</span>] HSPLIT;   <span class="cm">// Bit per master — re-grant signal</span>
+<span class="kw">endinterface</span>
+
+<span class="cm">// SVA: Both SPLIT and RETRY are 2-cycle responses
+// Cycle 1: HRESP asserted, HREADY=0
+// Cycle 2: HRESP still asserted, HREADY=1</span>
+<span class="kw">property</span> ahb_split_two_cycle;
+  @(<span class="kw">posedge</span> HCLK) <span class="kw">disable iff</span>(!HRESETn)
+  (HRESP == SPLIT && !HREADY) |=> (HRESP == SPLIT && HREADY);
+<span class="kw">endproperty</span>
+a_split_two_cycle: <span class="kw">assert property</span>(ahb_split_two_cycle)
+  <span class="kw">else</span> $error(<span class="str">"AHB: SPLIT must be a 2-cycle response"</span>);
+
+<span class="kw">property</span> ahb_retry_two_cycle;
+  @(<span class="kw">posedge</span> HCLK) <span class="kw">disable iff</span>(!HRESETn)
+  (HRESP == RETRY && !HREADY) |=> (HRESP == RETRY && HREADY);
+<span class="kw">endproperty</span>
+a_retry_two_cycle: <span class="kw">assert property</span>(ahb_retry_two_cycle)
+  <span class="kw">else</span> $error(<span class="str">"AHB: RETRY must be a 2-cycle response"</span>);
+
+<span class="cm">// SVA: After SPLIT, master must NOT get bus until HSPLIT asserted</span>
+<span class="kw">property</span> ahb_hsplit_required(master_id);
+  @(<span class="kw">posedge</span> HCLK) <span class="kw">disable iff</span>(!HRESETn)
+  $rose(HGRANT[master_id]) |->
+    $past(HSPLIT[master_id], <span class="num">1</span>);
+<span class="kw">endproperty</span>
+<span class="kw">generate</span>
+  <span class="kw">for</span>(<span class="kw">genvar</span> i=<span class="num">0</span>; i<<span class="num">16</span>; i++) <span class="kw">begin</span> : g_hsplit
+    a_hsplit: <span class="kw">assert property</span>(ahb_hsplit_required(i))
+      <span class="kw">else</span> $error(<span class="str">"AHB: Bus granted to M%0d before HSPLIT"</span>, i);
+  <span class="kw">end</span>
+<span class="kw">endgenerate</span></pre>
+    </div>
+  </div>
+
+  <!-- COVERAGE TAB -->
+  <div class="ctab-content" id="tab-coverage">
+    <div class="text-section">
+      <div class="ts-title">◉ COVERAGE CLOSURE — Sign-off &amp; EXCLUDE</div>
+      <div class="ts-body">
+        <h3>THE SCENARIO: 100% FUNC + 95% CODE COVERAGE</h3>
+        <p>If functional coverage is 100% and code coverage is 95%, you <strong>do not blindly proceed to sign-off</strong>. The critical question is: <em>what does that missing 5% represent?</em> Not all uncovered code is equally important.</p>
+        <div class="info-grid">
+          <div class="info-card"><div class="ic-l">FUNC COV 100%</div><div class="ic-v">Testplan Done</div><div class="ic-s">All planned scenarios verified</div></div>
+          <div class="info-card"><div class="ic-l">CODE COV 95%</div><div class="ic-v">RTL Lines Unexercised</div><div class="ic-s">Some branches/lines not hit</div></div>
+          <div class="info-card"><div class="ic-l">KEY QUESTION</div><div class="ic-v">What is that 5%?</div><div class="ic-s">Dead code or real gap?</div></div>
+          <div class="info-card"><div class="ic-l">INDUSTRY NORM</div><div class="ic-v">90–95% Code OK</div><div class="ic-s">With justified waivers</div></div>
+        </div>
+        <h3>THE "EXCLUDE" KEYWORD — WHAT IT MEANS</h3>
+        <p>The <strong>exclude</strong> mechanism intentionally removes certain RTL code from the coverage calculation. When RTL is confirmed unreachable by the design team, excluding it prevents falsely low coverage numbers — but exclusions require proper justification and documentation.</p>
+        <div class="flow-box">
+          <strong>Correct Coverage Closure Flow:</strong><br>
+          <span class="flow-arrow">1.</span> Analyze coverage report (line/branch/FSM/toggle coverage)<br>
+          <span class="flow-arrow">2.</span> Identify uncovered code — categorize each item<br>
+          <span class="flow-arrow">3.</span> Confirm with RTL designer: "Is this code reachable?"<br>
+          <span class="flow-arrow">4.</span> If unreachable → apply EXCLUDE with written justification<br>
+          <span class="flow-arrow">5.</span> Re-run coverage tool → verify target is now met<br>
+          <span class="flow-arrow">6.</span> Document as coverage waivers → proceed to sign-off
+        </div>
+        <h3>VALID EXCLUSION CASES (CAN EXCLUDE)</h3>
+        <div class="verdict pass"><span class="verdict-icon">✅</span><div>Default FSM case that can never occur due to binary encoding</div></div>
+        <div class="verdict pass"><span class="verdict-icon">✅</span><div>Safety check: <code>if (addr &gt; MAX_ADDR)</code> — constraints ensure this is never reached</div></div>
+        <div class="verdict pass"><span class="verdict-icon">✅</span><div>Debug output signals not synthesized in production build</div></div>
+        <div class="verdict pass"><span class="verdict-icon">✅</span><div>Power-down paths not modeled in simulation environment</div></div>
+        <h3>INVALID EXCLUSION CASES (DO NOT EXCLUDE)</h3>
+        <div class="verdict fail"><span class="verdict-icon">❌</span><div>Valid functional paths you simply haven't written tests for yet</div></div>
+        <div class="verdict fail"><span class="verdict-icon">❌</span><div>Reset / error / corner cases that ARE architecturally reachable</div></div>
+        <div class="verdict fail"><span class="verdict-icon">❌</span><div>FSM states or transitions defined in the design spec</div></div>
+        <div class="verdict warn"><span class="verdict-icon">⚠️</span><div><strong>Golden Rule:</strong> Never exclude just to reach 100%. Every exclusion must be analyzed, confirmed by the design team, and documented as a coverage waiver before sign-off.</div></div>
+        <div class="verdict pass"><span class="verdict-icon">🎯</span><div><strong>Interview Answer:</strong> "I won't directly proceed at 95% code coverage. I'll analyze the uncovered code. If it's unreachable RTL confirmed by the designer, I'll exclude it using tool mechanisms and document the waiver. If it's a valid path, I'll add tests before sign-off."</div></div>
+      </div>
+    </div>
+    <div class="code-section">
+      <div class="code-header">
+        <span class="code-filename">coverage_model_and_exclusions.sv</span>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <span class="code-lang">SYSTEMVERILOG / COVERAGE</span>
+          <button class="code-copy" onclick="copyCode(this)">COPY</button>
+        </div>
+      </div>
+<pre data-code><span class="cm">// ─── Coverage Exclusion Pragmas (Tool-Specific) ──</span>
+
+<span class="cm">// VCS / Questa / Xcelium style pragma:</span>
+<span class="cm">// pragma coverage off</span>
+<span class="kw">if</span> (state == <span class="num">4'hF</span>) <span class="kw">begin</span>
+  <span class="cm">// Unreachable — only states 0,1,2 are valid</span>
+  <span class="cm">// RTL designer confirmed: never reachable</span>
+  <span class="cm">// Waiver ID: WAV-PLL-001</span>
+  error_out <= <span class="num">1</span>;
+<span class="kw">end</span>
+<span class="cm">// pragma coverage on</span>
+
+<span class="cm">// ─── Functional Coverage Model — QSPI Example ────</span>
+<span class="kw">covergroup</span> qspi_cg @(<span class="kw">posedge</span> clk);
+
+  <span class="cm">// All QSPI commands</span>
+  cp_cmd: <span class="kw">coverpoint</span> cmd {
+    <span class="kw">bins</span> write_en   = {<span class="num">8'h06</span>};  <span class="cm">// Write Enable</span>
+    <span class="kw">bins</span> page_prog  = {<span class="num">8'h02</span>};  <span class="cm">// Page Program</span>
+    <span class="kw">bins</span> quad_prog  = {<span class="num">8'h32</span>};  <span class="cm">// Quad Page Program</span>
+    <span class="kw">bins</span> fast_read  = {<span class="num">8'h0B</span>};  <span class="cm">// Fast Read</span>
+    <span class="kw">bins</span> quad_read  = {<span class="num">8'hEB</span>};  <span class="cm">// Quad I/O Read</span>
+    <span class="kw">bins</span> sect_erase = {<span class="num">8'hD8</span>};  <span class="cm">// Sector Erase</span>
+    <span class="cm">// cmd[7:6]=2'b10 → EXCLUDED (reserved, unreachable)</span>
+    <span class="kw">illegal_bins</span> reserved = {[<span class="num">8'h80</span>:<span class="num">8'hBF</span>]};
+  }
+
+  <span class="cm">// Address coverage</span>
+  cp_addr: <span class="kw">coverpoint</span> addr {
+    <span class="kw">bins</span> low  = {[<span class="num">0</span>:<span class="num">24'h0FFFFF</span>]};
+    <span class="kw">bins</span> mid  = {[<span class="num">24'h100000</span>:<span class="num">24'hEFFFFF</span>]};
+    <span class="kw">bins</span> high = {[<span class="num">24'hF00000</span>:<span class="num">24'hFFFFFF</span>]};
+  }
+
+  <span class="cm">// Dummy cycles</span>
+  cp_dummy: <span class="kw">coverpoint</span> dummy_cycles {
+    <span class="kw">bins</span> min_d = {<span class="num">2</span>};
+    <span class="kw">bins</span> mid_d = {[<span class="num">3</span>:<span class="num">9</span>]};
+    <span class="kw">bins</span> max_d = {<span class="num">10</span>};
+  }
+
+  <span class="cm">// Cross coverage: command × address region</span>
+  cx_cmd_addr: <span class="kw">cross</span> cp_cmd, cp_addr;
+
+<span class="kw">endgroup</span>
+
+<span class="cm">// ─── Coverage Waiver Log (Documentation) ─────────
+// Item                 | Coverage | Action  | Waiver ID
+// ─────────────────────┼──────────┼─────────┼──────────
+// FSM default state    |   0%     | EXCLUDE | WAV-001
+// cmd[7:6]=2b10        |   0%     | EXCLUDE | WAV-002
+// Error inject path    |   0%     | ADD TEST| N/A
+// Interrupt handler    |   0%     | ADD TEST| N/A
+// Debug SFR access     |   0%     | EXCLUDE | WAV-003</span></pre>
     </div>
   </div>
 
@@ -1437,13 +1759,12 @@ a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
 </div>
 </section>
 
-<!-- ══════ FOOTER ══════ -->
 <footer>
   <div class="footer-logo">DV_HUB</div>
   <div class="footer-copy">
     © 2025–2026 <strong>Shaik Khaja Mohiddeen</strong>. All Rights Reserved.<br>
-    Design Verification Engineer · DV HUB · Built with SystemVerilog & Passion<br>
-    <span style="font-size:0.55rem;opacity:0.6;">UVM 1.2 · IEEE 1800-2017 · AMBA Protocols · MIPI · QSPI · GDMA</span>
+    Design Verification Engineer · DV HUB · Built with SystemVerilog &amp; Passion<br>
+    <span style="font-size:0.55rem;opacity:0.6;">UVM 1.2 · IEEE 1800-2017 · AMBA Protocols · MIPI · QSPI · GDMA · CLK · Coverage</span>
   </div>
   <div class="footer-links">
     <button class="footer-link" onclick="document.getElementById('home').scrollIntoView({behavior:'smooth'})">HOME</button>
@@ -1452,7 +1773,6 @@ a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
   </div>
 </footer>
 
-<!-- Project Modal -->
 <div class="modal-overlay" id="proj-modal">
   <div class="modal">
     <div class="modal-bar">
@@ -1465,9 +1785,6 @@ a_stable: <span class="kw">assert property</span>(apb_addr_stable);</pre>
 </div>
 
 <script>
-// ═══════════════════════════════════════════
-// DATA
-// ═══════════════════════════════════════════
 const SKILLS = [
   {name:'SystemVerilog',cat:'LANGUAGE',icon:'⬡',color:'#00ff88',tags:['OOP','Interfaces','Clocking','Randomization'],level:90},
   {name:'UVM 1.2',cat:'METHODOLOGY',icon:'⚙',color:'#00e5ff',tags:['Sequences','Agents','Scoreboard','RAL'],level:85},
@@ -1478,47 +1795,44 @@ const SKILLS = [
   {name:'PLL Verification',cat:'ANALOG/CLOCK',icon:'🌀',color:'#a78bfa',tags:['VCO','Lock','Dividers','Jitter'],level:75},
   {name:'GPIO & Interrupts',cat:'PERIPHERAL',icon:'📌',color:'#ffc200',tags:['INT_EN','W1C','Edge/Level','IRQ'],level:84},
   {name:'SVA Assertions',cat:'FORMAL VERIFY',icon:'✓',color:'#34d399',tags:['Properties','Sequences','Cover','Assume'],level:80},
-  {name:'Functional Coverage',cat:'COVERAGE',icon:'◉',color:'#fb7185',tags:['Covergroups','Cross','Bins','Goals'],level:82},
-  {name:'Processor Boot',cat:'FIRMWARE',icon:'🖥',color:'#60a5fa',tags:['POR','QSPI Boot','SBL','Secure Boot'],level:76},
-  {name:'Synopsys VCS',cat:'EDA TOOL',icon:'⚡',color:'#00ff88',tags:['Simulation','DVE','UVM Native','Debug'],level:83},
+  {name:'Functional Coverage',cat:'COVERAGE',icon:'◉',color:'#fb7185',tags:['Covergroups','Cross','Bins','Exclude'],level:82},
+  {name:'UVM Sync',cat:'TESTBENCH INFRA',icon:'🔔',color:'#60a5fa',tags:['Barrier','Event','Semaphore','Mailbox'],level:78},
+  {name:'Clock Verification',cat:'CLK INTEGRITY',icon:'⚡',color:'#00ff88',tags:['Glitch','Duty Cycle','Period','Gating'],level:76},
 ];
 
 const PROJECTS = [
   {id:'PRJ-001',title:'APB UVM TESTBENCH',color:'#00ff88',
    desc:'Complete UVM testbench for APB protocol. Includes driver, monitor, scoreboard, coverage, and SVA assertions.',
    tags:['APB','UVM','Scoreboard','SVA','Coverage'],
-   content:`<h3>APB UVM TESTBENCH</h3><p>A complete, production-grade UVM testbench for AMBA APB protocol verification. Features a reusable agent architecture with driver, monitor, scoreboard, and functional coverage.</p><h3>ARCHITECTURE</h3><div class="flow-box">apb_test → apb_env → apb_agent → apb_driver / apb_monitor<br>apb_monitor → apb_scoreboard (analysis port)<br>apb_monitor → apb_coverage (functional coverage)</div><h3>KEY FEATURES</h3><ul><li>Constrained-random write/read sequences with address alignment</li><li>Shadow memory scoreboard — write-through, read-verify</li><li>SVA: setup phase, enable timing, addr stability, SLVERR</li><li>Functional coverage: addr bins, wr/rd cross, delay distribution</li><li>UVM factory overrides for error injection</li></ul>`
+   content:`<h3>APB UVM TESTBENCH</h3><p>A complete, production-grade UVM testbench for AMBA APB protocol verification.</p><h3>ARCHITECTURE</h3><div class="flow-box">apb_test → apb_env → apb_agent → apb_driver / apb_monitor<br>apb_monitor → apb_scoreboard (analysis port)</div><h3>KEY FEATURES</h3><ul><li>Constrained-random write/read sequences with address alignment</li><li>Shadow memory scoreboard — write-through, read-verify</li><li>SVA: setup phase, enable timing, addr stability, SLVERR</li><li>Functional coverage: addr bins, wr/rd cross, delay distribution</li></ul>`
   },
   {id:'PRJ-002',title:'QSPI SoC UVM VIP',color:'#00e5ff',
    desc:'SoC-level QSPI flash verification IP with AHB master agent, QSPI monitor, flash model, and scoreboard.',
    tags:['QSPI','SoC','AHB','Flash Model','RAL'],
-   content:`<h3>QSPI SoC UVM VIP</h3><p>SoC-level UVM Verification IP for QSPI flash controller. Includes complete command set support, AHB register access via RAL model, and bit-accurate flash memory model.</p><h3>COMMANDS SUPPORTED</h3><p>Write Enable (0x06), Page Program (0x02), Quad Page Program (0x32), Fast Read (0x0B), Quad I/O Read (0xEB), Sector Erase (0xD8)</p><h3>SCOREBOARD</h3><p>Shadow memory model tracks all writes and verifies reads. Detects data corruption, address mismatches, and protocol violations.</p>`
+   content:`<h3>QSPI SoC UVM VIP</h3><p>SoC-level UVM Verification IP for QSPI flash controller. Includes complete command set support and bit-accurate flash memory model.</p><h3>COMMANDS SUPPORTED</h3><p>Write Enable (0x06), Page Program (0x02), Quad Page Program (0x32), Fast Read (0x0B), Quad I/O Read (0xEB), Sector Erase (0xD8)</p>`
   },
   {id:'PRJ-003',title:'MIPI DSI VERIFICATION',color:'#a78bfa',
    desc:'MIPI D-PHY based DSI protocol checker with ECC generation, packet format validation, and HS/LP mode coverage.',
    tags:['MIPI','DSI','D-PHY','ECC','Packets'],
-   content:`<h3>MIPI DSI VERIFICATION</h3><p>Protocol verification for MIPI Display Serial Interface using D-PHY physical layer. Covers both High-Speed (HS) and Low-Power (LP) modes with complete packet format checking.</p><h3>PACKET TYPES</h3><ul><li>Short Packets: 4 bytes (DI + Data + ECC)</li><li>Long Packets: Header + Variable Payload + CRC</li><li>Virtual Channels: 0–3 multiplexed</li></ul><h3>ECC IMPLEMENTATION</h3><p>Hardware-accurate ECC generation using Hamming code over 3-byte header (DI + WC). Can detect 2-bit and correct 1-bit errors.</p>`
+   content:`<h3>MIPI DSI VERIFICATION</h3><p>Protocol verification for MIPI Display Serial Interface using D-PHY physical layer. Covers both High-Speed (HS) and Low-Power (LP) modes.</p><h3>ECC IMPLEMENTATION</h3><p>Hardware-accurate ECC generation using Hamming code over 3-byte header. Can detect 2-bit and correct 1-bit errors.</p>`
   },
   {id:'PRJ-004',title:'PROCESSOR BOOT FLOW',color:'#f59e0b',
    desc:'Complete SoC boot verification: Primary ROM → SBL → Application. QSPI load, DDR init, GDMA transfer, CRC validation.',
    tags:['Boot','QSPI','GDMA','DDR','Firmware'],
-   content:`<h3>PROCESSOR BOOT FLOW VERIFICATION</h3><p>End-to-end SoC boot sequence verification covering all 3 stages: Boot ROM execution, Secondary Bootloader (SBL), and Application launch.</p><h3>VERIFICATION PLAN</h3><ul><li>Boot mode selection (QSPI / eMMC / UART recovery)</li><li>QSPI read correctness — memory-mapped vs indirect mode</li><li>SBL load integrity — CRC + signature verification</li><li>DDR initialization sequence</li><li>GDMA transfer verification — no overlap, correct size</li><li>Jump address correctness from image header</li></ul>`
+   content:`<h3>PROCESSOR BOOT FLOW VERIFICATION</h3><p>End-to-end SoC boot sequence verification covering all 3 stages: Boot ROM execution, Secondary Bootloader (SBL), and Application launch.</p><h3>VERIFICATION PLAN</h3><ul><li>Boot mode selection (QSPI / eMMC / UART recovery)</li><li>QSPI read correctness — memory-mapped vs indirect mode</li><li>SBL load integrity — CRC + signature verification</li><li>DDR initialization sequence and GDMA transfer verification</li></ul>`
   },
   {id:'PRJ-005',title:'PLL VALIDATION SUITE',color:'#00ff9d',
    desc:'Comprehensive PLL test suite: enable/disable, lock detection, divider config, bypass mode, stress and lock-time tests.',
    tags:['PLL','C Tests','Validation','Clock','VCO'],
-   content:`<h3>PLL VALIDATION SUITE</h3><p>Post-silicon validation and firmware bring-up test suite for PLL blocks in SoC designs. Covers all operational modes and corner cases.</p><h3>TEST CASES</h3><ul><li>TC1: PLL Enable — verify CTRL register write</li><li>TC2: Lock Detection — timeout-based polling</li><li>TC3: Divider Config — M/N/P verification</li><li>TC4: Bypass Mode — Fout=Fref check</li><li>TC5: Disable — clean shutdown</li><li>TC6: Lock Time Measurement — µs accuracy</li><li>TC7: Stress Test — 100 enable/disable cycles</li></ul>`
+   content:`<h3>PLL VALIDATION SUITE</h3><p>Post-silicon validation and firmware bring-up test suite for PLL blocks. Covers all operational modes and corner cases.</p><h3>TEST CASES</h3><ul><li>TC1: PLL Enable verification</li><li>TC2: Lock detection with timeout</li><li>TC3: Divider config M/N/P</li><li>TC4: Bypass mode</li><li>TC5: Disable clean shutdown</li><li>TC6: Lock time measurement</li><li>TC7: 100-cycle stress test</li></ul>`
   },
   {id:'PRJ-006',title:'GDMA UVM TESTBENCH',color:'#fb7185',
    desc:'Multi-channel GDMA verification with M2M/M2P/P2M modes, linked-list descriptors, burst testing, and IRQ validation.',
    tags:['GDMA','DMA','Multi-channel','IRQ','Burst'],
-   content:`<h3>GDMA UVM TESTBENCH</h3><p>Comprehensive GDMA controller verification covering all transfer modes, channel configurations, and error scenarios.</p><h3>TEST SCENARIOS</h3><ul><li>M2M: Verify no address overlap constraint</li><li>M2P: Peripheral TX with handshake</li><li>P2M: Peripheral RX with FIFO</li><li>Burst: All burst sizes 1/4/8/16</li><li>Linked-List: Chain of descriptors</li><li>IRQ: TC/TE/HT interrupt assertion</li><li>Error: Bus error injection mid-transfer</li></ul>`
+   content:`<h3>GDMA UVM TESTBENCH</h3><p>Comprehensive GDMA controller verification covering all transfer modes, channel configurations, and error scenarios.</p><h3>TEST SCENARIOS</h3><ul><li>M2M: Verify no address overlap constraint</li><li>Burst: All burst sizes 1/4/8/16</li><li>Linked-List: Chain of descriptors</li><li>IRQ: TC/TE/HT interrupt assertion</li><li>Error: Bus error injection mid-transfer</li></ul>`
   },
 ];
 
-// ═══════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════
 function buildSkills() {
   document.getElementById('skills-grid').innerHTML = SKILLS.map(s=>`
     <div class="skill-card reveal" style="--card-accent:${s.color}">
@@ -1544,14 +1858,11 @@ function buildProjects() {
       </div>
       <div class="proj-body">
         <div class="proj-tags">${p.tags.map(t=>`<span class="proj-tag">${t}</span>`).join('')}</div>
-        <button class="proj-link" onclick="openProject('${p.id}')">→ VIEW DETAILS</button>
+        <button class="proj-link">→ VIEW DETAILS</button>
       </div>
     </div>`).join('');
 }
 
-// ═══════════════════════════════════════════
-// TABS
-// ═══════════════════════════════════════════
 function switchTab(btn, id) {
   document.querySelectorAll('.ctab').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.ctab-content').forEach(c=>c.classList.remove('active'));
@@ -1559,9 +1870,6 @@ function switchTab(btn, id) {
   document.getElementById(id).classList.add('active');
 }
 
-// ═══════════════════════════════════════════
-// MODAL
-// ═══════════════════════════════════════════
 function openProject(id) {
   const p = PROJECTS.find(x=>x.id===id);
   if(!p) return;
@@ -1586,9 +1894,6 @@ document.getElementById('proj-modal').addEventListener('click',e=>{
   if(e.target===document.getElementById('proj-modal')) closeModal();
 });
 
-// ═══════════════════════════════════════════
-// COPY CODE
-// ═══════════════════════════════════════════
 function copyCode(btn) {
   const pre = btn.closest('.code-header').nextElementSibling;
   const text = pre.textContent;
@@ -1599,20 +1904,16 @@ function copyCode(btn) {
   });
 }
 
-// ═══════════════════════════════════════════
-// CONTACT FORM
-// ═══════════════════════════════════════════
 function sendMessage() {
   const name = document.getElementById('f-name').value.trim();
   const email = document.getElementById('f-email').value.trim();
-  const subject = document.getElementById('f-subject').value.trim();
   const message = document.getElementById('f-message').value.trim();
   const status = document.getElementById('form-status');
   if(!name||!email||!message){
     status.textContent='→ Please fill in all required fields.';
     status.style.color='var(--red)';status.style.display='block';return;
   }
-  status.textContent='→ Message sent! I\'ll get back to you soon.';
+  status.textContent="→ Message sent! I'll get back to you soon.";
   status.style.color='var(--green)';status.style.display='block';
   document.getElementById('f-name').value='';
   document.getElementById('f-email').value='';
@@ -1620,9 +1921,6 @@ function sendMessage() {
   document.getElementById('f-message').value='';
 }
 
-// ═══════════════════════════════════════════
-// NAV
-// ═══════════════════════════════════════════
 function navClick(el) {
   document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
   el.classList.add('active');
@@ -1632,14 +1930,10 @@ function toggleNav() {
   document.getElementById('nav-links').classList.toggle('open');
 }
 
-// ═══════════════════════════════════════════
-// SCROLL REVEAL + SKILL BARS
-// ═══════════════════════════════════════════
 const observer = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
     if(e.isIntersecting){
       e.target.classList.add('visible');
-      // Animate skill bars
       e.target.querySelectorAll('.sk-fill').forEach(bar=>{
         bar.style.width = bar.dataset.width;
       });
@@ -1652,9 +1946,6 @@ function observeAll(){
   document.querySelectorAll('.reveal,.skill-card').forEach(el=>observer.observe(el));
 }
 
-// ═══════════════════════════════════════════
-// ACTIVE NAV ON SCROLL
-// ═══════════════════════════════════════════
 const sections = ['home','about','skills','projects','coding','contact'];
 const secObserver = new IntersectionObserver(entries=>{
   entries.forEach(e=>{
@@ -1667,9 +1958,6 @@ const secObserver = new IntersectionObserver(entries=>{
 },{threshold:0.3});
 sections.forEach(id=>{const el=document.getElementById(id);if(el)secObserver.observe(el);});
 
-// ═══════════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════════
 window.addEventListener('load',()=>{
   buildSkills();
   buildProjects();
